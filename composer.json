@@ -1,0 +1,21 @@
+{
+    "name": "klaviyo/php-sdk",
+    "description": "Klaviyo PHP SDK",
+    "keywords": ["klaviyo", "sdk"],
+    "type": "library",
+    "homepage": "http://github.com/klaviyo",
+    "license": "Apache2",
+    "authors": [
+        {
+            "name": "Klaviyo",
+            "homepage": "https://github.com/klaviyo"
+        }
+    ],
+    "require": {
+        "php": ">=5.2.0",
+        "ext-json": "*"
+    },
+    "autoload": {
+        "classmap": ["src"]
+    }
+}
