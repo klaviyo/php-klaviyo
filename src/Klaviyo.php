@@ -56,7 +56,7 @@ class Klaviyo {
     }
 
     protected function build_params($params) {
-        return 'data=' . urlencode(base64_encode(json_encode($params, JSON_FORCE_OBJECT)));
+        return 'data=' . urlencode(base64_encode(json_encode($params)));
     }
 
     protected function make_request($path, $params) {
