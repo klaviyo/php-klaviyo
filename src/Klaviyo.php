@@ -7,6 +7,7 @@ class Klaviyo {
     public $host = 'http://a.klaviyo.com/';
 
     protected $TRACK_ONCE_KEY = '__track_once__';
+    private   $ERROR_MESSAGE  = '';
     
     public function __construct($api_key) {
         $this->api_key = $api_key;
@@ -55,6 +56,10 @@ class Klaviyo {
         return $this->make_request('api/identify', $encoded_params);
     }
 
+    function get_error() {
+        return $this->ERROR_MESSAGE;
+    }
+
     protected function build_params($params) {
         return 'data=' . urlencode(base64_encode(json_encode($params)));
     }
@@ -62,7 +67,13 @@ class Klaviyo {
     protected function make_request($path, $params) {
         $url = $this->host . $path . '?' . $params;
         $response = file_get_contents($url);
-        return $response == '1';
+        if ($response == '1') {
+            $this->ERROR_MESSAGE = ''; //Reset the error message in case someone wants to use empty() on it.
+            return true; //Success
+        } else {
+            $this->ERROR_MESSAGE = $response; //Save the error message in case of a problem.
+            return false; //Boolean to avoid breaking back-compatibility.
+        }
     }
 };
 
