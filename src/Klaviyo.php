@@ -35,7 +35,7 @@ class Klaviyo {
     }
 
     function track_once($event, $customer_properties=array(), $properties=array(), $timestamp=NULL) {
-        $properties[$TRACK_ONCE_KEY] = true;
+        $properties[$this->TRACK_ONCE_KEY] = true;
         return $this->track($event, $customer_properties, $properties, $timestamp);
     }
 
