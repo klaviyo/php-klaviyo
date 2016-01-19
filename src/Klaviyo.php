@@ -55,6 +55,15 @@ class Klaviyo {
         return $this->make_request('api/identify', $encoded_params);
     }
 
+    function list_member_add($list_id, $email, $properties = array(), $confirm_optin = true) {
+        $params = [
+            'email' => $email,
+            'properties' => json_encode($properties),
+            'confirm_optin' => json_encode($confirm_optin),
+        ];
+        return $this->make_post_request(sprintf('api/v1/list/%s/members', $list_id), $params);
+    }
+
     protected function build_params($params) {
         return 'data=' . urlencode(base64_encode(json_encode($params)));
     }
@@ -63,6 +72,28 @@ class Klaviyo {
         $url = $this->host . $path . '?' . $params;
         $response = file_get_contents($url);
         return $response == '1';
+    }
+    
+    protected function make_post_request($path, $params = array())
+    {
+        $url = sprintf('%s%s', $this->host, $path);
+        $params['api_key'] = $this->api_key;
+
+        $options = array(
+            'http' => array(
+                'header' => "Content-type: application/x-www-form-urlencoded\r\n",
+                'method' => 'POST',
+                'content' => http_build_query($params),
+            ),
+        );
+        $context = stream_context_create($options);
+        $response = file_get_contents($url, false, $context);
+
+        if ($response === FALSE) {
+            throw new \KlaviyoException();
+        }
+
+        return json_decode($response, true);
     }
 };
 
