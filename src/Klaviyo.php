@@ -4,7 +4,7 @@ class KlaviyoException extends Exception { }
 
 class Klaviyo {
     public $api_key;
-    public $host = 'http://a.klaviyo.com/';
+    public $host = 'https://a.klaviyo.com/api/v1/';
 
     protected $TRACK_ONCE_KEY = '__track_once__';
     
@@ -20,7 +20,6 @@ class Klaviyo {
         }
 
         $params = array(
-            'token' => $this->api_key,
             'event' => $event,
             'properties' => $properties,
             'customer_properties' => $customer_properties
@@ -30,8 +29,7 @@ class Klaviyo {
             $params['time'] = $timestamp;
         }
 
-        $encoded_params = $this->build_params($params);
-        return $this->make_request('api/track', $encoded_params);
+        return $this->make_request('track', $params);
     }
 
     function track_once($event, $customer_properties=array(), $properties=array(), $timestamp=NULL) {
@@ -47,22 +45,35 @@ class Klaviyo {
         }
 
         $params = array(
-            'token' => $this->api_key,
             'properties' => $properties
         );
 
-        $encoded_params = $this->build_params($params);
-        return $this->make_request('api/identify', $encoded_params);
+        return $this->make_request('identify', $params);
+    }
+
+    function email_is_in_list($properties) {
+        if ((!array_key_exists('$email', $properties) || empty($properties['$email']))
+            || (!array_key_exists('$list_id', $properties) || empty($properties['$list_id']))) {
+            
+            throw new KlaviyoException('You must identify a user by email and a list by ID.');
+        }
+        $params = array(
+            'email' => $properties['$email']
+        );
+        $response = $this->make_request('list/'.$properties['$list_id'].'/members', $params);
+        return $response->total > 0;
     }
 
     protected function build_params($params) {
-        return 'data=' . urlencode(base64_encode(json_encode($params)));
+        $params['api_key'] = $this->api_key;
+        return urldecode(http_build_query($params));
     }
 
     protected function make_request($path, $params) {
-        $url = $this->host . $path . '?' . $params;
+        $param_str = $this->build_params($params);
+        $url = $this->host . $path . '?' . $param_str;
         $response = file_get_contents($url);
-        return $response == '1';
+        return json_decode($response);
     }
 };
 
