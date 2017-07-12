@@ -77,6 +77,7 @@ class Klaviyo {
             'properties' => json_encode(array(
                 '$first_name' => array_key_exists('first_name', $properties) ? $properties['first_name'] : "",
                 '$last_name' => array_key_exists('last_name', $properties) ? $properties['last_name'] : "",
+                '$organization' => array_key_exists('organization', $properties) ? $properties['organization'] : "",
                 '$phone_number' => array_key_exists('phone_number', $properties) ? $properties['phone_number'] : "",
                 '$zip' => array_key_exists('zip', $properties) ? $properties['zip'] : ""
             ))
