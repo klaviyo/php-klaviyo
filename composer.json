@@ -17,5 +17,6 @@
     },
     "autoload": {
         "classmap": ["src"]
-    }
+    },
+    "version": "0.1.0"
 }
