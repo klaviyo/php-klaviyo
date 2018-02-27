@@ -7,15 +7,15 @@ class Klaviyo {
     public $host = 'http://a.klaviyo.com/';
 
     protected $TRACK_ONCE_KEY = '__track_once__';
-    
+
     public function __construct($api_key) {
         $this->api_key = $api_key;
     }
-    
+
     function track($event, $customer_properties=array(), $properties=array(), $timestamp=NULL) {
         if ((!array_key_exists('$email', $customer_properties) || empty($customer_properties['$email']))
             && (!array_key_exists('$id', $customer_properties) || empty($customer_properties['$id']))) {
-            
+
             throw new KlaviyoException('You must identify a user by email or ID.');
         }
 
@@ -42,7 +42,7 @@ class Klaviyo {
     function identify($properties) {
         if ((!array_key_exists('$email', $properties) || empty($properties['$email']))
             && (!array_key_exists('$id', $properties) || empty($properties['$id']))) {
-            
+
             throw new KlaviyoException('You must identify a user by email or ID.');
         }
 

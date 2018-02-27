@@ -23,6 +23,6 @@ The `track` method takes four arguments:
 
 **customer_properties** This is an associative array of properties that belong to the person who did the action you're recording. You must include either a `$id` or `$email` key.
 
-**properties** (optional) This is an associative array of properties that are specific to this event occurrance. In the above example, we included the SKU of the item that was purchased and the payment method.
+**properties** (optional) This is an associative array of properties that are specific to this event occurrence. In the above example, we included the SKU of the item that was purchased and the payment method.
 
 **timestamp** (optional) This is the timestamp when this event occurred. You only need to include this if you're tracking events that occurred in the past. If you're tracking activity in real time, you can ignore this argument.
