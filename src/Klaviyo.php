@@ -4,7 +4,7 @@ class KlaviyoException extends Exception { }
 
 class Klaviyo {
     public $api_key;
-    public $host = 'http://a.klaviyo.com/';
+    public $host = 'https://a.klaviyo.com/';
 
     protected $TRACK_ONCE_KEY = '__track_once__';
     
