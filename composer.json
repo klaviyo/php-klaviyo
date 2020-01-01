@@ -12,10 +12,11 @@
         }
     ],
     "require": {
-        "php": ">=5.2.0",
-        "ext-json": "*"
+        "guzzlehttp/guzzle": "~6.0"
     },
     "autoload": {
-        "classmap": ["src"]
+        "psr-4": {
+            "Klaviyo\\": "src/"
+        }
     }
 }
