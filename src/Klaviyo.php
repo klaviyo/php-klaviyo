@@ -61,8 +61,14 @@ class Klaviyo {
 
     protected function make_request($path, $params) {
         $url = $this->host . $path . '?' . $params;
-        $response = file_get_contents($url);
-        return $response == '1';
+
+        try {
+            $response = file_get_contents($url);
+            return $response == '1';
+
+        } catch (Exception $e) {
+            throw new KlaviyoException('Server could not be reached');
+        }
     }
 };
 
