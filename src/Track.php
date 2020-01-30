@@ -21,7 +21,7 @@ class Track extends KlaviyoBase
     public function trackEvent( $payload ) {
         $options = [self::QUERY => $payload];
         
-        $this->publicRequest( self::TRACK, $options );
+        return $this->publicRequest( self::TRACK, $options );
     }
 
     public function identifyProfile ( $payload ) {

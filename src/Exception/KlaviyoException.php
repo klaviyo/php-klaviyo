@@ -2,6 +2,4 @@
 
 namespace Klaviyo;
 
-class KlaviyoException extends \Exception
-{
-}
+class KlaviyoException extends \Exception {}

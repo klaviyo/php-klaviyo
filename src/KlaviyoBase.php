@@ -3,6 +3,7 @@
 namespace Klaviyo;
 
 use GuzzleHttp\Client;
+use Psr\Http\Message\ResponseInterface;
 
 abstract class KlaviyoBase
 {
@@ -62,7 +63,7 @@ abstract class KlaviyoBase
      * @param string $private_key Private API key for Klaviyo account
      * @param string $host Base URI for API requests. Can be overridden for testing.
      */
-    // TODO: I don't think we can ever actually define a different host like this. Only calliing this throough __get in the Klaviyo class
+    // TODO: I don't think we can ever actually define a different host like this. Only calliing this throough __get in the Klaviyo class. Would like to change for local dev for example.
     public function __construct( $public_key, $private_key ) {
         $this->public_key = $public_key;
         $this->private_key = $private_key;
@@ -103,7 +104,26 @@ abstract class KlaviyoBase
 
         $response = $this->client->request( $method, $path, $options);
 
+        if ( $isPublic ) {
+            return '1' == $response->getBody();
+        }
+
         return json_decode($response->getBody(), true);
+    }
+
+    /**
+     * Handle response from API call
+     */
+    private function handleResponse( ResponseInterface $response, $isPublic ) {
+        $statusCode = $response->getStatusCode();
+
+        if ( $statusCode == 403 ) {
+            throw new KlaviyoAuthenticationException('Invalid API key.');
+        } else if ( $statusCode == 429 ) {
+            throw new KlaviyoRateLimitException($response)
+        } else if ( $statusCode != 200 ) {
+            throw new KlaviyoException
+        }
     }
 
     /**
