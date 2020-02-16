@@ -1,5 +1,5 @@
 <?php
 
-namespace Klaviyo;
+namespace Klaviyo\Exception;
 
 class KlaviyoRateLimitException extends KlaviyoException {}

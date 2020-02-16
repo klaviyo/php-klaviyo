@@ -17,11 +17,18 @@ abstract class KlaviyoBase
     /**
      * Request methods
      */
-    const GET = 'GET';
-    const POST = 'POST';
-    const PUT = 'PUT';
-    const DELETE = 'DELETE';
+    const HTTP_GET = 'GET';
+    const HTTP_POST = 'POST';
+    const HTTP_PUT = 'PUT';
+    const HTTP_DELETE = 'DELETE';
 
+    /**
+     * Error messages
+     */
+    const ERROR_INVALID_API_KEY = 'Invalid API Key.';
+    const ERROR_RESOURCE_DOES_NOT_EXIST = 'The requested resource does not exist.';
+    const ERROR_NON_200_STATUS = 'Request Failed with HTTP Status Code: %s';
+    
     /**
      * Request options
      */
@@ -29,6 +36,7 @@ abstract class KlaviyoBase
     const DATA = 'data';
     const HEADERS = 'headers';
     const JSON = 'json';
+    const PROPERTIES = 'properties';
     const QUERY = 'query';
     const TOKEN = 'token';
 
@@ -75,13 +83,13 @@ abstract class KlaviyoBase
      */
     protected function publicRequest( $path, $options ) {
         // Public requests are always GET
-        return $this->request( self::GET, $path, $options, true );
+        return $this->request( self::HTTP_GET, $path, $options, true );
     }
 
     /**
      * Make private v1 API request
      */
-    protected function v1Request( $path, $options = [], $method = self::GET ) {
+    protected function v1Request( $path, $options = [], $method = self::HTTP_GET ) {
         $path = self::V1 . $this->trimPath( $path );
 
         return $this->request( $method, $path, $options );
@@ -90,7 +98,7 @@ abstract class KlaviyoBase
     /**
      * Make private v2 API request
      */
-    protected function v2Request( $path, $options = [], $method = self::GET ) {
+    protected function v2Request( $path, $options = [], $method = self::HTTP_GET ) {
         $path = self::V2 . $this->trimPath( $path );
 
         return $this->request( $method, $path, $options );
@@ -102,13 +110,9 @@ abstract class KlaviyoBase
     private function request( $method, $path, $options, $isPublic = false ) {
         $this->prepareAuthentication( $options, $isPublic );
 
-        $response = $this->client->request( $method, $path, $options);
+        $response = $this->client->request( $method, $path, $options );
 
-        if ( $isPublic ) {
-            return '1' == $response->getBody();
-        }
-
-        return json_decode($response->getBody(), true);
+        return $this->handleResponse( $response, $isPublic );
     }
 
     /**
@@ -118,12 +122,20 @@ abstract class KlaviyoBase
         $statusCode = $response->getStatusCode();
 
         if ( $statusCode == 403 ) {
-            throw new KlaviyoAuthenticationException('Invalid API key.');
+            throw new KlaviyoAuthenticationException(self::ERROR_INVALID_API_KEY);
+        } else if ( $statusCode == 404 ) {
+            throw new KlaviyoResourceNotFoundException(self::ERROR_RESOURCE_DOES_NOT_EXIST);
         } else if ( $statusCode == 429 ) {
-            throw new KlaviyoRateLimitException($response)
+            throw new KlaviyoRateLimitException( $this->decodeJsonResponse( $response ) );
         } else if ( $statusCode != 200 ) {
-            throw new KlaviyoException
+            throw new KlaviyoException( sprintf( self::ERROR_NON_200_STATUS, $statusCode ) );
         }
+
+        if ( $isPublic ) {
+            return '1' == $response->getBody();
+        }
+
+        return $this->decodeJsonResponse( $response );
     }
 
     /**
@@ -136,12 +148,25 @@ abstract class KlaviyoBase
     private function prepareAuthentication ( &$options, $isPublic ) {
         if ( $isPublic ) {
             unset($options[self::HEADERS][self::API_KEY_HEADER]);
+            printf("\n");
+            printf('incoming options');
+            printf("\n");
+            var_dump([
+                self::QUERY => [
+                    self::DATA => [self::TOKEN => $this->public_key] + $options[self::QUERY]
+                ]
+            ]);
 
             $options = [
                 self::QUERY => [
                     self::DATA => base64_encode(json_encode([self::TOKEN => $this->public_key] + $options[self::QUERY]))
                 ]
             ];
+
+            printf("\n");
+            printf('updated options');
+            printf("\n");
+            var_dump($options);
 
             return;
         }
@@ -156,5 +181,12 @@ abstract class KlaviyoBase
      */
     private function trimPath ( $path ) {
         return '/' . ltrim( $path, '/' );
+    }
+
+    /**
+     * Return decoded json response as associative array. 
+     */
+    private function decodeJsonResponse ( ResponseInterface $response ) {
+        return json_decode( $response->getBody(), true );
     }
 }

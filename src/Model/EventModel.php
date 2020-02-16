@@ -1,6 +1,8 @@
 <?php
 
-namespace Klaviyo;
+namespace Klaviyo\Model;
+
+use Klaviyo\Exception\KlaviyoException;
 
 class EventModel
 {

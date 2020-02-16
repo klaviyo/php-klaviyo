@@ -41,6 +41,6 @@ class Lists extends KlaviyoBase
 
         print_r($options);
 
-        return $this->v2Request( $path, $options, self::POST );
+        return $this->v2Request( $path, $options, self::HTTP_POST );
     }
 }

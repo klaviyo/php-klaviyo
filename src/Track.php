@@ -2,6 +2,8 @@
 
 namespace Klaviyo;
 
+use Klaviyo\Model\ProfileModel;
+
 class Track extends KlaviyoBase
 {
     /**
@@ -24,7 +26,9 @@ class Track extends KlaviyoBase
         return $this->publicRequest( self::TRACK, $options );
     }
 
-    public function identifyProfile ( $payload ) {
+    public function identifyProfile ( ProfileModel $profile ) {
+        $options = [self::QUERY => [self::PROPERTIES => $profile]];
 
+        return $this->publicRequest( self::IDENTIFY, $options );
     }
 }

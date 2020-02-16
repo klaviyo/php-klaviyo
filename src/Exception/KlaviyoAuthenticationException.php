@@ -1,5 +1,5 @@
 <?php
 
-namespace Klaviyo;
+namespace Klaviyo\Exception;
 
 class KlaviyoAuthenticationException extends KlaviyoException {}

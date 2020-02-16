@@ -10,12 +10,12 @@ class Klaviyo
     /**
      * @var string
      */
-    public $private_key;
+    protected $private_key;
 
     /**
      * @var string
      */
-    public $public_key;
+    protected $public_key;
     
     /**
      * Constructor for Klaviyo.
