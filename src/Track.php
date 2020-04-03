@@ -2,6 +2,7 @@
 
 namespace Klaviyo;
 
+use Klaviyo\Model\EventModel;
 use Klaviyo\Model\ProfileModel;
 
 class Track extends KlaviyoBase
@@ -20,8 +21,8 @@ class Track extends KlaviyoBase
         }
     }
 
-    public function trackEvent( $payload ) {
-        $options = [self::QUERY => $payload];
+    public function trackEvent( EventModel $event ) {
+        $options = [self::QUERY => $event->toArray()];
         
         return $this->publicRequest( self::TRACK, $options );
     }

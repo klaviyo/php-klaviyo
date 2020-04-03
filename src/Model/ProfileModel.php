@@ -8,7 +8,7 @@ use Klaviyo\Exception\KlaviyoException;
  * Class defining a profile in Klaviyo with methods to set
  * various special properties.
  */
-class ProfileModel implements \JsonSerializable
+class ProfileModel extends BaseModel
 {
     public $id;
     public $email;
@@ -100,7 +100,7 @@ class ProfileModel implements \JsonSerializable
 
     public function jsonSerialize() {
         return [
-            '$email' => $this->email,
+            'email' => $this->email,
             '$phone_number' => $this->phone_number,
             '$first_name' => $this->firstName,
             '$last_name' => $this->lastName

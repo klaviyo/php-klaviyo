@@ -4,6 +4,8 @@ namespace Klaviyo;
 
 use GuzzleHttp\Client;
 use Psr\Http\Message\ResponseInterface;
+use Klaviyo\Exception\KlaviyoException;
+use Klaviyo\Model\ProfileModel;
 
 abstract class KlaviyoBase
 {
@@ -63,6 +65,11 @@ abstract class KlaviyoBase
      * @var string
      */
     protected $private_key;
+
+    /**
+     * @var string
+     */
+    protected $public_key;
 
     /**
      * Constructor method for Base class.
@@ -148,25 +155,12 @@ abstract class KlaviyoBase
     private function prepareAuthentication ( &$options, $isPublic ) {
         if ( $isPublic ) {
             unset($options[self::HEADERS][self::API_KEY_HEADER]);
-            printf("\n");
-            printf('incoming options');
-            printf("\n");
-            var_dump([
-                self::QUERY => [
-                    self::DATA => [self::TOKEN => $this->public_key] + $options[self::QUERY]
-                ]
-            ]);
 
             $options = [
                 self::QUERY => [
                     self::DATA => base64_encode(json_encode([self::TOKEN => $this->public_key] + $options[self::QUERY]))
                 ]
             ];
-
-            printf("\n");
-            printf('updated options');
-            printf("\n");
-            var_dump($options);
 
             return;
         }
@@ -188,5 +182,30 @@ abstract class KlaviyoBase
      */
     private function decodeJsonResponse ( ResponseInterface $response ) {
         return json_decode( $response->getBody(), true );
+    }
+
+    /**
+     * Return formatted options.
+     */
+    protected function createOptions ( string $optionName, $optionValue ) {
+        return [self::JSON =>
+            [$optionName => $optionValue]
+        ];
+    }
+
+    /**
+     * Check if item is of a specific type. To be used with array_walk for
+     * checking all items of an array are of a certain type.
+     *
+     * @param mixed $value Value of item in array.
+     * @param mixed $key Key of item in array.
+     * @param string $class Name of class against which items are validated.
+     */
+    protected function isInstanceOf( $value, $key, $class ) {
+        if (!($value instanceof $class)) {
+            throw new KlaviyoException(
+                sprintf('%s at key %s is not of type %s.', json_encode($value), $key, $class)
+            );
+        }
     }
 }
