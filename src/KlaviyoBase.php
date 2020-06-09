@@ -87,7 +87,7 @@ abstract class KlaviyoBase
         $this->client = new Client(['base_uri' => self::HOST]);
     }
 
-    public function getPublicKkey()
+    public function getPublickey()
     {
         return $this->public_key;
     }
