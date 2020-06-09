@@ -1,0 +1,6 @@
+.idea/
+.vscode/
+php-klaviyo.iml
+vendor
+.phpunit.result.cache
+composer.phar

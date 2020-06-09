@@ -35,6 +35,7 @@ abstract class KlaviyoBase
      * Request options
      */
     const API_KEY_HEADER = 'api-key';
+    const API_KEY_PARAM = 'api_key';
     const DATA = 'data';
     const HEADERS = 'headers';
     const JSON = 'json';
@@ -78,17 +79,29 @@ abstract class KlaviyoBase
      * @param string $private_key Private API key for Klaviyo account
      * @param string $host Base URI for API requests. Can be overridden for testing.
      */
-    // TODO: I don't think we can ever actually define a different host like this. Only calliing this throough __get in the Klaviyo class. Would like to change for local dev for example.
-    public function __construct( $public_key, $private_key ) {
+    // TODO: I don't think we can ever actually define a different host like this. Only calling this through __get in the Klaviyo class. Would like to change for local dev for example.
+    public function __construct( $public_key, $private_key )
+    {
         $this->public_key = $public_key;
         $this->private_key = $private_key;
         $this->client = new Client(['base_uri' => self::HOST]);
     }
 
+    public function getPublicKkey()
+    {
+        return $this->public_key;
+    }
+
+    public function getPrivateKey()
+    {
+        return $this->private_key;
+    }
+
     /**
      * Make public API request
      */
-    protected function publicRequest( $path, $options ) {
+    protected function publicRequest( $path, $options )
+    {
         // Public requests are always GET
         return $this->request( self::HTTP_GET, $path, $options, true );
     }
@@ -96,26 +109,29 @@ abstract class KlaviyoBase
     /**
      * Make private v1 API request
      */
-    protected function v1Request( $path, $options = [], $method = self::HTTP_GET ) {
+    protected function v1Request( $path, $options = [], $method = self::HTTP_GET )
+    {
         $path = self::V1 . $this->trimPath( $path );
 
-        return $this->request( $method, $path, $options );
+        return $this->request( $method, $path, $options, false, true );
     }
 
     /**
      * Make private v2 API request
      */
-    protected function v2Request( $path, $options = [], $method = self::HTTP_GET ) {
+    protected function v2Request( $path, $options = [], $method = self::HTTP_GET )
+    {
         $path = self::V2 . $this->trimPath( $path );
 
-        return $this->request( $method, $path, $options );
+        return $this->request( $method, $path, $options, false, false, true );
     }
 
     /**
      * Make API request using HTTP client
      */
-    private function request( $method, $path, $options, $isPublic = false ) {
-        $this->prepareAuthentication( $options, $isPublic );
+    private function request( $method, $path, $options, $isPublic = false, $isV1 = false, $isV2 = false )
+    {
+        $this->prepareAuthentication( $options, $isPublic, $isV1, $isV2 );
 
         $response = $this->client->request( $method, $path, $options );
 
@@ -125,7 +141,8 @@ abstract class KlaviyoBase
     /**
      * Handle response from API call
      */
-    private function handleResponse( ResponseInterface $response, $isPublic ) {
+    private function handleResponse( ResponseInterface $response, $isPublic )
+    {
         $statusCode = $response->getStatusCode();
 
         if ( $statusCode == 403 ) {
@@ -150,9 +167,12 @@ abstract class KlaviyoBase
      * based on type of API request.
      *
      * @param array $options Options configuration for Request Interface
-     * @param bool $isPublic Request type - public/private
+     * @param bool $isPublic Request type - public
+     * @param bool $isV1 Request API version - V1
+     * @param bool $isV2 Request API version - V2
      */
-    private function prepareAuthentication ( &$options, $isPublic ) {
+    private function prepareAuthentication ( &$options, $isPublic, $isV1, $isV2 )
+    {
         if ( $isPublic ) {
             unset($options[self::HEADERS][self::API_KEY_HEADER]);
 
@@ -165,29 +185,52 @@ abstract class KlaviyoBase
             return;
         }
 
-        $options = $options + [
-            self::HEADERS => [self::API_KEY_HEADER => $this->private_key]
-        ];
+        if ( $isV1 ) {
+            $options = array(
+                self::QUERY => array_merge(
+                    $options,
+                    array( self::API_KEY_PARAM => $this->private_key )
+                )
+            );
+
+            return;
+        }
+
+        if ( $isV2 ) {
+            $options = array_merge(
+                $options,
+                array(
+                    self::HEADERS => array(
+                        self::API_KEY_HEADER => $this->private_key
+                    )
+                )
+            );
+
+            return;
+        }
     }
 
     /**
      * Helper function to remove leading forward slashes
      */
-    private function trimPath ( $path ) {
+    private function trimPath ( $path )
+    {
         return '/' . ltrim( $path, '/' );
     }
 
     /**
      * Return decoded json response as associative array. 
      */
-    private function decodeJsonResponse ( ResponseInterface $response ) {
+    private function decodeJsonResponse ( ResponseInterface $response )
+    {
         return json_decode( $response->getBody(), true );
     }
 
     /**
      * Return formatted options.
      */
-    protected function createOptions ( string $optionName, $optionValue ) {
+    protected function  createOptions ( string $optionName, $optionValue )
+    {
         return [self::JSON =>
             [$optionName => $optionValue]
         ];
@@ -201,11 +244,49 @@ abstract class KlaviyoBase
      * @param mixed $key Key of item in array.
      * @param string $class Name of class against which items are validated.
      */
-    protected function isInstanceOf( $value, $key, $class ) {
+    protected function isInstanceOf( $value, $key, $class )
+    {
         if (!($value instanceof $class)) {
             throw new KlaviyoException(
                 sprintf('%s at key %s is not of type %s.', json_encode($value), $key, $class)
             );
         }
     }
+
+    protected function setSinceParameter( $since, $uuid )
+    {
+        if ( is_null( $uuid )) {
+            return array(
+                'since' => $since
+            );
+        } else {
+            return array(
+                'since' => $uuid
+            );
+        }
+    }
+
+    protected function filterParams( array $params )
+    {
+        return array_filter(
+            $params,
+            function ( $key ){ return !is_null( $key ); },
+            ARRAY_FILTER_USE_BOTH
+        );
+    }
+
+    protected function createRequestBody( array $params )
+    {
+        return array(
+            'form_params' => $params
+        );
+    }
+
+    protected function createRequestJson( array $params)
+    {
+        return array(
+            'json' => $params
+        );
+    }
+
 }

@@ -44,8 +44,8 @@ class ProfileModel extends BaseModel
     public static $identifyAttributes = [
         '$email',
         '$id',
-        // '$phone_number',
-        // '$ios_tokens',
+        '$phone_number',
+        '$ios_tokens',
     ];
 
     public function __construct( array $configuration ) {
@@ -101,7 +101,7 @@ class ProfileModel extends BaseModel
     public function jsonSerialize() {
         return [
             'email' => $this->email,
-            '$phone_number' => $this->phone_number,
+            '$phone_number' => $this->phoneNumber,
             '$first_name' => $this->firstName,
             '$last_name' => $this->lastName
         ] + $this->getCustomAttributes();
