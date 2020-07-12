@@ -9,7 +9,7 @@ use phpDocumentor\Reflection\Types\Self_;
  * Class Lists
  * @package Klaviyo
  */
-class Lists extends KlaviyoBase
+class Lists extends KlaviyoAPI
 {
     /**
      * List endpoint constants
@@ -33,7 +33,7 @@ class Lists extends KlaviyoBase
      */
     public function createList( $listName )
     {
-        $options = $this->createOptions('list_name', $listName);
+        $options = $this->createParams('list_name', $listName);
 
         return $this->v2Request( self::LISTS, $options, self::HTTP_POST );
     }
@@ -58,9 +58,10 @@ class Lists extends KlaviyoBase
      *
      * @return bool|mixed
      */
-    public function getListDetails($listId )
+    public function getListDetails( $listId )
     {
-        return $this->v2Request( self::LIST.'/'.$listId );
+        $path = sprintf( '%s/%s', self::LIST, $listId );
+        return $this->v2Request( $path );
     }
 
     /**
@@ -75,13 +76,13 @@ class Lists extends KlaviyoBase
      *
      * @return bool|mixed
      */
-    public function updateListDetails($listId, $list_name )
+    public function updateListDetails( $listId, $list_name )
     {
         $params = $this->createRequestBody( array(
             'list_name' => $list_name
         ) );
 
-        $path = self::LIST.'/'.$listId;
+        $path = sprintf( '%s/%s', self::LIST, $listId );
 
         return $this->v2Request( $path, $params, self::HTTP_PUT );
     }
@@ -95,9 +96,10 @@ class Lists extends KlaviyoBase
      *
      * @return bool|mixed
      */
-    public function deleteList($listId )
+    public function deleteList( $listId )
     {
-        return $this->v2Request( self::LIST.'/'.$listId, [], self::HTTP_DELETE );
+        $path = sprintf( '%s/%s', self::LIST, $listId );
+        return $this->v2Request( $path, [], self::HTTP_DELETE );
     }
 
     /**
@@ -115,7 +117,7 @@ class Lists extends KlaviyoBase
      *
      * @return bool|mixed
      */
-    public function subscribeMembersToList($listId, array $profiles )
+    public function subscribeMembersToList( $listId, array $profiles )
     {
         array_walk($profiles, [$this, 'isInstanceOf'], __NAMESPACE__ . '\Model\ProfileModel');
         $profiles = array_map(
@@ -125,7 +127,7 @@ class Lists extends KlaviyoBase
         );
 
         $path = sprintf( '%s/%s/%s', self::LIST, $listId, self::SUBSCRIBE );
-        $params = $this->createOptions( 'profiles', $profiles );
+        $params = $this->createParams( 'profiles', $profiles );
 
         return $this->v2Request( $path, $params, self::HTTP_POST );
     }
@@ -178,7 +180,7 @@ class Lists extends KlaviyoBase
      *
      * @return bool|mixed
      */
-    public function unsubscribeMembersFromList($listId, array $emails )
+    public function unsubscribeMembersFromList( $listId, array $emails )
     {
         $params = $this->createRequestJson(
             $this->filterParams(
@@ -219,7 +221,7 @@ class Lists extends KlaviyoBase
         );
 
         $path = sprintf( '%s/%s/%s', self::LIST, $listId, self::MEMBERS );
-        $options = $this->createOptions( 'profiles', $profiles );
+        $options = $this->createParams( 'profiles', $profiles );
 
         return $this->v2Request( $path, $options, self::HTTP_POST );
     }
@@ -243,7 +245,7 @@ class Lists extends KlaviyoBase
      *
      * @return bool|mixed
      */
-    public function checkListMembership($listId, array $emails = null, array $phoneNumbers = null, array $pushTokens = null )
+    public function checkListMembership( $listId, array $emails = null, array $phoneNumbers = null, array $pushTokens = null )
     {
         $params = $this->createRequestJson(
             $this->filterParams(
@@ -272,21 +274,19 @@ class Lists extends KlaviyoBase
      *
      * @return bool|mixed
      */
-    public function removeMembersFromList($listId, array $emails )
+    public function removeMembersFromList( $listId, array $emails )
     {
-        {
-            $params = $this->createRequestJson(
-                $this->filterParams(
-                    array(
-                        'emails' => $emails
-                    )
+        $params = $this->createRequestJson(
+            $this->filterParams(
+                array(
+                    'emails' => $emails
                 )
-            );
+            )
+        );
 
-            $path = sprintf('%s/%s/%s', self::LIST, $listId, self::MEMBERS );
+        $path = sprintf('%s/%s/%s', self::LIST, $listId, self::MEMBERS );
 
-            return $this->v2Request( $path, $params, self::HTTP_DELETE );
-        }
+        return $this->v2Request( $path, $params, self::HTTP_DELETE );
     }
 
     /**

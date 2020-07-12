@@ -7,14 +7,14 @@ use Psr\Http\Message\ResponseInterface;
 use Klaviyo\Exception\KlaviyoException;
 use Klaviyo\Model\ProfileModel;
 
-abstract class KlaviyoBase
+abstract class KlaviyoAPI
 {
     /**
      * Host and versions
      */
-    const HOST = 'https://a.klaviyo.com/api/';
-    const V1 = 'v1';
-    const V2 = 'v2';
+    const BASE_URL = 'https://a.klaviyo.com/api/';
+    const API_V1 = 'v1';
+    const API_V2 = 'v2';
 
     /**
      * Request methods
@@ -73,6 +73,11 @@ abstract class KlaviyoBase
     protected $public_key;
 
     /**
+     * @var string
+     */
+    protected $client;
+
+    /**
      * Constructor method for Base class.
      *
      * @param string $public_key Public key (account ID) for Klaviyo account
@@ -84,21 +89,13 @@ abstract class KlaviyoBase
     {
         $this->public_key = $public_key;
         $this->private_key = $private_key;
-        $this->client = new Client(['base_uri' => self::HOST]);
+        $this->client = new Client(['base_uri' => self::BASE_URL]);
     }
-
-    public function getPublickey()
-    {
-        return $this->public_key;
-    }
-
-    public function getPrivateKey()
-    {
-        return $this->private_key;
-    }
-
     /**
      * Make public API request
+     *
+     * @param $path Endpoint to call
+     * @param $options API params to add to request
      */
     protected function publicRequest( $path, $options )
     {
@@ -108,30 +105,45 @@ abstract class KlaviyoBase
 
     /**
      * Make private v1 API request
+     *
+     * @param $path Endpoint to call
+     * @param $options API params to add to request
+     * @param string $method HTTP method for request
      */
     protected function v1Request( $path, $options = [], $method = self::HTTP_GET )
     {
-        $path = self::V1 . $this->trimPath( $path );
+        $path = self::API_V1 . $this->trimPath( $path );
 
         return $this->request( $method, $path, $options, false, true );
     }
 
     /**
      * Make private v2 API request
+     *
+     * @param $path Endpoint to call
+     * @param $options API params to add to request
+     * @param string $method HTTP method for request
      */
     protected function v2Request( $path, $options = [], $method = self::HTTP_GET )
     {
-        $path = self::V2 . $this->trimPath( $path );
+        $path = self::API_V2 . $this->trimPath( $path );
 
         return $this->request( $method, $path, $options, false, false, true );
     }
 
     /**
      * Make API request using HTTP client
+     *
+     * @param $path Endpoint to call
+     * @param $options API params to add to request
+     * @param string $method HTTP method for request
+     * @param bool $isPublic to determine if public request
+     * @param bool $isV1 to determine if V1 API request
+     * @param bool $isV2 to determine if V2 API request
      */
     private function request( $method, $path, $options, $isPublic = false, $isV1 = false, $isV2 = false )
     {
-        $this->prepareAuthentication( $options, $isPublic, $isV1, $isV2 );
+        $options = $this->prepareAuthentication( $options, $isPublic, $isV1, $isV2 );
 
         $response = $this->client->request( $method, $path, $options );
 
@@ -166,48 +178,85 @@ abstract class KlaviyoBase
      * Handle authentication by updating $options passed into request method
      * based on type of API request.
      *
-     * @param array $options Options configuration for Request Interface
+     * @param array $params Options configuration for Request Interface
      * @param bool $isPublic Request type - public
      * @param bool $isV1 Request API version - V1
      * @param bool $isV2 Request API version - V2
      */
-    private function prepareAuthentication ( &$options, $isPublic, $isV1, $isV2 )
+    private function prepareAuthentication ( $params, $isPublic, $isV1, $isV2 )
     {
         if ( $isPublic ) {
-            unset($options[self::HEADERS][self::API_KEY_HEADER]);
-
-            $options = [
-                self::QUERY => [
-                    self::DATA => base64_encode(json_encode([self::TOKEN => $this->public_key] + $options[self::QUERY]))
-                ]
-            ];
-
-            return;
+            $params = $this->publicAuth( $params );
+            return $params;
         }
 
         if ( $isV1 ) {
-            $options = array(
-                self::QUERY => array_merge(
-                    $options,
-                    array( self::API_KEY_PARAM => $this->private_key )
-                )
-            );
-
-            return;
+            $params = $this->v1Auth( $params );
+            return $params;
         }
 
         if ( $isV2 ) {
-            $options = array_merge(
-                $options,
-                array(
-                    self::HEADERS => array(
-                        self::API_KEY_HEADER => $this->private_key
-                    )
-                )
-            );
-
-            return;
+            $params = $this->v2Auth( $params );
+            return $params;
         }
+
+    }
+
+    /**
+     * Setup authentication for Public Klaviyo API request
+     *
+     * @param $params
+     * @return array[]
+     */
+    protected function publicAuth($params )
+    {
+        unset($params[self::HEADERS][self::API_KEY_HEADER]);
+
+        $params = [
+            self::QUERY => [
+                self::DATA => base64_encode(json_encode([self::TOKEN => $this->public_key] + $options[self::QUERY]))
+            ]
+        ];
+
+        return $params;
+    }
+
+    /**
+     * Setup authentication for Klaviyo API V1 request
+     *
+     * @param $params
+     * @return array
+     */
+    protected function v1Auth($params )
+    {
+        $params = array(
+            self::QUERY => array_merge(
+                $params,
+                array( self::API_KEY_PARAM => $this->private_key )
+            )
+        );
+
+        return $params;
+    }
+
+    /**
+     * Setup authentication for Klaviyo API V2 request
+     *
+     * @param $params
+     * @return array
+     */
+    protected function v2Auth($params )
+    {
+        $params = array_merge(
+            $params,
+            array(
+                self::HEADERS => array(
+                    self::API_KEY_HEADER => $this->private_key
+                )
+            )
+        );
+
+        return $params;
     }
 
     /**
@@ -228,11 +277,14 @@ abstract class KlaviyoBase
 
     /**
      * Return formatted options.
+     *
+     * @param string $paramName Name of API Param to create
+     * @param $paramValue Value of API params to create
      */
-    protected function  createOptions ( string $optionName, $optionValue )
+    protected function createParams (string $paramName, $paramValue )
     {
         return [self::JSON =>
-            [$optionName => $optionValue]
+            [$paramName => $paramValue]
         ];
     }
 
@@ -253,7 +305,14 @@ abstract class KlaviyoBase
         }
     }
 
-    protected function setSinceParameter( $since, $uuid )
+    /**
+     * Determine what value to set for the since request param
+     *
+     * @param $since Timestamp as a state supplied for API request
+     * @param $uuid New token supplied by API response
+     * @return array
+     */
+    protected function setSinceParameter($since, $uuid )
     {
         if ( is_null( $uuid )) {
             return array(
@@ -266,7 +325,13 @@ abstract class KlaviyoBase
         }
     }
 
-    protected function filterParams( array $params )
+    /**
+     * Removes all params which do not have values set
+     *
+     * @param array $params
+     * @return array
+     */
+    protected function filterParams(array $params )
     {
         return array_filter(
             $params,
@@ -275,14 +340,26 @@ abstract class KlaviyoBase
         );
     }
 
-    protected function createRequestBody( array $params )
+    /**
+     * Structure params for V2 API requests
+     *
+     * @param array $params
+     * @return array[]
+     */
+    protected function createRequestBody(array $params )
     {
         return array(
             'form_params' => $params
         );
     }
 
-    protected function createRequestJson( array $params)
+    /**
+     * Structure params for V1 API requests
+     *
+     * @param array $params
+     * @return array[]
+     */
+    protected function createRequestJson(array $params)
     {
         return array(
             'json' => $params

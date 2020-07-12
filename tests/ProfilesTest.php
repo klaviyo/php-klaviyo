@@ -41,6 +41,6 @@ class ProfilesTest extends TestCase
 
     public function testGetProfileAllMetricsTimeline()
     {
-        print_r( $this->test_KLAVIYO->getProfileAllMetricsTimeline( 'RCbFX2') );
+        print_r( $this->test_KLAVIYO->getAllProfileMetricsTimeline( 'RCbFX2') );
     }
 }

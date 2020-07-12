@@ -10,7 +10,7 @@ use phpDocumentor\Reflection\DocBlock\Tags\Example;
 use phpDocumentor\Reflection\DocBlock\Tags\Method;
 
 
-class Metrics extends KlaviyoBase
+class Metrics extends KlaviyoAPI
 {
     /**
      * Metrics endpoint constants
@@ -74,7 +74,9 @@ class Metrics extends KlaviyoBase
             )
         ) );
 
-        return $this->v1Request(self::METRICS.'/'.self::TIMELINE, $params );
+        $path = sprintf( '%s/%s', self::METRICS, self::TIMELINE );
+
+        return $this->v1Request($path, $params );
 
     }
 

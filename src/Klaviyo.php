@@ -2,6 +2,7 @@
 
 namespace Klaviyo;
 
+use Klaviyo\Exception\KlaviyoException as KlaviyoException;
 /**
  * Main class for accessing the Klaviyo API
  */
@@ -16,14 +17,16 @@ class Klaviyo
      * @var string
      */
     protected $public_key;
-    
+
     /**
      * Constructor for Klaviyo.
      *
      * @param string $private_key Private API key for Klaviyo account
      */
-    public function __construct( $private_key ) {
+    public function __construct($private_key, $public_key)
+    {
         $this->private_key = $private_key;
+        $this->public_key = $public_key;
     }
 
     /**
@@ -32,23 +35,16 @@ class Klaviyo
      *
      * @param string $api API service
      */
-    public function __get( $api ) {
-        $service = __NAMESPACE__ . '\\' . ucfirst( $api );
+    public function __get($api)
+    {
+        $service = __NAMESPACE__ . '\\' . ucfirst($api);
 
-        if ( class_exists( $service ) ) {
-            $this->$api = new $service( $this->public_key, $this->private_key );
+        if (class_exists($service)) {
+            $this->$api = new $service($this->public_key, $this->private_key);
 
             return $this->$api;
         }
 
         throw new KlaviyoException('Sorry, ' . $api . ' is not a valid Klaviyo API.');
-    }
-
-    public function setPublicApiKey( $key ) {
-        $this->public_key = $key;
-    }
-
-    public function getPublicApiKey() {
-        return $this->public_key;
     }
 }

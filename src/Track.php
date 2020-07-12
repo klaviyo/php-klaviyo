@@ -5,7 +5,7 @@ namespace Klaviyo;
 use Klaviyo\Model\EventModel;
 use Klaviyo\Model\ProfileModel;
 
-class Track extends KlaviyoBase
+class Track extends KlaviyoAPI
 {
     /**
      * Track Class constants

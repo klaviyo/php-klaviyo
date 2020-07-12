@@ -9,7 +9,7 @@ use Klaviyo\Model\EventModel;
 use phpDocumentor\Reflection\Types\Self_;
 
 
-class Profiles extends KlaviyoBase
+class Profiles extends KlaviyoAPI
 {
     /**
      * Profiles endpoint constants
@@ -74,7 +74,7 @@ class Profiles extends KlaviyoBase
      *
      * @return bool|mixed
      */
-    public function getProfileAllMetricsTimeline( $personId, $since = null, $uuid = null, $count = null, $sort = null )
+    public function getAllProfileMetricsTimeline( $personId, $since = null, $uuid = null, $count = null, $sort = null )
     {
         $params = $this->setSinceParameter( $since, $uuid );
 
@@ -135,3 +135,4 @@ class Profiles extends KlaviyoBase
     }
 
 }
+
