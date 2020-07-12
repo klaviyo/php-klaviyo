@@ -6,7 +6,6 @@ http://www.klaviyo.com/
 ## What does this package do?
 
 * Track customers and events directly from your backend.
-* Track customers and events via JavaScript using a Django middleware.
 
 
 ## How to install?
@@ -19,8 +18,7 @@ After installing the klaviyo package you can initiate it using your public token
 ```php
 use Klaviyo\Klaviyo as Klaviyo;
 
-$client = new Klaviyo('PRIVATE_API_KEY');
-$client->setPublicApiKey('PUBLIC_API_KEY');
+$client = new Klaviyo( 'PRIVATE_API_KEY', 'PUBLIC_API_KEY' );
 ```
 You can then easily use Klaviyo to track events or identify people.  Note, track and identify requests take your public token.
 
