@@ -16,7 +16,7 @@ abstract class KlaviyoAPI
     const BASE_URL = 'https://a.klaviyo.com/api/';
     const API_V1 = 'v1';
     const API_V2 = 'v2';
-    const PACKAGE_VERSION = Klaviyo::version;
+    const PACKAGE_VERSION = Klaviyo::VERSION;
 
     /**
      * Request methods
@@ -266,7 +266,13 @@ abstract class KlaviyoAPI
         return $params;
     }
 
-    protected function setUserAgentHeader( $params )
+    /**
+     * Helper function to add UserAgent with package version to request
+     *
+     * @param $params
+     * @return array
+     */
+    protected function setUserAgentHeader($params )
     {
         $params = array_merge(
             $params,
