@@ -23,6 +23,15 @@ class Lists extends KlaviyoAPI
     const SUBSCRIBE = 'subscribe';
 
     /**
+     * Lists API arguments
+     */
+    const EMAILS = 'emails';
+    const PHONE_NUMBERS = 'phone_numbers';
+    const PUSH_TOKENS = 'push_tokens';
+    const LIST_NAME = 'list_name';
+    const MARKER = 'marker';
+
+    /**
      * Create a new list
      * @link https://www.klaviyo.com/docs/api/v2/lists#post-lists
      *
@@ -33,7 +42,7 @@ class Lists extends KlaviyoAPI
      */
     public function createList( $listName )
     {
-        $options = $this->createParams('list_name', $listName);
+        $options = $this->createParams(self::LIST_NAME, $listName);
 
         return $this->v2Request( self::LISTS, $options, self::HTTP_POST );
     }
@@ -79,7 +88,7 @@ class Lists extends KlaviyoAPI
     public function updateListDetails( $listId, $list_name )
     {
         $params = $this->createRequestBody( array(
-            'list_name' => $list_name
+            self::LIST_NAME => $list_name
         ) );
 
         $path = sprintf( '%s/%s', self::LIST, $listId );
@@ -127,7 +136,7 @@ class Lists extends KlaviyoAPI
         );
 
         $path = sprintf( '%s/%s/%s', self::LIST, $listId, self::SUBSCRIBE );
-        $params = $this->createParams( 'profiles', $profiles );
+        $params = $this->createParams( self::PROFILES, $profiles );
 
         return $this->v2Request( $path, $params, self::HTTP_POST );
     }
@@ -156,9 +165,9 @@ class Lists extends KlaviyoAPI
         $params = $this->createRequestJson(
             $this->filterParams(
                 array(
-                    'emails' => $emails,
-                    'phone_numbers' => $phoneNumbers,
-                    'push_tokens' => $pushTokens
+                    self::EMAILS => $emails,
+                    self::PHONE_NUMBERS => $phoneNumbers,
+                    self::PUSH_TOKENS => $pushTokens
                 )
             )
         );
@@ -185,7 +194,7 @@ class Lists extends KlaviyoAPI
         $params = $this->createRequestJson(
             $this->filterParams(
                 array(
-                    'emails' => $emails
+                    self::EMAILS => $emails
                 )
             )
         );
@@ -221,7 +230,7 @@ class Lists extends KlaviyoAPI
         );
 
         $path = sprintf( '%s/%s/%s', self::LIST, $listId, self::MEMBERS );
-        $options = $this->createParams( 'profiles', $profiles );
+        $options = $this->createParams( self::PROFILES, $profiles );
 
         return $this->v2Request( $path, $options, self::HTTP_POST );
     }
@@ -250,9 +259,9 @@ class Lists extends KlaviyoAPI
         $params = $this->createRequestJson(
             $this->filterParams(
                 array(
-                    'emails' => $emails,
-                    'phone_numbers' => $phoneNumbers,
-                    'push_tokens' => $pushTokens
+                    self::EMAILS => $emails,
+                    self::PHONE_NUMBERS => $phoneNumbers,
+                    self::PUSH_TOKENS => $pushTokens
                 )
             )
         );
@@ -279,7 +288,7 @@ class Lists extends KlaviyoAPI
         $params = $this->createRequestJson(
             $this->filterParams(
                 array(
-                    'emails' => $emails
+                    self::EMAILS => $emails
                 )
             )
         );
@@ -307,7 +316,7 @@ class Lists extends KlaviyoAPI
         $params = $this->createRequestBody(
             $this->filterParams(
                 array(
-                    'marker' => $marker
+                    self::MARKER => $marker
                 )
             )
         );
@@ -335,7 +344,7 @@ class Lists extends KlaviyoAPI
         $params = $this->createRequestBody(
             $this->filterParams(
                 array(
-                    'marker' => $marker
+                    self::MARKER => $marker
                 )
             )
         );

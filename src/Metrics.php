@@ -21,6 +21,16 @@ class Metrics extends KlaviyoAPI
     const EXPORT = 'export';
 
     /**
+     * Metrics API arguments
+     */
+    const START_DATE = 'start_date';
+    const END_DATE = 'end_date';
+    const UNIT = 'unit';
+    const WHERE = 'where';
+    const MEASUREMENT = 'measurement';
+    const BY = 'by';
+
+    /**
      * Returns a list of all metrics in Klaviyo
      * @link https://www.klaviyo.com/docs/api/metrics#metrics
      *
@@ -35,8 +45,8 @@ class Metrics extends KlaviyoAPI
     public function getMetrics( int $page = null, int $count = null )
     {
         $params = $this->filterParams( array(
-            'page' => $page,
-            'count' => $count
+            self::PAGE=> $page,
+            self::COUNT => $count
         ) );
 
         return $this->v1Request( self::METRICS, $params );
@@ -69,8 +79,8 @@ class Metrics extends KlaviyoAPI
         $params = $this->filterParams( array_merge(
             $params,
             array(
-                'count' => $count,
-                'sort' => $sort
+                self::COUNT => $count,
+                self::SORT => $sort
             )
         ) );
 
@@ -110,8 +120,8 @@ class Metrics extends KlaviyoAPI
         $params = $this->filterParams( array_merge(
             $params,
             array(
-                'count' => $count,
-                'sort' => $sort
+                self::COUNT => $count,
+                self::SORT => $sort
             )
         ) );
 
@@ -142,17 +152,24 @@ class Metrics extends KlaviyoAPI
      *
      * @return bool|mixed
      */
-    public function exportMetricData( $metricID, $start_date = null, $end_date = null, $unit = null, $measurement = null, $where = null, $by = null, $count = null )
+    public function exportMetricData( $metricID,
+                                      $start_date = null,
+                                      $end_date = null,
+                                      $unit = null,
+                                      $measurement = null,
+                                      $where = null,
+                                      $by = null,
+                                      $count = null )
     {
         $params = $this->filterParams(
             array(
-                'start_date' => $start_date,
-                'end_date' => $end_date,
-                'unit' => $unit,
-                'measurement' => $measurement,
-                'where' => $where,
-                'by' => $by,
-                'count' => $count
+                self::START_DATE => $start_date,
+                self::END_DATE => $end_date,
+                self::UNIT => $unit,
+                self::MEASUREMENT => $measurement,
+                self::WHERE => $where,
+                self::BY => $by,
+                self::COUNT => $count
             )
         );
 

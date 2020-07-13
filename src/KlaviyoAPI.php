@@ -55,10 +55,9 @@ abstract class KlaviyoAPI
     /**
      * Klaviyo API arguments
      */
-    const COUNT = 'count';
-    const EMAILS = 'emails';
-    const PAGE = 'page';
     const PROFILES = 'profiles';
+    const COUNT = 'count';
+    const PAGE = 'page';
     const SINCE = 'since';
     const SORT = 'sort';
 
@@ -316,11 +315,11 @@ abstract class KlaviyoAPI
     {
         if ( is_null( $uuid )) {
             return array(
-                'since' => $since
+                self::SINCE => $since
             );
         } else {
             return array(
-                'since' => $uuid
+                self::SINCE => $uuid
             );
         }
     }

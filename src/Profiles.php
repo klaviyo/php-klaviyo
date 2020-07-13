@@ -30,7 +30,8 @@ class Profiles extends KlaviyoAPI
      */
     public function getProfile( $personId )
     {
-        return $this->v1Request(self::PERSON.'/'.$personId );
+        $path = sprintf( '%s/%s', self::PERSON, $personId );
+        return $this->v1Request( $path );
     }
 
     /**
@@ -48,7 +49,8 @@ class Profiles extends KlaviyoAPI
      */
     public function updateProfile( $personId, $properties )
     {
-        return $this->v1Request(self::PERSON.'/'.$personId, $properties, self::HTTP_PUT );
+        $path = sprintf( '%s/%s', self::PERSON, $personId );
+        return $this->v1Request( $path, $properties, self::HTTP_PUT );
     }
 
     /**
@@ -81,8 +83,8 @@ class Profiles extends KlaviyoAPI
         $params = $this->filterParams( array_merge(
             $params,
             array(
-                'count' => $count,
-                'sort' => $sort
+                self::COUNT => $count,
+                self::SORT => $sort
             )
         ) );
 
@@ -124,8 +126,8 @@ class Profiles extends KlaviyoAPI
         $params = $this->filterParams( array_merge(
             $params,
             array(
-                'count' => $count,
-                'sort' => $sort
+                self::COUNT => $count,
+                self::SORT => $sort
             )
         ) );
 
@@ -135,4 +137,3 @@ class Profiles extends KlaviyoAPI
     }
 
 }
-
