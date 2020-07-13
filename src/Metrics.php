@@ -72,7 +72,7 @@ class Metrics extends KlaviyoAPI
      *
      * @return bool|mixed
      */
-    public function getTimeline( $since = null, string $uuid = null, int $count = null, string $sort = null )
+    public function getMetricsTimeline($since = null, string $uuid = null, int $count = null, string $sort = null )
     {
         $params = $this->setSinceParameter( $since, $uuid );
 
