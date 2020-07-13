@@ -19,9 +19,15 @@ class Klaviyo
     protected $public_key;
 
     /**
+     * @var string
+     */
+    const version = '2.0.0';
+
+    /**
      * Constructor for Klaviyo.
      *
      * @param string $private_key Private API key for Klaviyo account
+     * @param string $public_key Public API key for Klaviyo account
      */
     public function __construct($private_key, $public_key)
     {

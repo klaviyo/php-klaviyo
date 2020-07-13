@@ -3,6 +3,7 @@
 namespace Klaviyo;
 
 use GuzzleHttp\Client;
+use Klaviyo\Klaviyo;
 use Psr\Http\Message\ResponseInterface;
 use Klaviyo\Exception\KlaviyoException;
 use Klaviyo\Model\ProfileModel;
@@ -15,6 +16,7 @@ abstract class KlaviyoAPI
     const BASE_URL = 'https://a.klaviyo.com/api/';
     const API_V1 = 'v1';
     const API_V2 = 'v2';
+    const PACKAGE_VERSION = Klaviyo::version;
 
     /**
      * Request methods
@@ -42,6 +44,7 @@ abstract class KlaviyoAPI
     const PROPERTIES = 'properties';
     const QUERY = 'query';
     const TOKEN = 'token';
+    const USER_AGENT = 'user-agent';
 
     /**
      * Shared endpoints
@@ -217,6 +220,8 @@ abstract class KlaviyoAPI
             ]
         ];
 
+        $params = $this->setUserAgentHeader( $params );
+
         return $params;
     }
 
@@ -235,6 +240,8 @@ abstract class KlaviyoAPI
             )
         );
 
+        $params = $this->setUserAgentHeader( $params );
+
         return $params;
     }
 
@@ -250,7 +257,22 @@ abstract class KlaviyoAPI
             $params,
             array(
                 self::HEADERS => array(
-                    self::API_KEY_HEADER => $this->private_key
+                    self::API_KEY_HEADER => $this->private_key,
+                    self::USER_AGENT => 'Klaviyo-PHP/' . self::PACKAGE_VERSION
+                )
+            )
+        );
+
+        return $params;
+    }
+
+    protected function setUserAgentHeader( $params )
+    {
+        $params = array_merge(
+            $params,
+            array(
+                self::HEADERS => array(
+                    self::USER_AGENT => 'Klaviyo-PHP/' . self::PACKAGE_VERSION
                 )
             )
         );
