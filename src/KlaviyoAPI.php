@@ -170,7 +170,7 @@ abstract class KlaviyoAPI
         }
 
         if ( $isPublic ) {
-            return '1' == $response->getBody();
+            $response->getBody();
         }
 
         return $this->decodeJsonResponse( $response );
@@ -216,7 +216,7 @@ abstract class KlaviyoAPI
 
         $params = [
             self::QUERY => [
-                self::DATA => base64_encode(json_encode([self::TOKEN => $this->public_key] + $options[self::QUERY]))
+                self::DATA => base64_encode(json_encode([self::TOKEN => $this->public_key] + $params[self::QUERY]))
             ]
         ];
 

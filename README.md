@@ -31,7 +31,7 @@ $event = new KlaviyoEvent(
     array(
         'event' => 'Filled out Profile',
         'customer_properties' => array(
-            'email' => 'someone@mailinator.com'    
+            '$email' => 'someone@mailinator.com'    
         ),
         'properties' => array(
             'Added Social Accounts' => False
@@ -49,7 +49,7 @@ $event = new KlaviyoEvent(
     array(
         'event' => 'Filled out Profile',
         'customer_properties' => array(
-            'email' => 'someone@mailinator.com',
+            '$email' => 'someone@mailinator.com',
             '$first_name' => 'Thomas',
             '$last_name' => 'Jefferson'   
         ),
