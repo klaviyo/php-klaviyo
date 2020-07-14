@@ -2,11 +2,12 @@
 
 namespace Klaviyo;
 
-use GuzzleHttp\Client;
 use Klaviyo\Klaviyo;
-use Psr\Http\Message\ResponseInterface;
 use Klaviyo\Exception\KlaviyoException;
 use Klaviyo\Model\ProfileModel;
+
+use GuzzleHttp\Client;
+use Psr\Http\Message\ResponseInterface;
 
 abstract class KlaviyoAPI
 {
@@ -210,17 +211,22 @@ abstract class KlaviyoAPI
      * @param $params
      * @return array[]
      */
-    protected function publicAuth($params )
+    protected function publicAuth( $params )
     {
         unset($params[self::HEADERS][self::API_KEY_HEADER]);
 
         $params = [
             self::QUERY => [
-                self::DATA => base64_encode(json_encode([self::TOKEN => $this->public_key] + $params[self::QUERY]))
+                self::DATA => base64_encode(
+                    json_encode(
+                        array_merge(
+                            [self::TOKEN => $this->public_key],
+                            $params[self::QUERY]
+                        )
+                    )
+                )
             ]
         ];
-
-        $params = $this->setUserAgentHeader( $params );
 
         return $params;
     }
@@ -231,7 +237,7 @@ abstract class KlaviyoAPI
      * @param $params
      * @return array
      */
-    protected function v1Auth($params )
+    protected function v1Auth( $params )
     {
         $params = array(
             self::QUERY => array_merge(
@@ -251,7 +257,7 @@ abstract class KlaviyoAPI
      * @param $params
      * @return array
      */
-    protected function v2Auth($params )
+    protected function v2Auth( $params )
     {
         $params = array_merge(
             $params,
@@ -272,7 +278,7 @@ abstract class KlaviyoAPI
      * @param $params
      * @return array
      */
-    protected function setUserAgentHeader($params )
+    protected function setUserAgentHeader( $params )
     {
         $params = array_merge(
             $params,
