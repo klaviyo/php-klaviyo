@@ -35,7 +35,7 @@ class ProfileModel extends BaseModel
      *
      * @var string[]
      */
-    public static $specialAttributes = [
+    public static $specialAttributes = array(
         '$id',
         '$email',
         '$first_name',
@@ -51,19 +51,19 @@ class ProfileModel extends BaseModel
         '$timezone',
         '$phone_number',
         '$ios_tokens',
-    ];
+    );
 
     /**
      * Attributes of a profile used to identify each
      *
      * @var string[]
      */
-    public static $identifyAttributes = [
+    public static $identifyAttributes = array(
         '$email',
         '$id',
         '$phone_number',
         '$ios_tokens',
-    ];
+    );
 
     /**
      * ProfileModel constructor.
@@ -150,11 +150,14 @@ class ProfileModel extends BaseModel
     }
 
     public function jsonSerialize() {
-        return [
-            'email' => $this->email,
-            '$phone_number' => $this->phoneNumber,
-            '$first_name' => $this->firstName,
-            '$last_name' => $this->lastName
-        ] + $this->getCustomAttributes();
+        return array_merge(
+            array(
+                'email' => $this->email,
+                '$phone_number' => $this->phoneNumber,
+                '$first_name' => $this->firstName,
+                '$last_name' => $this->lastName
+            ),
+            $this->getCustomAttributes()
+        );
     }
 }

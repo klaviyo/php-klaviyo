@@ -33,8 +33,8 @@ class PublicAPI extends KlaviyoAPI
      */
     public function trackEvent( EventModel $event )
     {
-        $options = [self::QUERY => $event->toArray()];
-        
+        $options = array( self::QUERY => $event->toArray() );
+
         return $this->publicRequest( self::TRACK, $options );
     }
 
@@ -47,7 +47,11 @@ class PublicAPI extends KlaviyoAPI
      */
     public function identifyProfile ( ProfileModel $profile )
     {
-        $options = [self::QUERY => [self::PROPERTIES => $profile]];
+        $options = array(
+            self::QUERY => array(
+                self::PROPERTIES => $profile
+            )
+        );
 
         return $this->publicRequest( self::IDENTIFY, $options );
     }

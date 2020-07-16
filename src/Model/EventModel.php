@@ -50,12 +50,12 @@ class EventModel extends BaseModel
      * @return array|mixed
      */
     public function jsonSerialize() {
-        return [
+        return array(
             'event' => $this->event,
             'customer_properties' => $this->customer_properties,
             'properties' => $this->properties,
             'time' => $this->time
-        ];
+        );
     }
     
 }
