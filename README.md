@@ -85,7 +85,7 @@ $client->publicAPI->identify( $profile );
 $client->metrics->getMetrics();
 
 #return a timeline of all metrics
-$client->metrics->getTimeline();
+$client->metrics->getMetricsTimeline();
 
 #return a specific metric timeline using its metric ID
 $client->metrics->getMetricTimeline( 'METRICID' );

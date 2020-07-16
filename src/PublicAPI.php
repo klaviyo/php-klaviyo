@@ -31,7 +31,7 @@ class PublicAPI extends KlaviyoAPI
      * @param EventModel $event
      * @return mixed
      */
-    public function trackEvent( EventModel $event )
+    public function track( EventModel $event )
     {
         $options = array( self::QUERY => $event->toArray() );
 
@@ -45,7 +45,7 @@ class PublicAPI extends KlaviyoAPI
      * @param ProfileModel $profile
      * @return mixed
      */
-    public function identifyProfile ( ProfileModel $profile )
+    public function identify( ProfileModel $profile )
     {
         $options = array(
             self::QUERY => array(
