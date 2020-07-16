@@ -96,22 +96,6 @@ abstract class KlaviyoAPI
     }
 
     /**
-     * @return string
-     */
-    public function getPrivateKey(): string
-    {
-        return $this->private_key;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPublicKey(): string
-    {
-        return $this->public_key;
-    }
-
-    /**
      * Make public API request
      *
      * @param $path Endpoint to call

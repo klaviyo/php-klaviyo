@@ -36,6 +36,22 @@ class Klaviyo
     }
 
     /**
+     * @return string
+     */
+    public function getPrivateKey(): string
+    {
+        return $this->private_key;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPublicKey(): string
+    {
+        return $this->public_key;
+    }
+
+    /**
      * Dynamically retrieve the corresponding API service and
      * save as property for re-use.
      *
