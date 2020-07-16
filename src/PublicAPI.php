@@ -5,7 +5,7 @@ namespace Klaviyo;
 use Klaviyo\Model\EventModel;
 use Klaviyo\Model\ProfileModel;
 
-class Track extends KlaviyoAPI
+class PublicAPI extends KlaviyoAPI
 {
     /**
      * Track Class constants
@@ -14,17 +14,14 @@ class Track extends KlaviyoAPI
     const IDENTIFY = 'identify';
 
     /**
-     * Track constructor.
+     * PublicAPI constructor.
      * @param $public_key
      * @param $private_key
      * @param string $host
      */
-    public function __construct($public_key, $private_key, $host = self::BASE_URL) {
-        parent::__construct($public_key, $private_key, $host = self::BASE_URL);
-
-        if ( !isset( $this->public_key ) ) {
-            throw new KlaviyoException('Public key is not defined.');
-        }
+    public function __construct( $public_key, $private_key, $host = self::BASE_URL )
+    {
+        parent::__construct( $public_key, $private_key, $host = self::BASE_URL );
     }
 
     /**
@@ -34,7 +31,8 @@ class Track extends KlaviyoAPI
      * @param EventModel $event
      * @return mixed
      */
-    public function trackEvent(EventModel $event ) {
+    public function trackEvent( EventModel $event )
+    {
         $options = [self::QUERY => $event->toArray()];
         
         return $this->publicRequest( self::TRACK, $options );
@@ -47,7 +45,8 @@ class Track extends KlaviyoAPI
      * @param ProfileModel $profile
      * @return mixed
      */
-    public function identifyProfile (ProfileModel $profile ) {
+    public function identifyProfile ( ProfileModel $profile )
+    {
         $options = [self::QUERY => [self::PROPERTIES => $profile]];
 
         return $this->publicRequest( self::IDENTIFY, $options );

@@ -4,11 +4,7 @@
 namespace Klaviyo;
 
 use GuzzleHttp\Client;
-use Klaviyo\Model\ProfileModel;
-use Klaviyo\Model\EventModel;
-use phpDocumentor\Reflection\DocBlock\Tags\Example;
-use phpDocumentor\Reflection\DocBlock\Tags\Method;
-
+use Klaviyo\Exception\KlaviyoException;
 
 class Metrics extends KlaviyoAPI
 {
@@ -151,6 +147,7 @@ class Metrics extends KlaviyoAPI
      * @param $count
      *
      * @return bool|mixed
+     * @throws KlaviyoException
      */
     public function exportMetricData( $metricID,
                                       $start_date = null,
@@ -161,6 +158,10 @@ class Metrics extends KlaviyoAPI
                                       $by = null,
                                       $count = null )
     {
+        if (isset( $where ) && isset( $by )) {
+            throw new KlaviyoException('Please use either \'where\' or \'by\', only one of these variables can be set for the export call' );
+        }
+
         $params = $this->filterParams(
             array(
                 self::START_DATE => $start_date,

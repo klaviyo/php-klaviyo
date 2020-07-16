@@ -2,12 +2,12 @@
 
 namespace Klaviyo;
 
-use Klaviyo\Klaviyo;
 use Klaviyo\Exception\KlaviyoException;
-use Klaviyo\Model\ProfileModel;
 
 use GuzzleHttp\Client;
+use Klaviyo\Model\ProfileModel;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamInterface;
 
 abstract class KlaviyoAPI
 {
@@ -94,6 +94,23 @@ abstract class KlaviyoAPI
         $this->private_key = $private_key;
         $this->client = new Client(['base_uri' => self::BASE_URL]);
     }
+
+    /**
+     * @return string
+     */
+    public function getPrivateKey(): string
+    {
+        return $this->private_key;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPublicKey(): string
+    {
+        return $this->public_key;
+    }
+
     /**
      * Make public API request
      *
@@ -110,8 +127,11 @@ abstract class KlaviyoAPI
      * Make private v1 API request
      *
      * @param $path Endpoint to call
-     * @param $options API params to add to request
+     * @param array $options API params to add to request
      * @param string $method HTTP method for request
+     * @return mixed|StreamInterface
+     *
+     * @throws KlaviyoException
      */
     protected function v1Request( $path, $options = [], $method = self::HTTP_GET )
     {
@@ -124,14 +144,17 @@ abstract class KlaviyoAPI
      * Make private v2 API request
      *
      * @param $path Endpoint to call
-     * @param $options API params to add to request
+     * @param array $options API params to add to request
      * @param string $method HTTP method for request
+     * @return mixed|StreamInterface
+     *
+     * @throws KlaviyoException
      */
     protected function v2Request( $path, $options = [], $method = self::HTTP_GET )
     {
         $path = self::API_V2 . $this->trimPath( $path );
 
-        return $this->request( $method, $path, $options, false, false, true );
+        return $this->request( $method, $path, $options, false, false );
     }
 
     /**
@@ -142,11 +165,12 @@ abstract class KlaviyoAPI
      * @param string $method HTTP method for request
      * @param bool $isPublic to determine if public request
      * @param bool $isV1 to determine if V1 API request
-     * @param bool $isV2 to determine if V2 API request
+     *
+     * @throws KlaviyoException
      */
-    private function request( $method, $path, $options, $isPublic = false, $isV1 = false, $isV2 = false )
+    private function request( $method, $path, $options, $isPublic = false, $isV1 = false )
     {
-        $options = $this->prepareAuthentication( $options, $isPublic, $isV1, $isV2 );
+        $options = $this->prepareAuthentication( $options, $isPublic, $isV1 );
 
         $response = $this->client->request( $method, $path, $options );
 
@@ -171,7 +195,7 @@ abstract class KlaviyoAPI
         }
 
         if ( $isPublic ) {
-            $response->getBody();
+            return $response->getBody();
         }
 
         return $this->decodeJsonResponse( $response );
@@ -186,7 +210,7 @@ abstract class KlaviyoAPI
      * @param bool $isV1 Request API version - V1
      * @param bool $isV2 Request API version - V2
      */
-    private function prepareAuthentication ( $params, $isPublic, $isV1, $isV2 )
+    private function prepareAuthentication ( $params, $isPublic, $isV1 )
     {
         if ( $isPublic ) {
             $params = $this->publicAuth( $params );
@@ -196,9 +220,7 @@ abstract class KlaviyoAPI
         if ( $isV1 ) {
             $params = $this->v1Auth( $params );
             return $params;
-        }
-
-        if ( $isV2 ) {
+        } else {
             $params = $this->v2Auth( $params );
             return $params;
         }
@@ -301,9 +323,12 @@ abstract class KlaviyoAPI
     }
 
     /**
-     * Return decoded json response as associative array. 
+     * Return decoded json response as associative array.
+     *
+     * @param ResponseInterface $response
+     * @return mixed
      */
-    private function decodeJsonResponse ( ResponseInterface $response )
+    private function decodeJsonResponse( ResponseInterface $response )
     {
         return json_decode( $response->getBody(), true );
     }
@@ -314,7 +339,7 @@ abstract class KlaviyoAPI
      * @param string $paramName Name of API Param to create
      * @param $paramValue Value of API params to create
      */
-    protected function createParams (string $paramName, $paramValue )
+    protected function createParams( string $paramName, $paramValue )
     {
         return [self::JSON =>
             [$paramName => $paramValue]
@@ -345,7 +370,7 @@ abstract class KlaviyoAPI
      * @param $uuid New token supplied by API response
      * @return array
      */
-    protected function setSinceParameter($since, $uuid )
+    protected function setSinceParameter( $since, $uuid )
     {
         if ( is_null( $uuid )) {
             return array(
@@ -364,7 +389,7 @@ abstract class KlaviyoAPI
      * @param array $params
      * @return array
      */
-    protected function filterParams(array $params )
+    protected function filterParams( array $params )
     {
         return array_filter(
             $params,
@@ -379,7 +404,7 @@ abstract class KlaviyoAPI
      * @param array $params
      * @return array[]
      */
-    protected function createRequestBody(array $params )
+    protected function createRequestBody( array $params )
     {
         return array(
             'form_params' => $params
@@ -392,11 +417,29 @@ abstract class KlaviyoAPI
      * @param array $params
      * @return array[]
      */
-    protected function createRequestJson(array $params)
+    protected function createRequestJson( array $params)
     {
         return array(
             'json' => $params
         );
+    }
+
+    /**
+     * Check if a profile is an instance of ProfileModel
+     *
+     * @param array $profiles
+     * @throws KlaviyoException
+     */
+    protected function checkProfile( array $profiles )
+    {
+        foreach ( $profiles as $profile ) {
+            if ( ! $profile instanceof ProfileModel ) {
+                throw new KlaviyoException( sprintf( " %s is not an instance of %s, You must identify the person by their email, using a \$email key, or a unique identifier, using a \$id.",
+                    $profile['$email'],
+                    ProfileModel::class )
+                );
+            }
+        }
     }
 
 }

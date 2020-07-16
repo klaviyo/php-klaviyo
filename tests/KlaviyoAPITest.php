@@ -240,4 +240,32 @@ class KlaviyoAPITest extends TestCase
         $this->assertEquals( $expected, $this->testKlaviyoClass->returnCreateRequestJson( [] ) );
     }
 
+    public function testCheckProfile()
+    {
+        $this->testKlaviyoClass = new class('Test0A', 'pk_testprivatekey') extends Klaviyo {
+
+            public function returnCheckProfile( $profiles )
+            {
+                return $this->checkProfile( $profiles );
+            }
+        };
+
+        $profile1 = new \Klaviyo\Model\ProfileModel( array(
+            '$email' => 'checkprofiles@example.com',
+            '$first_name' => 'Check',
+            '$last_name' => 'Profile'
+        ) );
+
+        $profile2 = array(
+            '$email' => 'checkprofile121@example.com',
+            '$first_name' => 'Check1',
+            '$last_name' => 'Profile1'
+        );
+
+        $this->expectException( \Klaviyo\Exception\KlaviyoException::class );
+
+        $this->testKlaviyoClass->returnCheckProfile( array( $profile1, $profile2 ) );
+
+    }
+
 }

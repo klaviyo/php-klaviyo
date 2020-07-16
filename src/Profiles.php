@@ -3,12 +3,6 @@
 
 namespace Klaviyo;
 
-use GuzzleHttp\Client;
-use Klaviyo\Model\ProfileModel;
-use Klaviyo\Model\EventModel;
-use phpDocumentor\Reflection\Types\Self_;
-
-
 class Profiles extends KlaviyoAPI
 {
     /**
@@ -97,7 +91,7 @@ class Profiles extends KlaviyoAPI
      * Returns a person's batched timeline for one specific event type.
      * @link https://www.klaviyo.com/docs/api/people#metric-timeline
      *
-     *@param $personId
+     * @param $personId
      * 6 digit unique identifier for Profile
      *
      * @param $metricId

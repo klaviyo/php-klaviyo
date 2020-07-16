@@ -2,9 +2,6 @@
 
 namespace Klaviyo;
 
-use Klaviyo\Model\ProfileModel as profileModel;
-use phpDocumentor\Reflection\Types\Self_;
-
 /**
  * Class Lists
  * @package Klaviyo
@@ -125,10 +122,12 @@ class Lists extends KlaviyoAPI
      * If you are updating consent for a phone number or would like to send an opt-in SMS to the profile (for double opt-in lists), include an sms_consent key in the profile with a value of true or false.
      *
      * @return bool|mixed
+     * @throws Exception\KlaviyoException
      */
     public function subscribeMembersToList( $listId, array $profiles )
     {
-        array_walk($profiles, [$this, 'isInstanceOf'], __NAMESPACE__ . '\Model\ProfileModel');
+        $this->checkProfile( $profiles );
+
         $profiles = array_map(
             function( $profile ) {
                 return $profile->toArray();
@@ -156,7 +155,7 @@ class Lists extends KlaviyoAPI
      * Phone numbers must be in E.164 format.
      *
      * @param array|null $pushTokens
-     *The push tokens corresponding to the profiles that you would like to check.
+     * The push tokens corresponding to the profiles that you would like to check.
      *
      * @return bool|mixed
      */
@@ -219,10 +218,12 @@ class Lists extends KlaviyoAPI
      *
      * @return bool|mixed
      *
+     * @throws Exception\KlaviyoException
      */
     public function addMembersToList( $listId, array $profiles )
     {
-        array_walk($profiles, [$this, 'isInstanceOf'], __NAMESPACE__ . '\Model\ProfileModel');
+        $this->checkProfile( $profiles );
+
         $profiles = array_map(
             function( $profile ) {
                 return $profile->toArray();

@@ -39,7 +39,7 @@ $event = new KlaviyoEvent(
     )
 );
     
-$client->track->trackEvent( $event );    
+$client->publicAPI->track( $event );    
 ```    
 ### You can also add profile properties to the 'customer properties' attribute in the Event model
 ```php
@@ -59,7 +59,7 @@ $event = new KlaviyoEvent(
     )
 );
 
-$client->track->trackEvent( $event );
+$client->publicAPI->track( $event );
 ```
 
 ### or just add a property to someone
@@ -75,7 +75,7 @@ $profile = new KlaviyoProfile(
     )
 );
     
-$client->track->identifyProfile( $profile );
+$client->publicAPI->identify( $profile );
 ```
 
 ### You can get metrics, a timeline of events and export analytics for a metric. See here for more https://www.klaviyo.com/docs/api/metrics
