@@ -192,7 +192,8 @@ abstract class KlaviyoAPI
      * @param array $params Options configuration for Request Interface
      * @param bool $isPublic Request type - public
      * @param bool $isV1 Request API version - V1
-     * @param bool $isV2 Request API version - V2
+     *
+     * @return array|array[]
      */
     private function prepareAuthentication ( $params, $isPublic, $isV1 )
     {

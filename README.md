@@ -14,7 +14,7 @@ http://www.klaviyo.com/
     
 ## API Examples
 
-After installing the klaviyo package you can initiate it using your public token which is for track events or identifying profiles and/or your private api key to utilize the metrics and list apis.
+After installing the Klaviyo package you can initiate it using your public token which is for track events or identifying profiles and/or your private api key to utilize the metrics and list apis.
 ```php
 use Klaviyo\Klaviyo as Klaviyo;
 
@@ -23,7 +23,7 @@ $client = new Klaviyo( 'PRIVATE_API_KEY', 'PUBLIC_API_KEY' );
 You can then easily use Klaviyo to track events or identify people.  Note, track and identify requests take your public token.
 
 
-### Track an event...
+### Track an event
 ```php
 use Klaviyo\Model\EventModel as KlaviyoEvent;
     

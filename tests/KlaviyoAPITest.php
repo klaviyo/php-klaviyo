@@ -9,6 +9,9 @@ class KlaviyoAPITest extends TestCase
     public $testKlaviyoClass;
     public $testAPI;
 
+    public $testPrivateKey = 'pk_testprivatekey';
+    public $testPublicKey = 'Test0A';
+
     public function setUp(): void
     {
         parent::setUp();
@@ -17,33 +20,33 @@ class KlaviyoAPITest extends TestCase
 
     public function testPublicKey()
     {
-        $this->testKlaviyoClass = new class('Test0A', 'pk_testprivatekey') extends Klaviyo{
+        $this->testKlaviyoClass = new class( $this->testPublicKey, $this->testPrivateKey ) extends Klaviyo{
 
             public function returnPublicKey( ){
                 return $this->public_key;
             }
         };
 
-        $this->assertEquals( 'Test0A', $this->testKlaviyoClass->returnPublicKey() );
+        $this->assertEquals( $this->testPublicKey, $this->testKlaviyoClass->returnPublicKey() );
 
     }
 
     public function testPrivateKey()
     {
-        $this->testKlaviyoClass = new class('Test0A', 'pk_testprivatekey') extends Klaviyo{
+        $this->testKlaviyoClass = new class( $this->testPublicKey, $this->testPrivateKey ) extends Klaviyo{
 
             public function returnPrivateKey( ){
                 return $this->private_key;
             }
         };
 
-        $this->assertEquals( 'pk_testprivatekey', $this->testKlaviyoClass->returnPrivateKey() );
+        $this->assertEquals( $this->testPrivateKey, $this->testKlaviyoClass->returnPrivateKey() );
 
     }
 
     public function testClient()
     {
-        $this->testKlaviyoClass = new class('Test0A', 'pk_testprivatekey') extends Klaviyo{
+        $this->testKlaviyoClass = new class( $this->testPublicKey, $this->testPrivateKey ) extends Klaviyo{
 
             public function returnClient(){
                 return $this->client;
@@ -56,7 +59,7 @@ class KlaviyoAPITest extends TestCase
 
     public function testPublicAuth()
     {
-        $this->testKlaviyoClass = new class('Test0A', 'pk_testprivatekey') extends Klaviyo{
+        $this->testKlaviyoClass = new class( $this->testPublicKey, $this->testPrivateKey ) extends Klaviyo{
 
             public function returnPublicAuth( $params ){
                 return $this->publicAuth( $params );
@@ -81,7 +84,7 @@ class KlaviyoAPITest extends TestCase
 
     public function testV1Auth()
     {
-        $this->testKlaviyoClass = new class('Test0A', 'pk_testprivatekey') extends Klaviyo {
+        $this->testKlaviyoClass = new class( $this->testPublicKey, $this->testPrivateKey ) extends Klaviyo {
 
             public function returnV1Auth( $params )
             {
@@ -91,7 +94,7 @@ class KlaviyoAPITest extends TestCase
 
         $expected = array(
             'query' => array(
-                'api_key' => 'pk_testprivatekey'
+                'api_key' => $this->testPrivateKey
             ),
             'headers' => array(
                 'user-agent' => 'Klaviyo-PHP/2.0.0'
@@ -103,7 +106,7 @@ class KlaviyoAPITest extends TestCase
 
     public function testV2Auth()
     {
-        $this->testKlaviyoClass = new class('Test0A', 'pk_testprivatekey') extends Klaviyo {
+        $this->testKlaviyoClass = new class( $this->testPublicKey, $this->testPrivateKey ) extends Klaviyo {
 
             public function returnV2Auth( $params )
             {
@@ -113,7 +116,7 @@ class KlaviyoAPITest extends TestCase
 
         $expected = array(
             'headers' => array(
-                'api-key' => 'pk_testprivatekey',
+                'api-key' => $this->testPrivateKey,
                 'user-agent' => 'Klaviyo-PHP/2.0.0'
             )
         );
@@ -124,7 +127,7 @@ class KlaviyoAPITest extends TestCase
 
     public function testSetUserAgentHeader()
     {
-        $this->testKlaviyoClass = new class('Test0A', 'pk_testprivatekey') extends Klaviyo{
+        $this->testKlaviyoClass = new class( $this->testPublicKey, $this->testPrivateKey ) extends Klaviyo{
 
             public function returnUserAgentHeader( $query ){
                 return $this->setUserAgentHeader( $query );
@@ -143,7 +146,7 @@ class KlaviyoAPITest extends TestCase
 
     public function testCreateParams()
     {
-        $this->testKlaviyoClass = new class('Test0A', 'pk_testprivatekey') extends Klaviyo {
+        $this->testKlaviyoClass = new class( $this->testPublicKey, $this->testPrivateKey ) extends Klaviyo {
 
             public function returnCreateParams( $name, $value )
             {
@@ -163,7 +166,7 @@ class KlaviyoAPITest extends TestCase
 
     public function testSetSinceParameter()
     {
-        $this->testKlaviyoClass = new class('Test0A', 'pk_testprivatekey') extends Klaviyo {
+        $this->testKlaviyoClass = new class( $this->testPublicKey, $this->testPrivateKey ) extends Klaviyo {
 
             public function returnSetSinceParameter( $value1, $value2 )
             {
@@ -185,7 +188,7 @@ class KlaviyoAPITest extends TestCase
 
     public function testFilterParams()
     {
-        $this->testKlaviyoClass = new class('Test0A', 'pk_testprivatekey') extends Klaviyo {
+        $this->testKlaviyoClass = new class( $this->testPublicKey, $this->testPrivateKey ) extends Klaviyo {
 
             public function returnFilterParams( $params )
             {
@@ -208,7 +211,7 @@ class KlaviyoAPITest extends TestCase
     }
     public function testCreateRequestBody()
     {
-        $this->testKlaviyoClass = new class('Test0A', 'pk_testprivatekey') extends Klaviyo {
+        $this->testKlaviyoClass = new class( $this->testPublicKey, $this->testPrivateKey ) extends Klaviyo {
 
             public function returnCreateRequestBody( $params )
             {
@@ -225,7 +228,7 @@ class KlaviyoAPITest extends TestCase
 
     public function testCreateRequestJson()
     {
-        $this->testKlaviyoClass = new class('Test0A', 'pk_testprivatekey') extends Klaviyo {
+        $this->testKlaviyoClass = new class( $this->testPublicKey, $this->testPrivateKey ) extends Klaviyo {
 
             public function returnCreateRequestJson( $params )
             {
@@ -242,7 +245,7 @@ class KlaviyoAPITest extends TestCase
 
     public function testCheckProfile()
     {
-        $this->testKlaviyoClass = new class('Test0A', 'pk_testprivatekey') extends Klaviyo {
+        $this->testKlaviyoClass = new class( $this->testPublicKey, $this->testPrivateKey ) extends Klaviyo {
 
             public function returnCheckProfile( $profiles )
             {
