@@ -1,69 +1,72 @@
 <?php
 
-class KlaviyoException extends Exception { }
+namespace Klaviyo;
 
-class Klaviyo {
-    public $api_key;
-    public $host = 'https://a.klaviyo.com/';
+use Klaviyo\Exception\KlaviyoException as KlaviyoException;
+/**
+ * Main class for accessing the Klaviyo API
+ */
+class Klaviyo
+{
+    /**
+     * @var string
+     */
+    protected $private_key;
 
-    protected $TRACK_ONCE_KEY = '__track_once__';
-    
-    public function __construct($api_key) {
-        $this->api_key = $api_key;
+    /**
+     * @var string
+     */
+    protected $public_key;
+
+    /**
+     * @var string
+     */
+    const VERSION = '2.0.0';
+
+    /**
+     * Constructor for Klaviyo.
+     *
+     * @param string $private_key Private API key for Klaviyo account
+     * @param string $public_key Public API key for Klaviyo account
+     */
+    public function __construct($private_key, $public_key)
+    {
+        $this->private_key = $private_key;
+        $this->public_key = $public_key;
     }
-    
-    function track($event, $customer_properties=array(), $properties=array(), $timestamp=NULL) {
-        if ((!array_key_exists('$email', $customer_properties) || empty($customer_properties['$email']))
-            && (!array_key_exists('$id', $customer_properties) || empty($customer_properties['$id']))) {
-            
-            throw new KlaviyoException('You must identify a user by email or ID.');
+
+    /**
+     * @return string
+     */
+    public function getPrivateKey(): string
+    {
+        return $this->private_key;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPublicKey(): string
+    {
+        return $this->public_key;
+    }
+
+    /**
+     * Dynamically retrieve the corresponding API service and
+     * save as property for re-use.
+     *
+     * @param string $api API service
+     */
+    public function __get($api)
+    {
+        $service = __NAMESPACE__ . '\\' . ucfirst($api);
+
+        if (class_exists($service)) {
+            $this->$api = new $service($this->public_key, $this->private_key);
+
+            return $this->$api;
         }
 
-        $params = array(
-            'token' => $this->api_key,
-            'event' => $event,
-            'properties' => $properties,
-            'customer_properties' => $customer_properties
-        );
-
-        if (!is_null($timestamp)) {
-            $params['time'] = $timestamp;
-        }
-
-        $encoded_params = $this->build_params($params);
-        return $this->make_request('api/track', $encoded_params);
+        throw new KlaviyoException('Sorry, ' . $api . ' is not a valid Klaviyo API.');
     }
-
-    function track_once($event, $customer_properties=array(), $properties=array(), $timestamp=NULL) {
-        $properties[$this->TRACK_ONCE_KEY] = true;
-        return $this->track($event, $customer_properties, $properties, $timestamp);
-    }
-
-    function identify($properties) {
-        if ((!array_key_exists('$email', $properties) || empty($properties['$email']))
-            && (!array_key_exists('$id', $properties) || empty($properties['$id']))) {
-            
-            throw new KlaviyoException('You must identify a user by email or ID.');
-        }
-
-        $params = array(
-            'token' => $this->api_key,
-            'properties' => $properties
-        );
-
-        $encoded_params = $this->build_params($params);
-        return $this->make_request('api/identify', $encoded_params);
-    }
-
-    protected function build_params($params) {
-        return 'data=' . urlencode(base64_encode(json_encode($params)));
-    }
-
-    protected function make_request($path, $params) {
-        $url = $this->host . $path . '?' . $params;
-        $response = file_get_contents($url);
-        return $response == '1';
-    }
-};
-
-?>
+}
