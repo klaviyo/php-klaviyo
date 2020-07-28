@@ -438,7 +438,7 @@ abstract class KlaviyoAPI
      * @param $method
      * @return array
      */
-    private function getDefaultCurlOptions($method)
+    protected function getDefaultCurlOptions($method)
     {
         return array(
             CURLOPT_RETURNTRANSFER => true,
@@ -456,7 +456,7 @@ abstract class KlaviyoAPI
      * @param $options
      * @return array
      */
-    private function getCurlOptUrl($path, $options)
+    protected function getCurlOptUrl($path, $options)
     {
         $url = self::BASE_URL . $path;
         if (isset($options[self::QUERY])) {
@@ -472,7 +472,7 @@ abstract class KlaviyoAPI
      * @param $options
      * @return array
      */
-    private function getSpecificCurlOptions($options)
+    protected function getSpecificCurlOptions($options)
     {
         $setopt_array = array();
         if (isset($options[self::HEADERS])) {
@@ -480,7 +480,7 @@ abstract class KlaviyoAPI
         }
         if (isset($options[self::JSON])) {
             $setopt_array[CURLOPT_POSTFIELDS] = json_encode($options[self::JSON]);
-            array_push($setopt_array[CURLOPT_HTTPHEADER],'Content-Type: application/json');
+            $setopt_array[CURLOPT_HTTPHEADER][] = 'Content-Type: application/json';
         }
         if (isset($options['form_params'])) {
             $setopt_array[CURLOPT_POSTFIELDS] = http_build_query($options['form_params']);
@@ -495,7 +495,7 @@ abstract class KlaviyoAPI
      * @param array $headers
      * @return array
      */
-    private function formatCurlHeaders(array $headers)
+    protected function formatCurlHeaders(array $headers)
     {
         $formatted = array();
 
