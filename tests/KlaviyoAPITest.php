@@ -44,19 +44,6 @@ class KlaviyoAPITest extends TestCase
 
     }
 
-    public function testClient()
-    {
-        $this->testKlaviyoClass = new class( $this->testPublicKey, $this->testPrivateKey ) extends Klaviyo{
-
-            public function returnClient(){
-                return $this->client;
-            }
-        };
-
-        $this->assertInstanceOf(\GuzzleHttp\Client::class, $this->testKlaviyoClass->returnClient() );
-
-    }
-
     public function testPublicAuth()
     {
         $this->testKlaviyoClass = new class( $this->testPublicKey, $this->testPrivateKey ) extends Klaviyo{
@@ -97,7 +84,7 @@ class KlaviyoAPITest extends TestCase
                 'api_key' => $this->testPrivateKey
             ),
             'headers' => array(
-                'user-agent' => 'Klaviyo-PHP/2.0.0'
+                Klaviyo::USER_AGENT => 'Klaviyo-PHP/' . Klaviyo::PACKAGE_VERSION
             )
         );
 
@@ -117,7 +104,7 @@ class KlaviyoAPITest extends TestCase
         $expected = array(
             'headers' => array(
                 'api-key' => $this->testPrivateKey,
-                'user-agent' => 'Klaviyo-PHP/2.0.0'
+                Klaviyo::USER_AGENT => 'Klaviyo-PHP/' . Klaviyo::PACKAGE_VERSION
             )
         );
 
@@ -136,7 +123,7 @@ class KlaviyoAPITest extends TestCase
 
         $testHeader = array(
             'headers' => array(
-                'user-agent' => 'Klaviyo-PHP/2.0.0'
+                Klaviyo::USER_AGENT => 'Klaviyo-PHP/' . Klaviyo::PACKAGE_VERSION
             )
         );
 
@@ -271,4 +258,121 @@ class KlaviyoAPITest extends TestCase
 
     }
 
+    public function testGetDefaultCurlOptions()
+    {
+        $this->testKlaviyoClass = new class( $this->testPrivateKey, $this->testPublicKey ) extends Klaviyo {
+            public function returnGetDefaultCurlOptions( $method )
+            {
+                return $this->getDefaultCurlOptions( $method );
+            }
+        };
+
+        $expected = array(
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+        );
+
+        $this->assertEquals( $expected, $this->testKlaviyoClass->returnGetDefaultCurlOptions( 'GET' ));
+    }
+
+    public function testGetCurlOptUrl()
+    {
+        $this->testKlaviyoClass = new class( $this->testPrivateKey, $this->testPublicKey ) extends Klaviyo {
+            public function returnGetCurlOptUrl( $path, $options )
+            {
+                return $this->getCurlOptUrl( $path, $options );
+            }
+        };
+
+        $path = 'identify';
+        $options = array(
+            Klaviyo::QUERY => array(
+                Klaviyo::DATA => 'asdf'
+            )
+        );
+
+        $expected = array(CURLOPT_URL => Klaviyo::BASE_URL . $path . '?data=asdf');
+
+        $this->assertEquals( $expected, $this->testKlaviyoClass->returnGetCurlOptUrl( $path, $options ));
+    }
+
+    public function testGetSpecificCurlOptionsJson()
+    {
+        $this->testKlaviyoClass = new class( $this->testPrivateKey, $this->testPublicKey ) extends Klaviyo {
+            public function returnGetSpecificCurlOptions( $options )
+            {
+                return $this->getSpecificCurlOptions( $options );
+            }
+        };
+
+        $options = array(
+            Klaviyo::HEADERS => array(
+                Klaviyo::API_KEY_HEADER => $this->testPrivateKey,
+                Klaviyo::USER_AGENT => 'Klaviyo-PHP/' . Klaviyo::PACKAGE_VERSION,
+            ),
+            Klaviyo::JSON => array(
+                'list_name' => 'refactor test'
+            )
+        );
+
+        $expected = array(
+            CURLOPT_HTTPHEADER => array(
+                Klaviyo::API_KEY_HEADER . ': ' . $this->testPrivateKey,
+                Klaviyo::USER_AGENT . ': Klaviyo-PHP/' . Klaviyo::PACKAGE_VERSION,
+                'Content-Type: application/json',
+            ),
+            CURLOPT_POSTFIELDS => '{"list_name":"refactor test"}'
+        );
+
+        $this->assertEquals( $expected, $this->testKlaviyoClass->returnGetSpecificCurlOptions( $options ));
+    }
+
+    public function testGetSpecificCurlOptionsFormParams()
+    {
+        $this->testKlaviyoClass = new class( $this->testPrivateKey, $this->testPublicKey ) extends Klaviyo {
+            public function returnGetSpecificCurlOptions( $options )
+            {
+                return $this->getSpecificCurlOptions( $options );
+            }
+        };
+
+        $options = array(
+            Klaviyo::HEADERS => array(
+                Klaviyo::API_KEY_HEADER => $this->testPrivateKey,
+                Klaviyo::USER_AGENT => 'Klaviyo-PHP/' . Klaviyo::PACKAGE_VERSION,
+            ),
+            'form_params' => array(
+                'list_name' => 'Refactor Updated'
+            )
+        );
+
+        $expected = array(
+            CURLOPT_HTTPHEADER => array(
+                Klaviyo::API_KEY_HEADER . ': ' . $this->testPrivateKey,
+                Klaviyo::USER_AGENT . ': Klaviyo-PHP/' . Klaviyo::PACKAGE_VERSION,
+            ),
+            CURLOPT_POSTFIELDS => 'list_name=Refactor+Updated'
+        );
+
+        $this->assertEquals( $expected, $this->testKlaviyoClass->returnGetSpecificCurlOptions( $options ));
+    }
+
+    public function testFormatCurlHeaders()
+    {
+        $this->testKlaviyoClass = new class($this->testPrivateKey, $this->testPublicKey) extends Klaviyo {
+            public function returnFormatCurlHeaders( $headers )
+            {
+                return $this->formatCurlHeaders( $headers );
+            }
+        };
+
+        $headers = array(Klaviyo::USER_AGENT => 'Klaviyo-PHP/' . Klaviyo::PACKAGE_VERSION);
+        $expected = array('User-Agent: Klaviyo-PHP/2.1.0');
+
+        $this->assertEquals( $expected, $this->testKlaviyoClass->returnFormatCurlHeaders( $headers ));
+
+    }
 }

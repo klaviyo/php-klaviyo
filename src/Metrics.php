@@ -1,9 +1,7 @@
 <?php
 
-
 namespace Klaviyo;
 
-use GuzzleHttp\Client;
 use Klaviyo\Exception\KlaviyoException;
 
 class Metrics extends KlaviyoAPI
@@ -36,7 +34,7 @@ class Metrics extends KlaviyoAPI
      * @param int $count defaults to 50,
      * For pagination, the number of results to return, The maximum number of results per page is 100
      *
-     * @return Client response object
+     * @return mixed
      */
     public function getMetrics( int $page = null, int $count = null )
     {

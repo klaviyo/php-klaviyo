@@ -2,12 +2,11 @@
 
 namespace Klaviyo;
 
+use Klaviyo\Exception\KlaviyoAuthenticationException;
 use Klaviyo\Exception\KlaviyoException;
-
-use GuzzleHttp\Client;
+use Klaviyo\Exception\KlaviyoRateLimitException;
+use Klaviyo\Exception\KlaviyoResourceNotFoundException;
 use Klaviyo\Model\ProfileModel;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\StreamInterface;
 
 abstract class KlaviyoAPI
 {
@@ -45,7 +44,7 @@ abstract class KlaviyoAPI
     const PROPERTIES = 'properties';
     const QUERY = 'query';
     const TOKEN = 'token';
-    const USER_AGENT = 'user-agent';
+    const USER_AGENT = 'User-Agent';
 
     /**
      * Shared endpoints
@@ -85,14 +84,11 @@ abstract class KlaviyoAPI
      *
      * @param string $public_key Public key (account ID) for Klaviyo account
      * @param string $private_key Private API key for Klaviyo account
-     * @param string $host Base URI for API requests. Can be overridden for testing.
      */
-    // TODO: I don't think we can ever actually define a different host like this. Only calling this through __get in the Klaviyo class. Would like to change for local dev for example.
     public function __construct( $public_key, $private_key )
     {
         $this->public_key = $public_key;
         $this->private_key = $private_key;
-        $this->client = new Client(['base_uri' => self::BASE_URL]);
     }
 
     /**
@@ -113,7 +109,7 @@ abstract class KlaviyoAPI
      * @param $path Endpoint to call
      * @param array $options API params to add to request
      * @param string $method HTTP method for request
-     * @return mixed|StreamInterface
+     * @return mixed
      *
      * @throws KlaviyoException
      */
@@ -130,7 +126,7 @@ abstract class KlaviyoAPI
      * @param $path Endpoint to call
      * @param array $options API params to add to request
      * @param string $method HTTP method for request
-     * @return mixed|StreamInterface
+     * @return mixed
      *
      * @throws KlaviyoException
      */
@@ -144,8 +140,8 @@ abstract class KlaviyoAPI
     /**
      * Make API request using HTTP client
      *
-     * @param $path Endpoint to call
-     * @param $options API params to add to request
+     * @param string $path Endpoint to call
+     * @param array $options API params to add to request
      * @param string $method HTTP method for request
      * @param bool $isPublic to determine if public request
      * @param bool $isV1 to determine if V1 API request
@@ -156,18 +152,27 @@ abstract class KlaviyoAPI
     {
         $options = $this->prepareAuthentication( $options, $isPublic, $isV1 );
 
-        $response = $this->client->request( $method, $path, $options );
+        $setopt_array = (
+            $this->getDefaultCurlOptions($method) +
+            $this->getCurlOptUrl($path, $options) +
+            $this->getSpecificCurlOptions($options)
+        );
 
-        return $this->handleResponse( $response, $isPublic );
+        $curl = curl_init();
+        curl_setopt_array($curl, $setopt_array);
+
+        $response= curl_exec($curl);
+        $statusCode = curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
+        curl_close($curl);
+
+        return $this->handleResponse( $response, $statusCode, $isPublic );
     }
 
     /**
      * Handle response from API call
      */
-    private function handleResponse( ResponseInterface $response, $isPublic )
+    private function handleResponse( $response, $statusCode, $isPublic )
     {
-        $statusCode = $response->getStatusCode();
-
         if ( $statusCode == 403 ) {
             throw new KlaviyoAuthenticationException(self::ERROR_INVALID_API_KEY);
         } else if ( $statusCode == 404 ) {
@@ -179,7 +184,7 @@ abstract class KlaviyoAPI
         }
 
         if ( $isPublic ) {
-            return $response->getBody();
+            return $response;
         }
 
         return $this->decodeJsonResponse( $response );
@@ -310,12 +315,12 @@ abstract class KlaviyoAPI
     /**
      * Return decoded json response as associative array.
      *
-     * @param ResponseInterface $response
+     * @param string $response
      * @return mixed
      */
-    private function decodeJsonResponse( ResponseInterface $response )
+    private function decodeJsonResponse( $response )
     {
-        return json_decode( $response->getBody(), true );
+        return json_decode( $response, true );
     }
 
     /**
@@ -427,4 +432,77 @@ abstract class KlaviyoAPI
         }
     }
 
+    /**
+     * Get base options array for curl request.
+     *
+     * @param $method
+     * @return array
+     */
+    protected function getDefaultCurlOptions($method)
+    {
+        return array(
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_CUSTOMREQUEST => $method,
+        );
+    }
+
+    /**
+     * Build url for curl request.
+     *
+     * @param $path
+     * @param $options
+     * @return array
+     */
+    protected function getCurlOptUrl($path, $options)
+    {
+        $url = self::BASE_URL . $path;
+        if (isset($options[self::QUERY])) {
+            $url = $url . '?' . http_build_query($options[self::QUERY]);
+        }
+
+        return array(CURLOPT_URL => $url);
+    }
+
+    /**
+     * Build curl options array based on request data.
+     *
+     * @param $options
+     * @return array
+     */
+    protected function getSpecificCurlOptions($options)
+    {
+        $setopt_array = array();
+        if (isset($options[self::HEADERS])) {
+            $setopt_array[CURLOPT_HTTPHEADER] = $this->formatCurlHeaders($options[self::HEADERS]);
+        }
+        if (isset($options[self::JSON])) {
+            $setopt_array[CURLOPT_POSTFIELDS] = json_encode($options[self::JSON]);
+            $setopt_array[CURLOPT_HTTPHEADER][] = 'Content-Type: application/json';
+        }
+        if (isset($options['form_params'])) {
+            $setopt_array[CURLOPT_POSTFIELDS] = http_build_query($options['form_params']);
+        }
+
+        return $setopt_array;
+    }
+
+    /**
+     * Convert associative array of headers to HTTP header format.
+     *
+     * @param array $headers
+     * @return array
+     */
+    protected function formatCurlHeaders(array $headers)
+    {
+        $formatted = array();
+
+        foreach ($headers as $key => $value) {
+            $formatted[] = $key . ': ' . $value;
+        }
+
+        return $formatted;
+    }
 }
