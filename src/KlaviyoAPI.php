@@ -152,9 +152,11 @@ abstract class KlaviyoAPI
     {
         $options = $this->prepareAuthentication( $options, $isPublic, $isV1 );
 
-        $setopt_array = $this->getDefaultCurlOptions($method);
-        $setopt_array = $this->setCurlUrl($setopt_array, $path, $options);
-        $setopt_array = $this->setSpecificCurlOptions($setopt_array, $options);
+        $setopt_array = (
+            $this->getDefaultCurlOptions($method) +
+            $this->getCurlOptUrl($path, $options) +
+            $this->getSpecificCurlOptions($options)
+        );
 
         $curl = curl_init();
         curl_setopt_array($curl, $setopt_array);
@@ -313,7 +315,7 @@ abstract class KlaviyoAPI
     /**
      * Return decoded json response as associative array.
      *
-     * @param array $response
+     * @param string $response
      * @return mixed
      */
     private function decodeJsonResponse( $response )
@@ -450,31 +452,29 @@ abstract class KlaviyoAPI
     /**
      * Build url for curl request.
      *
-     * @param $setopt_array
      * @param $path
      * @param $options
      * @return array
      */
-    private function setCurlUrl($setopt_array, $path, $options)
+    private function getCurlOptUrl($path, $options)
     {
         $url = self::BASE_URL . $path;
         if (isset($options[self::QUERY])) {
             $url = $url . '?' . http_build_query($options[self::QUERY]);
         }
-        $setopt_array[CURLOPT_URL] = $url;
 
-        return $setopt_array;
+        return array(CURLOPT_URL => $url);
     }
 
     /**
      * Build curl options array based on request data.
      *
-     * @param $setopt_array
      * @param $options
      * @return array
      */
-    private function setSpecificCurlOptions($setopt_array, $options)
+    private function getSpecificCurlOptions($options)
     {
+        $setopt_array = array();
         if (isset($options[self::HEADERS])) {
             $setopt_array[CURLOPT_HTTPHEADER] = $this->formatCurlHeaders($options[self::HEADERS]);
         }
