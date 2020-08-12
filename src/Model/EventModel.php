@@ -40,10 +40,7 @@ class EventModel extends BaseModel
         );
         $this->properties = $config['properties'];
         // Can pass in unix timestamp if prefixed with '@'. Else just let it parse the date
-        $this->time = !empty($config['time']) ?
-            new DateTime(
-                is_int($config['time']) ? '@' . $config['time'] : $config['time']
-            ) : null;
+        $this->time = $config['time'];
     }
 
     /**
@@ -57,5 +54,7 @@ class EventModel extends BaseModel
             'time' => $this->time
         );
     }
-    
+
+
+
 }
