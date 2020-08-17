@@ -4,6 +4,7 @@ namespace Klaviyo\Model;
 
 use Klaviyo\Exception\KlaviyoException;
 use Klaviyo\Model\ProfileModel;
+use DateTime;
 
 class EventModel extends BaseModel
 {
@@ -40,10 +41,11 @@ class EventModel extends BaseModel
         );
         $this->properties = $config['properties'];
         // Can pass in unix timestamp if prefixed with '@'. Else just let it parse the date
-        $this->time = !empty($config['time']) ?
-            new DateTime(
-                is_int($config['time']) ? '@' . $config['time'] : $config['time']
-            ) : null;
+        $time = (array) new DateTime(
+            is_int($config['time']) ? '@' . $config['time'] : $config['time']
+        );
+
+        $this->time = !empty($config['time']) ? $time['date'] : null;
     }
 
     /**

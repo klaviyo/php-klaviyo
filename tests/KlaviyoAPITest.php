@@ -3,6 +3,7 @@
 
 use Klaviyo\KlaviyoAPI as Klaviyo;
 use PHPUnit\Framework\TestCase;
+use Klaviyo\Model\EventModel as KlaviyoEvent;
 
 class KlaviyoAPITest extends TestCase
 {
