@@ -2,9 +2,10 @@
 
 namespace Klaviyo\Model;
 
+use DateTime;
+
 use Klaviyo\Exception\KlaviyoException;
 use Klaviyo\Model\ProfileModel;
-use DateTime;
 
 class EventModel extends BaseModel
 {
