@@ -45,7 +45,7 @@ class EventModel extends BaseModel
             is_int($config['time']) ? '@' . $config['time'] : $config['time']
         );
 
-        $this->time = !empty($config['time']) ? $time['date'] : null;
+        $this->time = !empty($config['time']) ? strtotime( $time['date'] ) : null;
     }
 
     /**
