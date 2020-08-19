@@ -41,10 +41,14 @@ class EventModel extends BaseModel
             $config['customer_properties']
         );
         $this->properties = $config['properties'];
-        // Can pass in unix timestamp if prefixed with '@'. Else just let it parse the date
-        $time = (array) new DateTime(
-            is_int($config['time']) ? '@' . $config['time'] : $config['time']
-        );
+
+        try {
+            $time = (array)new DateTime(
+                is_int($config['time']) ? '@' . $config['time'] : $config['time']
+            );
+        } catch ( Exception $e ) {
+            throw new KlaviyoException( $e->getMessage() );
+        }
 
         $this->time = !empty($config['time']) ? strtotime( $time['date'] ) : null;
     }
