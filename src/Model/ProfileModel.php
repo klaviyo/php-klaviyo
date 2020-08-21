@@ -96,7 +96,7 @@ class ProfileModel extends BaseModel
     protected function setAttributes(array $configuration ) {
         foreach ( $configuration as $key => $value ) {
             if ( $this->isSpecialAttribute($key) ) {
-                $this->{ltrim($key, '$')} = $value;
+                $this->{lcfirst(str_replace('_', '', ucwords(ltrim($key, '$'), '_')))} = $value;
             }
             
         }

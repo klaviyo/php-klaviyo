@@ -2,6 +2,9 @@
 
 namespace Klaviyo\Model;
 
+use DateTime;
+use Exception;
+
 use Klaviyo\Exception\KlaviyoException;
 use Klaviyo\Model\ProfileModel;
 
@@ -39,11 +42,16 @@ class EventModel extends BaseModel
             $config['customer_properties']
         );
         $this->properties = $config['properties'];
-        // Can pass in unix timestamp if prefixed with '@'. Else just let it parse the date
-        $this->time = !empty($config['time']) ?
-            new DateTime(
+        // Can pass in unix timestamp if prefixed with '@' or any date/time format accepted by DateTime interface.
+        try {
+            $time = (array)new DateTime(
                 is_int($config['time']) ? '@' . $config['time'] : $config['time']
-            ) : null;
+            );
+        } catch ( Exception $e ) {
+            throw new KlaviyoException( $e->getMessage() );
+        }
+
+        $this->time = !empty($config['time']) ? strtotime( $time['date'] ) : null;
     }
 
     /**

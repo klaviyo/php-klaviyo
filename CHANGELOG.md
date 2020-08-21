@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### 2.1.1
+- Fix - EventModel configuration to use DateTime correctly
+- Fix - ProfileModel configuration to set special attributes correctly
+
 ### 2.1.0
 - Utilize ext-curl and remove Guzzle dependency.
 - Add KlaviyoResourceNotFoundException.
