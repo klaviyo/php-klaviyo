@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### 2.1.2
+- Fix - EventModel configuration to handle null dates
+- Fix - Compatibility with php5.6
+
 ### 2.1.1
 - Fix - EventModel configuration to use DateTime correctly
 - Fix - ProfileModel configuration to set special attributes correctly
