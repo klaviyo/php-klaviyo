@@ -134,7 +134,7 @@ class Lists extends KlaviyoAPI
             }, $profiles
         );
 
-        $path = sprintf( '%s/%s/%s', self::ENDPOINT_LIST, $listId, self::SUBSCRIBE );
+        $path = sprintf( '%s/%s/%s', self::ENDPOINT_LIST, $listId, self::ENDPOINT_SUBSCRIBE );
         $params = $this->createParams( self::PROFILES, $profiles );
 
         return $this->v2Request( $path, $params, self::HTTP_POST );
@@ -171,7 +171,7 @@ class Lists extends KlaviyoAPI
             )
         );
 
-        $path = sprintf('%s/%s/%s', self::ENDPOINT_LIST, $listId, self::SUBSCRIBE );
+        $path = sprintf('%s/%s/%s', self::ENDPOINT_LIST, $listId, self::ENDPOINT_SUBSCRIBE );
 
         return $this->v2Request( $path, $params, self::HTTP_GET );
     }
@@ -198,7 +198,7 @@ class Lists extends KlaviyoAPI
             )
         );
 
-        $path = sprintf('%s/%s/%s', self::ENDPOINT_LIST, $listId, self::SUBSCRIBE );
+        $path = sprintf('%s/%s/%s', self::ENDPOINT_LIST, $listId, self::ENDPOINT_SUBSCRIBE );
 
         return $this->v2Request( $path, $params, self::HTTP_DELETE );
     }
