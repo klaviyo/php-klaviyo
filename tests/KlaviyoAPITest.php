@@ -12,12 +12,6 @@ class KlaviyoAPITest extends TestCase
     public $testPrivateKey = 'pk_testprivatekey';
     public $testPublicKey = 'Test0A';
 
-    public function setUp()
-    {
-        parent::setUp();
-
-    }
-
     public function testPublicKey()
     {
         $this->testKlaviyoClass = new class( $this->testPublicKey, $this->testPrivateKey ) extends Klaviyo{
@@ -370,7 +364,7 @@ class KlaviyoAPITest extends TestCase
         };
 
         $headers = array(Klaviyo::USER_AGENT => 'Klaviyo-PHP/' . Klaviyo::PACKAGE_VERSION);
-        $expected = array('User-Agent: Klaviyo-PHP/2.1.0');
+        $expected = array('User-Agent: Klaviyo-PHP/2.1.2');
 
         $this->assertEquals( $expected, $this->testKlaviyoClass->returnFormatCurlHeaders( $headers ));
 
