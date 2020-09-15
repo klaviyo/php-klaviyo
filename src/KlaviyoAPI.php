@@ -329,7 +329,7 @@ abstract class KlaviyoAPI
      * @param string $paramName Name of API Param to create
      * @param $paramValue Value of API params to create
      */
-    protected function createParams( string $paramName, $paramValue )
+    protected function createParams( $paramName, $paramValue )
     {
         return [self::JSON =>
             [$paramName => $paramValue]
@@ -379,7 +379,7 @@ abstract class KlaviyoAPI
      * @param array $params
      * @return array
      */
-    protected function filterParams( array $params )
+    protected function filterParams( $params )
     {
         return array_filter(
             $params,
@@ -394,7 +394,7 @@ abstract class KlaviyoAPI
      * @param array $params
      * @return array[]
      */
-    protected function createRequestBody( array $params )
+    protected function createRequestBody( $params )
     {
         return array(
             'form_params' => $params
@@ -407,7 +407,7 @@ abstract class KlaviyoAPI
      * @param array $params
      * @return array[]
      */
-    protected function createRequestJson( array $params)
+    protected function createRequestJson( $params)
     {
         return array(
             'json' => $params
@@ -420,7 +420,7 @@ abstract class KlaviyoAPI
      * @param array $profiles
      * @throws KlaviyoException
      */
-    protected function checkProfile( array $profiles )
+    protected function checkProfile( $profiles )
     {
         foreach ( $profiles as $profile ) {
             if ( ! $profile instanceof ProfileModel ) {
@@ -495,7 +495,7 @@ abstract class KlaviyoAPI
      * @param array $headers
      * @return array
      */
-    protected function formatCurlHeaders(array $headers)
+    protected function formatCurlHeaders($headers)
     {
         $formatted = array();
 

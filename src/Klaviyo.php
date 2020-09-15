@@ -38,7 +38,7 @@ class Klaviyo
     /**
      * @return string
      */
-    public function getPrivateKey(): string
+    public function getPrivateKey()
     {
         return $this->private_key;
     }
@@ -46,7 +46,7 @@ class Klaviyo
     /**
      * @return string
      */
-    public function getPublicKey(): string
+    public function getPublicKey()
     {
         return $this->public_key;
     }

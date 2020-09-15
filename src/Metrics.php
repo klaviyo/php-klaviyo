@@ -36,7 +36,7 @@ class Metrics extends KlaviyoAPI
      *
      * @return mixed
      */
-    public function getMetrics( int $page = null, int $count = null )
+    public function getMetrics( $page = null, $count = null )
     {
         $params = $this->filterParams( array(
             self::PAGE=> $page,
@@ -66,7 +66,7 @@ class Metrics extends KlaviyoAPI
      *
      * @return bool|mixed
      */
-    public function getMetricsTimeline($since = null, string $uuid = null, int $count = null, string $sort = null )
+    public function getMetricsTimeline( $since = null, $uuid = null, $count = null, $sort = null )
     {
         $params = $this->setSinceParameter( $since, $uuid );
 
@@ -107,7 +107,7 @@ class Metrics extends KlaviyoAPI
      * @return bool|mixed
      *
      */
-    public function getMetricTimeline( string $metricID, $since = null, $uuid = null, int $count = null, string $sort = null)
+    public function getMetricTimeline( $metricID, $since = null, $uuid = null, $count = null, $sort = null)
     {
         $params = $this->setSinceParameter( $since, $uuid );
 

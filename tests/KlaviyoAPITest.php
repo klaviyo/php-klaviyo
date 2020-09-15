@@ -12,7 +12,7 @@ class KlaviyoAPITest extends TestCase
     public $testPrivateKey = 'pk_testprivatekey';
     public $testPublicKey = 'Test0A';
 
-    public function setUp(): void
+    public function setUp()
     {
         parent::setUp();
 

@@ -11,13 +11,13 @@ class Lists extends KlaviyoAPI
     /**
      * List endpoint constants
      */
-    const EXCLUSIONS = 'exclusions';
-    const GROUP = 'group';
-    const LIST = 'list';
-    const LISTS = 'lists';
-    const MEMBERS = 'members';
-    const SEGMENT = 'segment';
-    const SUBSCRIBE = 'subscribe';
+    const ENDPOINT_EXCLUSIONS = 'exclusions';
+    const ENDPOINT_GROUP = 'group';
+    const ENDPOINT_LIST = 'list';
+    const ENDPOINT_LISTS = 'lists';
+    const ENDPOINT_MEMBERS = 'members';
+    const ENDPOINT_SEGMENT = 'segment';
+    const ENDPOINT_SUBSCRIBE = 'subscribe';
 
     /**
      * Lists API arguments
@@ -41,7 +41,7 @@ class Lists extends KlaviyoAPI
     {
         $options = $this->createParams(self::LIST_NAME, $listName);
 
-        return $this->v2Request( self::LISTS, $options, self::HTTP_POST );
+        return $this->v2Request( self::ENDPOINT_LISTS, $options, self::HTTP_POST );
     }
 
     /**
@@ -52,7 +52,7 @@ class Lists extends KlaviyoAPI
      */
     public function getLists() {
 
-        return $this->v2Request( self::LISTS );
+        return $this->v2Request( self::ENDPOINT_LISTS );
     }
 
     /**
@@ -66,7 +66,7 @@ class Lists extends KlaviyoAPI
      */
     public function getListDetails( $listId )
     {
-        $path = sprintf( '%s/%s', self::LIST, $listId );
+        $path = sprintf( '%s/%s', self::ENDPOINT_LIST, $listId );
         return $this->v2Request( $path );
     }
 
@@ -88,7 +88,7 @@ class Lists extends KlaviyoAPI
             self::LIST_NAME => $list_name
         ) );
 
-        $path = sprintf( '%s/%s', self::LIST, $listId );
+        $path = sprintf( '%s/%s', self::ENDPOINT_LIST, $listId );
 
         return $this->v2Request( $path, $params, self::HTTP_PUT );
     }
@@ -104,7 +104,7 @@ class Lists extends KlaviyoAPI
      */
     public function deleteList( $listId )
     {
-        $path = sprintf( '%s/%s', self::LIST, $listId );
+        $path = sprintf( '%s/%s', self::ENDPOINT_LIST, $listId );
         return $this->v2Request( $path, [], self::HTTP_DELETE );
     }
 
@@ -124,7 +124,7 @@ class Lists extends KlaviyoAPI
      * @return bool|mixed
      * @throws Exception\KlaviyoException
      */
-    public function subscribeMembersToList( $listId, array $profiles )
+    public function subscribeMembersToList( $listId, $profiles )
     {
         $this->checkProfile( $profiles );
 
@@ -134,7 +134,7 @@ class Lists extends KlaviyoAPI
             }, $profiles
         );
 
-        $path = sprintf( '%s/%s/%s', self::LIST, $listId, self::SUBSCRIBE );
+        $path = sprintf( '%s/%s/%s', self::ENDPOINT_LIST, $listId, self::SUBSCRIBE );
         $params = $this->createParams( self::PROFILES, $profiles );
 
         return $this->v2Request( $path, $params, self::HTTP_POST );
@@ -159,7 +159,7 @@ class Lists extends KlaviyoAPI
      *
      * @return bool|mixed
      */
-    public function checkListSubscriptions ($listId, array $emails = null, array $phoneNumbers = null, array $pushTokens = null )
+    public function checkListSubscriptions ($listId, $emails = null,  $phoneNumbers = null, $pushTokens = null )
     {
         $params = $this->createRequestJson(
             $this->filterParams(
@@ -171,7 +171,7 @@ class Lists extends KlaviyoAPI
             )
         );
 
-        $path = sprintf('%s/%s/%s', self::LIST, $listId, self::SUBSCRIBE );
+        $path = sprintf('%s/%s/%s', self::ENDPOINT_LIST, $listId, self::SUBSCRIBE );
 
         return $this->v2Request( $path, $params, self::HTTP_GET );
     }
@@ -188,7 +188,7 @@ class Lists extends KlaviyoAPI
      *
      * @return bool|mixed
      */
-    public function unsubscribeMembersFromList( $listId, array $emails )
+    public function unsubscribeMembersFromList( $listId, $emails )
     {
         $params = $this->createRequestJson(
             $this->filterParams(
@@ -198,7 +198,7 @@ class Lists extends KlaviyoAPI
             )
         );
 
-        $path = sprintf('%s/%s/%s', self::LIST, $listId, self::SUBSCRIBE );
+        $path = sprintf('%s/%s/%s', self::ENDPOINT_LIST, $listId, self::SUBSCRIBE );
 
         return $this->v2Request( $path, $params, self::HTTP_DELETE );
     }
@@ -220,7 +220,7 @@ class Lists extends KlaviyoAPI
      *
      * @throws Exception\KlaviyoException
      */
-    public function addMembersToList( $listId, array $profiles )
+    public function addMembersToList( $listId, $profiles )
     {
         $this->checkProfile( $profiles );
 
@@ -230,7 +230,7 @@ class Lists extends KlaviyoAPI
             }, $profiles
         );
 
-        $path = sprintf( '%s/%s/%s', self::LIST, $listId, self::MEMBERS );
+        $path = sprintf( '%s/%s/%s', self::ENDPOINT_LIST, $listId, self::MEMBERS );
         $options = $this->createParams( self::PROFILES, $profiles );
 
         return $this->v2Request( $path, $options, self::HTTP_POST );
@@ -255,7 +255,7 @@ class Lists extends KlaviyoAPI
      *
      * @return bool|mixed
      */
-    public function checkListMembership( $listId, array $emails = null, array $phoneNumbers = null, array $pushTokens = null )
+    public function checkListMembership( $listId,  $emails = null, $phoneNumbers = null, $pushTokens = null )
     {
         $params = $this->createRequestJson(
             $this->filterParams(
@@ -267,7 +267,7 @@ class Lists extends KlaviyoAPI
             )
         );
 
-        $path = sprintf('%s/%s/%s', self::LIST, $listId, self::MEMBERS );
+        $path = sprintf('%s/%s/%s', self::ENDPOINT_LIST, $listId, self::MEMBERS );
 
         return $this->v2Request( $path, $params, self::HTTP_GET );
     }
@@ -284,7 +284,7 @@ class Lists extends KlaviyoAPI
      *
      * @return bool|mixed
      */
-    public function removeMembersFromList( $listId, array $emails )
+    public function removeMembersFromList( $listId, $emails )
     {
         $params = $this->createRequestJson(
             $this->filterParams(
@@ -294,7 +294,7 @@ class Lists extends KlaviyoAPI
             )
         );
 
-        $path = sprintf('%s/%s/%s', self::LIST, $listId, self::MEMBERS );
+        $path = sprintf('%s/%s/%s', self::ENDPOINT_LIST, $listId, self::MEMBERS );
 
         return $this->v2Request( $path, $params, self::HTTP_DELETE );
     }
@@ -312,7 +312,7 @@ class Lists extends KlaviyoAPI
      *
      * @return bool|mixed
      */
-    public function getAllExclusionsOnList( $listId, int $marker = null )
+    public function getAllExclusionsOnList( $listId, $marker = null )
     {
         $params = $this->createRequestBody(
             $this->filterParams(
@@ -322,7 +322,7 @@ class Lists extends KlaviyoAPI
             )
         );
 
-        $path = sprintf('%s/%s/%s/%s',self::LIST, $listId, self::EXCLUSIONS, 'all' );
+        $path = sprintf('%s/%s/%s/%s',self::ENDPOINT_LIST, $listId, self::EXCLUSIONS, 'all' );
 
         return $this->v2Request( $path, $params );
     }
@@ -340,7 +340,7 @@ class Lists extends KlaviyoAPI
      *
      * @return bool|mixed
      */
-    public function getGroupMemberIdentifiers( $groupId, int $marker = null )
+    public function getGroupMemberIdentifiers( $groupId, $marker = null )
     {
         $params = $this->createRequestBody(
             $this->filterParams(
@@ -350,8 +350,7 @@ class Lists extends KlaviyoAPI
             )
         );
 
-        $path = sprintf('%s/%s/%s/%s',self::GROUP, $groupId, self::MEMBERS, 'all' );
-
+        $path = sprintf('%s/%s/%s/%s',self::ENDPOINT_GROUP, $groupId, self::ENDPOINT_MEMBERS, 'all' );
         return $this->v2Request( $path, $params );
     }
 }
