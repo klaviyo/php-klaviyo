@@ -407,7 +407,7 @@ abstract class KlaviyoAPI
      * @param array $params
      * @return array[]
      */
-    protected function createRequestJson( $params)
+    protected function createRequestJson( $params )
     {
         return array(
             'json' => $params
@@ -495,7 +495,7 @@ abstract class KlaviyoAPI
      * @param array $headers
      * @return array
      */
-    protected function formatCurlHeaders($headers)
+    protected function formatCurlHeaders( $headers )
     {
         $formatted = array();
 

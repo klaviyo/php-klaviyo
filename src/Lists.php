@@ -230,7 +230,7 @@ class Lists extends KlaviyoAPI
             }, $profiles
         );
 
-        $path = sprintf( '%s/%s/%s', self::ENDPOINT_LIST, $listId, self::MEMBERS );
+        $path = sprintf( '%s/%s/%s', self::ENDPOINT_LIST, $listId, self::ENDPOINT_MEMBERS );
         $options = $this->createParams( self::PROFILES, $profiles );
 
         return $this->v2Request( $path, $options, self::HTTP_POST );
@@ -267,7 +267,7 @@ class Lists extends KlaviyoAPI
             )
         );
 
-        $path = sprintf('%s/%s/%s', self::ENDPOINT_LIST, $listId, self::MEMBERS );
+        $path = sprintf( '%s/%s/%s', self::ENDPOINT_LIST, $listId, self::ENDPOINT_MEMBERS );
 
         return $this->v2Request( $path, $params, self::HTTP_GET );
     }
@@ -294,7 +294,7 @@ class Lists extends KlaviyoAPI
             )
         );
 
-        $path = sprintf('%s/%s/%s', self::ENDPOINT_LIST, $listId, self::MEMBERS );
+        $path = sprintf('%s/%s/%s', self::ENDPOINT_LIST, $listId, self::ENDPOINT_MEMBERS );
 
         return $this->v2Request( $path, $params, self::HTTP_DELETE );
     }
@@ -322,7 +322,7 @@ class Lists extends KlaviyoAPI
             )
         );
 
-        $path = sprintf('%s/%s/%s/%s',self::ENDPOINT_LIST, $listId, self::EXCLUSIONS, 'all' );
+        $path = sprintf( '%s/%s/%s/%s',self::ENDPOINT_LIST, $listId, self::ENDPOINT_EXCLUSIONS, 'all' );
 
         return $this->v2Request( $path, $params );
     }
@@ -350,7 +350,7 @@ class Lists extends KlaviyoAPI
             )
         );
 
-        $path = sprintf('%s/%s/%s/%s',self::ENDPOINT_GROUP, $groupId, self::ENDPOINT_MEMBERS, 'all' );
+        $path = sprintf( '%s/%s/%s/%s',self::ENDPOINT_GROUP, $groupId, self::ENDPOINT_MEMBERS, 'all' );
         return $this->v2Request( $path, $params );
     }
 }

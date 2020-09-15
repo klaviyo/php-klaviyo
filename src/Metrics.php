@@ -107,7 +107,7 @@ class Metrics extends KlaviyoAPI
      * @return bool|mixed
      *
      */
-    public function getMetricTimeline( $metricID, $since = null, $uuid = null, $count = null, $sort = null)
+    public function getMetricTimeline( $metricID, $since = null, $uuid = null, $count = null, $sort = null )
     {
         $params = $this->setSinceParameter( $since, $uuid );
 
