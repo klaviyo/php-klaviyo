@@ -364,7 +364,7 @@ class KlaviyoAPITest extends TestCase
         };
 
         $headers = array(Klaviyo::USER_AGENT => 'Klaviyo-PHP/' . Klaviyo::PACKAGE_VERSION);
-        $expected = array('User-Agent: Klaviyo-PHP/2.1.2');
+        $expected = array('User-Agent: Klaviyo-PHP/' . Klaviyo::PACKAGE_VERSION);
 
         $this->assertEquals( $expected, $this->testKlaviyoClass->returnFormatCurlHeaders( $headers ));
 
