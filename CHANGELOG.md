@@ -1,5 +1,8 @@
 ## CHANGELOG
 
+### 2.2.1
+- Fix - Composer file remove comma
+
 ### 2.2.0
 - Fix - EventModel configuration to handle null dates
 - Fix - PHP compatibility >= 5.4
