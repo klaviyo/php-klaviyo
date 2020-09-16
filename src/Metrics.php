@@ -80,7 +80,7 @@ class Metrics extends KlaviyoAPI
 
         $path = sprintf( '%s/%s', self::METRICS, self::TIMELINE );
 
-        return $this->v1Request($path, $params );
+        return $this->v1Request( $path, $params );
 
     }
 
@@ -120,7 +120,6 @@ class Metrics extends KlaviyoAPI
         ) );
 
         $path = sprintf( '%s/%s/%s', self::METRIC, $metricID, self::TIMELINE );
-
         return $this->v1Request( $path, $params );
     }
 
@@ -172,7 +171,7 @@ class Metrics extends KlaviyoAPI
             )
         );
 
-        $path = sprintf('%s/%s/%s', self::METRIC, $metricID, self::EXPORT );
+        $path = sprintf( '%s/%s/%s', self::METRIC, $metricID, self::EXPORT );
 
         return $this->v1Request( $path, $params );
 
