@@ -2,7 +2,6 @@
 
 use Klaviyo\KlaviyoAPI;
 use Klaviyo\Profiles;
-use getProfileWithID;
 use PHPUnit\Framework\TestCase;
 
 class ProfilesTest extends TestCase
