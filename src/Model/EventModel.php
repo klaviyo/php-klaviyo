@@ -36,7 +36,7 @@ class EventModel extends BaseModel
      * @param array $config
      * @throws KlaviyoException
      */
-    public function __construct(array $config ) {
+    public function __construct( $config ) {
         $this->event = $config['event'];
         $this->customer_properties = new ProfileModel(
             $config['customer_properties']
@@ -45,9 +45,9 @@ class EventModel extends BaseModel
         // Can pass in unix timestamp if prefixed with '@' or any date/time format accepted by DateTime interface.
         try {
             if (isset($config['time'])) {
-              $time = new DateTime(
-                  is_int($config['time']) ? '@' . $config['time'] : $config['time']
-              );
+                $time = new DateTime(
+                    is_int($config['time']) ? '@' . $config['time'] : $config['time']
+                );
             }
         } catch ( Exception $e ) {
             throw new KlaviyoException( $e->getMessage() );

@@ -2,7 +2,7 @@
 
 ### 2.2.0
 - Fix - EventModel configuration to handle null dates
-- Fix - Compatibility with php 5.4 <
+- Fix - PHP compatibility >= 5.4
 
 ### 2.1.1
 - Fix - EventModel configuration to use DateTime correctly

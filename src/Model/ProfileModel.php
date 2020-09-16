@@ -78,9 +78,9 @@ class ProfileModel extends BaseModel
      * @param array $configuration
      * @throws KlaviyoException
      */
-    public function __construct(array $configuration ) {
-        $arrayResponse = array_intersect_key( $configuration, array_flip(self::$identifyAttributes) );
-        if (empty($arrayResponse)) {
+    public function __construct( array $configuration ) {
+        $profileIdentityValues = array_intersect_key( $configuration, array_flip(self::$identifyAttributes) );
+        if (empty($profileIdentityValues)) {
             throw new KlaviyoException(
                 sprintf(
                     'ProfileModel requires one of the following fields for identification: %s',

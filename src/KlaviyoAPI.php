@@ -424,7 +424,7 @@ abstract class KlaviyoAPI
     {
         foreach ( $profiles as $profile ) {
             if ( ! $profile instanceof ProfileModel ) {
-                throw new KlaviyoException( sprintf( " %s is not an instance of %s, You must identify the person by their email, using a \$email key, or a unique identifier, using a \$id.",
+                throw new KlaviyoException( sprintf( " %s is not an instance of ProfileModel, You must identify the person by their email, using a \$email key, or a unique identifier, using a \$id.",
                     $profile['$email']
                     )
                 );

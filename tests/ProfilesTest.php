@@ -17,10 +17,10 @@ class ProfilesTest extends TestCase
 
         $profiles->method('getProfile')
             ->willReturn($this->getProfileWithID());
+
         $this->assertIsObject($profiles->getProfile('test_id'));
         $this->assertObjectHasAttribute('id', $profiles->getProfile('test_id'));
     }
-
     function getProfileWithID()
     {
         return json_decode(
