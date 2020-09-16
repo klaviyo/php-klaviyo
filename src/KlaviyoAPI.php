@@ -382,19 +382,10 @@ abstract class KlaviyoAPI
      */
     protected function filterParams( $params )
     {
-        if (version_compare(phpversion(), '5.6', '>')) {
-            return array_filter(
-                $params,
-                function ( $key ){ return !is_null( $key ); },
-                ARRAY_FILTER_USE_BOTH
-            );
-        } else {
-            return array_filter(
-                $params,
-                function ( $key ){ return !is_null( $key ); }
-            );
-        }
-
+        return array_filter(
+            $params,
+            function ( $key ){ return !is_null( $key ); }
+        );
     }
 
     /**

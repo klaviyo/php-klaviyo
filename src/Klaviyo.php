@@ -21,7 +21,7 @@ class Klaviyo
     /**
      * @var string
      */
-    const VERSION = '2.1.2';
+    const VERSION = '2.2.0';
 
     /**
      * Constructor for Klaviyo.
