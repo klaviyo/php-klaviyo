@@ -161,8 +161,9 @@ abstract class KlaviyoAPI
         $curl = curl_init();
         curl_setopt_array($curl, $setopt_array);
 
-        $response= curl_exec($curl);
-        $statusCode = curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
+        $response = curl_exec($curl);
+        $phpVersionHttpCode =  version_compare(phpversion(), '5.5.0', '>') ? CURLINFO_RESPONSE_CODE : CURLINFO_HTTP_CODE;
+        $statusCode = curl_getinfo($curl, $phpVersionHttpCode);
         curl_close($curl);
 
         return $this->handleResponse( $response, $statusCode, $isPublic );
@@ -329,7 +330,7 @@ abstract class KlaviyoAPI
      * @param string $paramName Name of API Param to create
      * @param $paramValue Value of API params to create
      */
-    protected function createParams( string $paramName, $paramValue )
+    protected function createParams( $paramName, $paramValue )
     {
         return [self::JSON =>
             [$paramName => $paramValue]
@@ -379,12 +380,11 @@ abstract class KlaviyoAPI
      * @param array $params
      * @return array
      */
-    protected function filterParams( array $params )
+    protected function filterParams( $params )
     {
         return array_filter(
             $params,
-            function ( $key ){ return !is_null( $key ); },
-            ARRAY_FILTER_USE_BOTH
+            function ( $key ){ return !is_null( $key ); }
         );
     }
 
@@ -394,7 +394,7 @@ abstract class KlaviyoAPI
      * @param array $params
      * @return array[]
      */
-    protected function createRequestBody( array $params )
+    protected function createRequestBody( $params )
     {
         return array(
             'form_params' => $params
@@ -407,7 +407,7 @@ abstract class KlaviyoAPI
      * @param array $params
      * @return array[]
      */
-    protected function createRequestJson( array $params)
+    protected function createRequestJson( $params )
     {
         return array(
             'json' => $params
@@ -420,13 +420,13 @@ abstract class KlaviyoAPI
      * @param array $profiles
      * @throws KlaviyoException
      */
-    protected function checkProfile( array $profiles )
+    protected function checkProfile( $profiles )
     {
         foreach ( $profiles as $profile ) {
             if ( ! $profile instanceof ProfileModel ) {
-                throw new KlaviyoException( sprintf( " %s is not an instance of %s, You must identify the person by their email, using a \$email key, or a unique identifier, using a \$id.",
-                    $profile['$email'],
-                    ProfileModel::class )
+                throw new KlaviyoException( sprintf( " %s is not an instance of ProfileModel, You must identify the person by their email, using a \$email key, or a unique identifier, using a \$id.",
+                    $profile['$email']
+                    )
                 );
             }
         }
@@ -495,7 +495,7 @@ abstract class KlaviyoAPI
      * @param array $headers
      * @return array
      */
-    protected function formatCurlHeaders(array $headers)
+    protected function formatCurlHeaders( $headers )
     {
         $formatted = array();
 
