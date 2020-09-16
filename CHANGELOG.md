@@ -1,4 +1,6 @@
 ## CHANGELOG
+###
+- Fix - Composer file remove comma
 
 ### 2.2.0
 - Fix - EventModel configuration to handle null dates
