@@ -161,8 +161,9 @@ abstract class KlaviyoAPI
         $curl = curl_init();
         curl_setopt_array($curl, $setopt_array);
 
-        $response= curl_exec($curl);
-        $statusCode = curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
+        $response = curl_exec($curl);
+        $phpVersionHttpCode =  version_compare(phpversion(), '5.5.0', '>') ? CURLINFO_RESPONSE_CODE : CURLINFO_HTTP_CODE;
+        $statusCode = curl_getinfo($curl, $phpVersionHttpCode);
         curl_close($curl);
 
         return $this->handleResponse( $response, $statusCode, $isPublic );
@@ -381,11 +382,19 @@ abstract class KlaviyoAPI
      */
     protected function filterParams( $params )
     {
-        return array_filter(
-            $params,
-            function ( $key ){ return !is_null( $key ); },
-            ARRAY_FILTER_USE_BOTH
-        );
+        if (version_compare(phpversion(), '5.6', '>')) {
+            return array_filter(
+                $params,
+                function ( $key ){ return !is_null( $key ); },
+                ARRAY_FILTER_USE_BOTH
+            );
+        } else {
+            return array_filter(
+                $params,
+                function ( $key ){ return !is_null( $key ); }
+            );
+        }
+
     }
 
     /**
@@ -425,8 +434,8 @@ abstract class KlaviyoAPI
         foreach ( $profiles as $profile ) {
             if ( ! $profile instanceof ProfileModel ) {
                 throw new KlaviyoException( sprintf( " %s is not an instance of %s, You must identify the person by their email, using a \$email key, or a unique identifier, using a \$id.",
-                    $profile['$email'],
-                    ProfileModel::class )
+                    $profile['$email']
+                    )
                 );
             }
         }
