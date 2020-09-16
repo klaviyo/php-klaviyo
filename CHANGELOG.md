@@ -1,5 +1,6 @@
 ## CHANGELOG
-###
+
+### 2.2.1
 - Fix - Composer file remove comma
 
 ### 2.2.0
