@@ -151,13 +151,20 @@ class ProfileModel extends BaseModel
     }
 
     public function jsonSerialize() {
+        $properties = array_fill_keys($this::$specialAttributes, null);
+        foreach ($properties as $key => &$value) {
+            if (!property_exists($this, substr($key, 1))) {
+                continue;
+            }
+
+            $value = $this->{substr($key, 1)};
+        }
+
+        unset($properties['$email']);
+        $properties['email'] = $this->email;
+
         return array_merge(
-            array(
-                'email' => $this->email,
-                '$phone_number' => $this->phoneNumber,
-                '$first_name' => $this->firstName,
-                '$last_name' => $this->lastName
-            ),
+            $properties,
             $this->getCustomAttributes()
         );
     }
