@@ -32,7 +32,7 @@ abstract class KlaviyoAPI
     const ERROR_INVALID_API_KEY = 'Invalid API Key.';
     const ERROR_RESOURCE_DOES_NOT_EXIST = 'The requested resource does not exist.';
     const ERROR_NON_200_STATUS = 'Request Failed with HTTP Status Code: %s';
-    
+
     /**
      * Request options
      */
@@ -314,14 +314,17 @@ abstract class KlaviyoAPI
     }
 
     /**
-     * Return decoded json response as associative array.
+     * Return decoded json response as associative or empty array.
      *
      * @param string $response
      * @return mixed
      */
     private function decodeJsonResponse( $response )
     {
-        return json_decode( $response, true );
+        if (!empty($response)) {
+            return json_decode( $response, true );
+        }
+        return json_decode( '{}', true );
     }
 
     /**
