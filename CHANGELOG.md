@@ -1,5 +1,8 @@
 ## CHANGELOG
 
+### 2.2.2
+- Fix - KlaviyoAPI file to handle json_decode correctly when empty string is returned
+
 ### 2.2.1
 - Fix - Composer file remove comma
 
