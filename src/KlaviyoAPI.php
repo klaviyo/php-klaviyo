@@ -324,6 +324,7 @@ abstract class KlaviyoAPI
         if (!empty($response)) {
             return json_decode( $response, true );
         }
+        // Delete requests return an empty response
         return json_decode( '{}', true );
     }
 
