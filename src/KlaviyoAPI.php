@@ -314,7 +314,9 @@ abstract class KlaviyoAPI
     }
 
     /**
-     * Return decoded json response as associative or empty array.
+     * Return decoded JSON response as associative or empty array.
+     * Certain Klaviyo endpoints (such as Delete) return an empty string on success
+     * and so PHP versions >= 7 will throw a JSON_ERROR_SYNTAX when trying to decode it
      *
      * @param string $response
      * @return mixed
@@ -324,7 +326,6 @@ abstract class KlaviyoAPI
         if (!empty($response)) {
             return json_decode( $response, true );
         }
-        // Delete requests return an empty response
         return json_decode( '{}', true );
     }
 
