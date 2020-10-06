@@ -53,7 +53,7 @@ class EventModel extends BaseModel
             throw new KlaviyoException( $e->getMessage() );
         }
 
-        $this->time = !empty($config['time']) ? strtotime( $time['date'] ) : null;
+        $this->time = !empty($config['time']) ? $time->getTimestamp() : null;
     }
 
     /**
