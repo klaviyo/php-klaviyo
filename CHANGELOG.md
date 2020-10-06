@@ -2,6 +2,8 @@
 
 ### 2.2.2
 - Fix - KlaviyoAPI file to handle json_decode correctly when empty string is returned
+- Fix - Fix EventModel unix timestamp issue 
+- Update - Add all Klaviyo special properties
 
 ### 2.2.1
 - Fix - Composer file remove comma
