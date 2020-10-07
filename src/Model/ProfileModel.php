@@ -154,6 +154,7 @@ class ProfileModel extends BaseModel
      * The Special attributes array is using snake case, while class properties are camelCased.
      * This means that variables such as first_name or last_name won't exist on the class object and will
      * simply be missed. To accomodate for that, we convert all the keys to camelCase before running the comparison.
+     *
      * @return string
      */
     public function convertToCamelCase($key) {
