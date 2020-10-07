@@ -1,7 +1,7 @@
 ## CHANGELOG
 
 ### 2.2.3
-- Fix - ProfileModel file to convert specialAttributes properties to camelCase before running property_exists inside jsonSerialize
+- Fix - ProfileModel file to convert specialAttributes properties to camel case before executing property_exists method inside jsonSerialize
 
 ### 2.2.2
 - Fix - KlaviyoAPI file to handle json_decode correctly when empty string is returned
