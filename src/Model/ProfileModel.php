@@ -97,9 +97,9 @@ class ProfileModel extends BaseModel
     protected function setAttributes(array $configuration ) {
         foreach ( $configuration as $key => $value ) {
             if ( $this->isSpecialAttribute($key) ) {
-                $this->{lcfirst(str_replace('_', '', ucwords(ltrim($key, '$'), '_')))} = $value;
+                $this->{$this->convertToCamelCase($key)} = $value;
             }
-            
+
         }
 
         $this->setCustomAttributes( $configuration );
@@ -150,14 +150,25 @@ class ProfileModel extends BaseModel
         return $this->customAttributes;
     }
 
+    /**
+     * The Special attributes array is using snake case, while class properties are camelCased.
+     * This means that variables such as first_name or last_name won't exist on the class object and will
+     * simply be missed inside jsonSerialize method. To accomodate for that, we convert all the keys to camelCase before running the comparison.
+     *
+     * @return string
+     */
+    public function convertToCamelCase($key) {
+        return lcfirst(str_replace('_', '', ucwords(ltrim($key, '$'), '_')));
+    }
+
     public function jsonSerialize() {
         $properties = array_fill_keys($this::$specialAttributes, null);
         foreach ($properties as $key => &$value) {
-            if (!property_exists($this, substr($key, 1))) {
+            if (!property_exists($this, $this->convertToCamelCase($key))) {
                 continue;
             }
 
-            $value = $this->{substr($key, 1)};
+            $value = $this->{$this->convertToCamelCase($key)};
         }
 
         unset($properties['$email']);

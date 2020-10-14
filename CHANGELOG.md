@@ -1,8 +1,11 @@
 ## CHANGELOG
 
+### 2.2.3
+- Fix - ProfileModel file to convert specialAttributes properties to camel case before executing property_exists method inside jsonSerialize
+
 ### 2.2.2
 - Fix - KlaviyoAPI file to handle json_decode correctly when empty string is returned
-- Fix - Fix EventModel unix timestamp issue 
+- Fix - Fix EventModel unix timestamp issue
 - Update - Add all Klaviyo special properties
 
 ### 2.2.1
