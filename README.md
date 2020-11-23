@@ -153,5 +153,5 @@ $client->profiles->getProfileMetricTimeline( 'ProfileId', 'MetricId' );
 
 ## Rate Limiting
   If a rate limit happens it will throw a Klaviyo/Exception/KlaviyoRateLimitException.
-  After you catch this exception you can use getMessage() and it will return an array:
+  After you catch this exception you can use getMessage() and it will return a JSON encoded array:
   `{"detail":"Request was throttled. Expected available in 26.0 seconds.","retryAfter":26}`
