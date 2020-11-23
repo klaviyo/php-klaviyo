@@ -1,5 +1,8 @@
 ## CHANGELOG
 
+### 2.2.4
+- Fix - Catch KlaviyoRateLimitException properly
+
 ### 2.2.3
 - Fix - ProfileModel file to convert specialAttributes properties to camel case before executing property_exists method inside jsonSerialize
 

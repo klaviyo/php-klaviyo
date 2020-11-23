@@ -152,5 +152,5 @@ $client->profiles->getProfileMetricTimeline( 'ProfileId', 'MetricId' );
 ```
 
 ## Rate Limiting
-  If a rate limit happens it will throw a Klaviyo/Exception/KlaviyoRateLimitException
-  This will contain a detail key with a string value mentioning the time to back off in seconds
+  If a rate limit happens it will throw a Klaviyo/Exception/KlaviyoRateLimitException.
+  You will use getMessage() to get the detail key with a string value mentioning the time to back off in seconds.
