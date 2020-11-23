@@ -332,7 +332,7 @@ abstract class KlaviyoAPI
     }
 
     /**
-     * Return jsone encoded rate limit array with details and the retryAfter value parsed.
+     * Return json encoded rate limit array with details and the retryAfter value parsed.
      * We build an easier object that tells you how long to retry after.
      *
      * @param mixed $response
@@ -340,8 +340,8 @@ abstract class KlaviyoAPI
      */
     private function returnRateLimit ( $response )
     {
-        $arr = explode(" ", $response['detail'] );
-        foreach ($arr as $value) {
+        $responseDetail = explode(" ", $response['detail'] );
+        foreach ($responseDetail as $value) {
             if (intval($value) > 0) {
                 $response['retryAfter'] = intval($value);
             }
