@@ -1,5 +1,9 @@
 ## CHANGELOG
 
+### 2.2.4
+- Fix - Instantiate KlaviyoRateLimitException properly
+- Update - Add retryAfter as an array key for the KlaviyoRateLimitException message
+
 ### 2.2.3
 - Fix - ProfileModel file to convert specialAttributes properties to camel case before executing property_exists method inside jsonSerialize
 

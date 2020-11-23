@@ -179,7 +179,9 @@ abstract class KlaviyoAPI
         } else if ( $statusCode == 404 ) {
             throw new KlaviyoResourceNotFoundException(self::ERROR_RESOURCE_DOES_NOT_EXIST);
         } else if ( $statusCode == 429 ) {
-            throw new KlaviyoRateLimitException( $this->decodeJsonResponse( $response ) );
+            throw new KlaviyoRateLimitException(
+                $this->returnRateLimit( $this->decodeJsonResponse( $response ) )
+            );
         } else if ( $statusCode != 200 ) {
             throw new KlaviyoException( sprintf( self::ERROR_NON_200_STATUS, $statusCode ) );
         }
@@ -328,6 +330,25 @@ abstract class KlaviyoAPI
         }
         return json_decode( '{}', true );
     }
+
+    /**
+     * Return json encoded rate limit array with details and the retryAfter value parsed.
+     * We build an easier object that tells you how long to retry after.
+     *
+     * @param mixed $response
+     * @return string
+     */
+    private function returnRateLimit ( $response )
+    {
+        $responseDetail = explode(" ", $response['detail'] );
+        foreach ($responseDetail as $value) {
+            if (intval($value) > 0) {
+                $response['retryAfter'] = intval($value);
+            }
+        }
+        return json_encode($response);
+    }
+
 
     /**
      * Return formatted options.
