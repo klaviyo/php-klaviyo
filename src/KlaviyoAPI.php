@@ -183,7 +183,8 @@ abstract class KlaviyoAPI
                 $this->returnRateLimit( $this->decodeJsonResponse( $response ) )
             );
         } else if ( $statusCode != 200 ) {
-            throw new KlaviyoException( sprintf( self::ERROR_NON_200_STATUS, $statusCode ) );
+            $responseDetail = $statusCode . ' (' . $this->decodeJsonResponse( $response )['detail'] . ')';
+            throw new KlaviyoException( sprintf( self::ERROR_NON_200_STATUS, $responseDetail ) );
         }
 
         if ( $isPublic ) {
