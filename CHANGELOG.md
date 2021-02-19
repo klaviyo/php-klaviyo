@@ -1,5 +1,8 @@
 ## CHANGELOG
 
+### 2.2.5
+- Update - Add error details into KlaviyoAPI handleResponse function
+
 ### 2.2.4
 - Fix - Instantiate KlaviyoRateLimitException properly
 - Update - Add retryAfter as an array key for the KlaviyoRateLimitException message
