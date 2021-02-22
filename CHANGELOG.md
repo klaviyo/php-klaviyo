@@ -2,6 +2,7 @@
 
 ### 2.2.5
 - Update - Add error details into KlaviyoAPI handleResponse function
+- Update - Add KlaviyoApiException 
 
 ### 2.2.4
 - Fix - Instantiate KlaviyoRateLimitException properly
