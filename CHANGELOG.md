@@ -1,5 +1,8 @@
 ## CHANGELOG
 
+### 2.2.6
+- Fix - Composer file Apache license value
+
 ### 2.2.5
 - Update - Add error details into KlaviyoAPI handleResponse function
 - Update - Add KlaviyoApiException 
