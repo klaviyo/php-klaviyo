@@ -151,7 +151,18 @@ $client->profiles->getAllProfileMetricsTimeline( 'ProfileId' );
 $client->profiles->getProfileMetricTimeline( 'ProfileId', 'MetricId' );
 ```
 
-## Rate Limiting
-  If a rate limit happens it will throw a Klaviyo/Exception/KlaviyoRateLimitException.
+## Exceptions
+
+### Klaviyo\Exception\KlaviyoApiException
+  Thrown when there is an issue making an API request. After you catch this exception, you can use getMessage() and it will return a string containing more details about the issue that occurred.
+
+### Klaviyo\Exception\KlaviyoRateLimitException
+  If a rate limit happens it will throw a Klaviyo\Exception\KlaviyoRateLimitException.
   After you catch this exception you can use getMessage() and it will return a JSON encoded array:
   `{"detail":"Request was throttled. Expected available in 26.0 seconds.","retryAfter":26}`
+
+### Klaviyo\Exception\KlaviyoAuthenticationException
+  Thrown when there is an authentication error when making an API request, usually caused by an invalid API key.  
+
+### Klaviyo\Exception\KlaviyoResourceNotFoundException
+  Thrown when the system attempts to update a property that doesn't exist. For example, attempting to update a list that doesn't exist on the account.

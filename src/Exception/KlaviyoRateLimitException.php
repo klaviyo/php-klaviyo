@@ -2,4 +2,4 @@
 
 namespace Klaviyo\Exception;
 
-class KlaviyoRateLimitException extends KlaviyoException {}
+class KlaviyoRateLimitException extends KlaviyoApiException {}

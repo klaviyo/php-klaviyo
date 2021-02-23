@@ -6,6 +6,7 @@ use Klaviyo\Exception\KlaviyoAuthenticationException;
 use Klaviyo\Exception\KlaviyoException;
 use Klaviyo\Exception\KlaviyoRateLimitException;
 use Klaviyo\Exception\KlaviyoResourceNotFoundException;
+use Klaviyo\Exception\KlaviyoApiException;
 use Klaviyo\Model\ProfileModel;
 
 abstract class KlaviyoAPI
@@ -31,7 +32,6 @@ abstract class KlaviyoAPI
      */
     const ERROR_INVALID_API_KEY = 'Invalid API Key.';
     const ERROR_RESOURCE_DOES_NOT_EXIST = 'The requested resource does not exist.';
-    const ERROR_NON_200_STATUS = 'Request Failed with HTTP Status Code: %s';
 
     /**
      * Request options
@@ -175,15 +175,15 @@ abstract class KlaviyoAPI
     private function handleResponse( $response, $statusCode, $isPublic )
     {
         if ( $statusCode == 403 ) {
-            throw new KlaviyoAuthenticationException(self::ERROR_INVALID_API_KEY);
+            throw new KlaviyoAuthenticationException(self::ERROR_INVALID_API_KEY, $statusCode);
         } else if ( $statusCode == 404 ) {
-            throw new KlaviyoResourceNotFoundException(self::ERROR_RESOURCE_DOES_NOT_EXIST);
+            throw new KlaviyoResourceNotFoundException( self::ERROR_RESOURCE_DOES_NOT_EXIST, $statusCode);
         } else if ( $statusCode == 429 ) {
             throw new KlaviyoRateLimitException(
-                $this->returnRateLimit( $this->decodeJsonResponse( $response ) )
+                $this->returnRateLimit( $this->decodeJsonResponse( $response ), $statusCode )
             );
         } else if ( $statusCode != 200 ) {
-            throw new KlaviyoException( sprintf( self::ERROR_NON_200_STATUS, $statusCode ) );
+            throw new KlaviyoApiException($this->decodeJsonResponse( $response )['detail'], $statusCode);
         }
 
         if ( $isPublic ) {
