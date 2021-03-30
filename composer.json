@@ -4,7 +4,7 @@
     "keywords": ["klaviyo", "sdk"],
     "type": "library",
     "homepage": "http://github.com/klaviyo",
-    "license": "Apache2",
+    "license": "Apache-2.0",
     "authors": [
         {
             "name": "Klaviyo",
@@ -17,7 +17,7 @@
         "ext-curl": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": "^9",
+        "phpunit/phpunit": "^9.5",
         "vimeo/psalm": "^4.7"
     },
     "autoload": {
