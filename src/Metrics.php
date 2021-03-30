@@ -9,20 +9,20 @@ class Metrics extends KlaviyoAPI
     /**
      * Metrics endpoint constants
      */
-    const METRICS = 'metrics';
-    const METRIC = 'metric';
-    const TIMELINE = 'timeline';
-    const EXPORT = 'export';
+    public const METRICS = 'metrics';
+    public const METRIC = 'metric';
+    public const TIMELINE = 'timeline';
+    public const EXPORT = 'export';
 
     /**
      * Metrics API arguments
      */
-    const START_DATE = 'start_date';
-    const END_DATE = 'end_date';
-    const UNIT = 'unit';
-    const WHERE = 'where';
-    const MEASUREMENT = 'measurement';
-    const BY = 'by';
+    public const START_DATE = 'start_date';
+    public const END_DATE = 'end_date';
+    public const UNIT = 'unit';
+    public const WHERE = 'where';
+    public const MEASUREMENT = 'measurement';
+    public const BY = 'by';
 
     /**
      * Returns a list of all metrics in Klaviyo
@@ -36,14 +36,14 @@ class Metrics extends KlaviyoAPI
      *
      * @return mixed
      */
-    public function getMetrics( $page = null, $count = null )
+    public function getMetrics($page = null, $count = null)
     {
-        $params = $this->filterParams( array(
-            self::PAGE=> $page,
+        $params = $this->filterParams([
+            self::PAGE => $page,
             self::COUNT => $count
-        ) );
+        ]);
 
-        return $this->v1Request( self::METRICS, $params );
+        return $this->v1Request(self::METRICS, $params);
     }
 
     /**
@@ -66,22 +66,21 @@ class Metrics extends KlaviyoAPI
      *
      * @return bool|mixed
      */
-    public function getMetricsTimeline( $since = null, $uuid = null, $count = null, $sort = null )
+    public function getMetricsTimeline($since = null, $uuid = null, $count = null, $sort = null)
     {
-        $params = $this->setSinceParameter( $since, $uuid );
+        $params = $this->setSinceParameter($since, $uuid);
 
-        $params = $this->filterParams( array_merge(
+        $params = $this->filterParams(array_merge(
             $params,
-            array(
+            [
                 self::COUNT => $count,
                 self::SORT => $sort
-            )
-        ) );
+            ]
+        ));
 
-        $path = sprintf( '%s/%s', self::METRICS, self::TIMELINE );
+        $path = sprintf('%s/%s', self::METRICS, self::TIMELINE);
 
-        return $this->v1Request( $path, $params );
-
+        return $this->v1Request($path, $params);
     }
 
     /**
@@ -107,20 +106,20 @@ class Metrics extends KlaviyoAPI
      * @return bool|mixed
      *
      */
-    public function getMetricTimeline( $metricID, $since = null, $uuid = null, $count = null, $sort = null )
+    public function getMetricTimeline($metricID, $since = null, $uuid = null, $count = null, $sort = null)
     {
-        $params = $this->setSinceParameter( $since, $uuid );
+        $params = $this->setSinceParameter($since, $uuid);
 
-        $params = $this->filterParams( array_merge(
+        $params = $this->filterParams(array_merge(
             $params,
-            array(
+            [
                 self::COUNT => $count,
                 self::SORT => $sort
-            )
-        ) );
+            ]
+        ));
 
-        $path = sprintf( '%s/%s/%s', self::METRIC, $metricID, self::TIMELINE );
-        return $this->v1Request( $path, $params );
+        $path = sprintf('%s/%s/%s', self::METRIC, $metricID, self::TIMELINE);
+        return $this->v1Request($path, $params);
     }
 
     /**
@@ -146,21 +145,23 @@ class Metrics extends KlaviyoAPI
      * @return bool|mixed
      * @throws KlaviyoException
      */
-    public function exportMetricData( $metricID,
-                                      $start_date = null,
-                                      $end_date = null,
-                                      $unit = null,
-                                      $measurement = null,
-                                      $where = null,
-                                      $by = null,
-                                      $count = null )
+    public function exportMetricData(
+        $metricID,
+        $start_date = null,
+        $end_date = null,
+        $unit = null,
+        $measurement = null,
+        $where = null,
+        $by = null,
+        $count = null
+    )
     {
-        if (isset( $where ) && isset( $by )) {
-            throw new KlaviyoException('Please use either \'where\' or \'by\', only one of these variables can be set for the export call' );
+        if (isset($where) && isset($by)) {
+            throw new KlaviyoException('Please use either \'where\' or \'by\', only one of these variables can be set for the export call');
         }
 
         $params = $this->filterParams(
-            array(
+            [
                 self::START_DATE => $start_date,
                 self::END_DATE => $end_date,
                 self::UNIT => $unit,
@@ -168,13 +169,11 @@ class Metrics extends KlaviyoAPI
                 self::WHERE => $where,
                 self::BY => $by,
                 self::COUNT => $count
-            )
+            ]
         );
 
-        $path = sprintf( '%s/%s/%s', self::METRIC, $metricID, self::EXPORT );
+        $path = sprintf('%s/%s/%s', self::METRIC, $metricID, self::EXPORT);
 
-        return $this->v1Request( $path, $params );
-
+        return $this->v1Request($path, $params);
     }
-
 }

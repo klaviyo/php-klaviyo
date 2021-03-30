@@ -2,4 +2,6 @@
 
 namespace Klaviyo\Exception;
 
-class KlaviyoApiException extends KlaviyoException {}
+class KlaviyoApiException extends KlaviyoException
+{
+}

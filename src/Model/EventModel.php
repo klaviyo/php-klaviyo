@@ -6,7 +6,6 @@ use DateTime;
 use Exception;
 
 use Klaviyo\Exception\KlaviyoException;
-use Klaviyo\Model\ProfileModel;
 
 class EventModel extends BaseModel
 {
@@ -36,7 +35,8 @@ class EventModel extends BaseModel
      * @param array $config
      * @throws KlaviyoException
      */
-    public function __construct( $config ) {
+    public function __construct($config)
+    {
         $this->event = $config['event'];
         $this->customer_properties = new ProfileModel(
             $config['customer_properties']
@@ -49,8 +49,8 @@ class EventModel extends BaseModel
                     is_int($config['time']) ? '@' . $config['time'] : $config['time']
                 );
             }
-        } catch ( Exception $e ) {
-            throw new KlaviyoException( $e->getMessage() );
+        } catch (Exception $e) {
+            throw new KlaviyoException($e->getMessage());
         }
 
         $this->time = !empty($config['time']) ? $time->getTimestamp() : null;
@@ -59,13 +59,13 @@ class EventModel extends BaseModel
     /**
      * @return array|mixed
      */
-    public function jsonSerialize() {
-        return array(
+    public function jsonSerialize()
+    {
+        return [
             'event' => $this->event,
             'customer_properties' => $this->customer_properties,
             'properties' => $this->properties,
             'time' => $this->time
-        );
+        ];
     }
-    
 }

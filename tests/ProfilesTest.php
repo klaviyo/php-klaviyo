@@ -1,18 +1,15 @@
 <?php
 
-use Klaviyo\KlaviyoAPI;
-use Klaviyo\Profiles;
 use PHPUnit\Framework\TestCase;
 
 class ProfilesTest extends TestCase
 {
-
-    function testGetProfile()
+    public function testGetProfile()
     {
         $profiles = $this
             ->getMockBuilder('Klaviyo\Profiles')
             ->disableOriginalConstructor()
-            ->onlyMethods(array('v1Request', 'getProfile'))
+            ->onlyMethods(['v1Request', 'getProfile'])
             ->getMockForAbstractClass();
 
         $profiles->method('getProfile')
@@ -21,7 +18,7 @@ class ProfilesTest extends TestCase
         $this->assertIsObject($profiles->getProfile('test_id'));
         $this->assertObjectHasAttribute('id', $profiles->getProfile('test_id'));
     }
-    function getProfileWithID()
+    public function getProfileWithID()
     {
         return json_decode(
             '{

@@ -3,6 +3,7 @@
 namespace Klaviyo;
 
 use Klaviyo\Exception\KlaviyoException as KlaviyoException;
+
 /**
  * Main class for accessing the Klaviyo API
  */
@@ -21,7 +22,7 @@ class Klaviyo
     /**
      * @var string
      */
-    const VERSION = '2.2.4';
+    public const VERSION = '2.2.4';
 
     /**
      * Constructor for Klaviyo.

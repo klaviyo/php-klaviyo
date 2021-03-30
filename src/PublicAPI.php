@@ -10,8 +10,8 @@ class PublicAPI extends KlaviyoAPI
     /**
      * Track Class constants
      */
-    const TRACK = 'track';
-    const IDENTIFY = 'identify';
+    public const TRACK = 'track';
+    public const IDENTIFY = 'identify';
 
     /**
      * PublicAPI constructor.
@@ -19,9 +19,9 @@ class PublicAPI extends KlaviyoAPI
      * @param $private_key
      * @param string $host
      */
-    public function __construct( $public_key, $private_key, $host = self::BASE_URL )
+    public function __construct($public_key, $private_key, $host = self::BASE_URL)
     {
-        parent::__construct( $public_key, $private_key, $host = self::BASE_URL );
+        parent::__construct($public_key, $private_key, $host = self::BASE_URL);
     }
 
     /**
@@ -31,11 +31,11 @@ class PublicAPI extends KlaviyoAPI
      * @param EventModel $event
      * @return mixed
      */
-    public function track( EventModel $event )
+    public function track(EventModel $event)
     {
-        $options = array( self::QUERY => $event->toArray() );
+        $options = [ self::QUERY => $event->toArray() ];
 
-        return $this->publicRequest( self::TRACK, $options );
+        return $this->publicRequest(self::TRACK, $options);
     }
 
     /**
@@ -45,14 +45,14 @@ class PublicAPI extends KlaviyoAPI
      * @param ProfileModel $profile
      * @return mixed
      */
-    public function identify( ProfileModel $profile )
+    public function identify(ProfileModel $profile)
     {
-        $options = array(
-            self::QUERY => array(
+        $options = [
+            self::QUERY => [
                 self::PROPERTIES => $profile
-            )
-        );
+            ]
+        ];
 
-        return $this->publicRequest( self::IDENTIFY, $options );
+        return $this->publicRequest(self::IDENTIFY, $options);
     }
 }

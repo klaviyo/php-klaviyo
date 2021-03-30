@@ -18,11 +18,15 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5",
-        "vimeo/psalm": "^4.7"
+        "vimeo/psalm": "^4.7",
+        "symplify/easy-coding-standard": "^9.2"
     },
     "autoload": {
         "psr-4": {
             "Klaviyo\\": "src/"
         }
+    },
+    "scripts": {
+        "fix-style": "ecs --fix"
     }
 }

@@ -2,4 +2,6 @@
 
 namespace Klaviyo\Exception;
 
-class KlaviyoResourceNotFoundException extends KlaviyoApiException {}
+class KlaviyoResourceNotFoundException extends KlaviyoApiException
+{
+}

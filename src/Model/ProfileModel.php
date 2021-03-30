@@ -35,7 +35,7 @@ class ProfileModel extends BaseModel
      *
      * @var string[]
      */
-    public static $specialAttributes = array(
+    public static $specialAttributes = [
         '$id',
         '$email',
         '$first_name',
@@ -51,19 +51,19 @@ class ProfileModel extends BaseModel
         '$timezone',
         '$phone_number',
         '$ios_tokens',
-    );
+    ];
 
     /**
      * Attributes of a profile used to identify each
      *
      * @var string[]
      */
-    public static $identifyAttributes = array(
+    public static $identifyAttributes = [
         '$email',
         '$id',
         '$phone_number',
         '$ios_tokens',
-    );
+    ];
 
     /**
      * ProfileModel constructor.
@@ -78,8 +78,9 @@ class ProfileModel extends BaseModel
      * @param array $configuration
      * @throws KlaviyoException
      */
-    public function __construct( array $configuration ) {
-        $profileIdentityValues = array_intersect_key( $configuration, array_flip(self::$identifyAttributes) );
+    public function __construct(array $configuration)
+    {
+        $profileIdentityValues = array_intersect_key($configuration, array_flip(self::$identifyAttributes));
         if (empty($profileIdentityValues)) {
             throw new KlaviyoException(
                 sprintf(
@@ -88,34 +89,35 @@ class ProfileModel extends BaseModel
                 )
             );
         }
-        $this->setAttributes( $configuration );
+        $this->setAttributes($configuration);
     }
 
     /**
      * @param array $configuration
      */
-    protected function setAttributes(array $configuration ) {
-        foreach ( $configuration as $key => $value ) {
-            if ( $this->isSpecialAttribute($key) ) {
+    protected function setAttributes(array $configuration)
+    {
+        foreach ($configuration as $key => $value) {
+            if ($this->isSpecialAttribute($key)) {
                 $this->{$this->convertToCamelCase($key)} = $value;
             }
-
         }
 
-        $this->setCustomAttributes( $configuration );
+        $this->setCustomAttributes($configuration);
     }
 
     /**
      * @param array $configuration
      */
-    private function setCustomAttributes(array $configuration ) {
+    private function setCustomAttributes(array $configuration)
+    {
         $customAttributeKeys = array_flip(
             array_filter(
-                array_keys( $configuration ),
+                array_keys($configuration),
                 'self::isCustomAttribute'
             )
         );
-        $customAttributes = array_intersect_key( $configuration, $customAttributeKeys );
+        $customAttributes = array_intersect_key($configuration, $customAttributeKeys);
         $this->customAttributes = $customAttributes;
     }
 
@@ -123,30 +125,34 @@ class ProfileModel extends BaseModel
      * @param $attributeKey
      * @return bool
      */
-    protected function isSpecialAttribute($attributeKey ) {
-        return in_array( $attributeKey, self::$specialAttributes );
+    protected function isSpecialAttribute($attributeKey)
+    {
+        return in_array($attributeKey, self::$specialAttributes);
     }
 
     /**
      * @param $attributeKey
      * @return bool
      */
-    protected function isCustomAttribute($attributeKey ) {
-        return !self::isSpecialAttribute( $attributeKey );
+    protected function isCustomAttribute($attributeKey)
+    {
+        return !self::isSpecialAttribute($attributeKey);
     }
 
     /**
      * @param $attributeKey
      * @return string
      */
-    public function getCustomAttribute($attributeKey ) {
+    public function getCustomAttribute($attributeKey)
+    {
         return !empty($this->customAttributes[$attributeKey]) ? $this->customAttributes[$attributeKey] : '';
     }
 
     /**
      * @return mixed
      */
-    public function getCustomAttributes() {
+    public function getCustomAttributes()
+    {
         return $this->customAttributes;
     }
 
@@ -157,11 +163,13 @@ class ProfileModel extends BaseModel
      *
      * @return string
      */
-    public function convertToCamelCase($key) {
+    public function convertToCamelCase($key)
+    {
         return lcfirst(str_replace('_', '', ucwords(ltrim($key, '$'), '_')));
     }
 
-    public function jsonSerialize() {
+    public function jsonSerialize()
+    {
         $properties = array_fill_keys($this::$specialAttributes, null);
         foreach ($properties as $key => &$value) {
             if (!property_exists($this, $this->convertToCamelCase($key))) {

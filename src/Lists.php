@@ -11,22 +11,22 @@ class Lists extends KlaviyoAPI
     /**
      * List endpoint constants
      */
-    const ENDPOINT_EXCLUSIONS = 'exclusions';
-    const ENDPOINT_GROUP = 'group';
-    const ENDPOINT_LIST = 'list';
-    const ENDPOINT_LISTS = 'lists';
-    const ENDPOINT_MEMBERS = 'members';
-    const ENDPOINT_SEGMENT = 'segment';
-    const ENDPOINT_SUBSCRIBE = 'subscribe';
+    public const ENDPOINT_EXCLUSIONS = 'exclusions';
+    public const ENDPOINT_GROUP = 'group';
+    public const ENDPOINT_LIST = 'list';
+    public const ENDPOINT_LISTS = 'lists';
+    public const ENDPOINT_MEMBERS = 'members';
+    public const ENDPOINT_SEGMENT = 'segment';
+    public const ENDPOINT_SUBSCRIBE = 'subscribe';
 
     /**
      * Lists API arguments
      */
-    const EMAILS = 'emails';
-    const PHONE_NUMBERS = 'phone_numbers';
-    const PUSH_TOKENS = 'push_tokens';
-    const LIST_NAME = 'list_name';
-    const MARKER = 'marker';
+    public const EMAILS = 'emails';
+    public const PHONE_NUMBERS = 'phone_numbers';
+    public const PUSH_TOKENS = 'push_tokens';
+    public const LIST_NAME = 'list_name';
+    public const MARKER = 'marker';
 
     /**
      * Create a new list
@@ -37,11 +37,11 @@ class Lists extends KlaviyoAPI
      *
      * @return bool|mixed
      */
-    public function createList( $listName )
+    public function createList($listName)
     {
         $options = $this->createParams(self::LIST_NAME, $listName);
 
-        return $this->v2Request( self::ENDPOINT_LISTS, $options, self::HTTP_POST );
+        return $this->v2Request(self::ENDPOINT_LISTS, $options, self::HTTP_POST);
     }
 
     /**
@@ -50,9 +50,9 @@ class Lists extends KlaviyoAPI
      *
      * @return bool/mixed
      */
-    public function getLists() {
-
-        return $this->v2Request( self::ENDPOINT_LISTS );
+    public function getLists()
+    {
+        return $this->v2Request(self::ENDPOINT_LISTS);
     }
 
     /**
@@ -64,10 +64,10 @@ class Lists extends KlaviyoAPI
      *
      * @return bool|mixed
      */
-    public function getListDetails( $listId )
+    public function getListDetails($listId)
     {
-        $path = sprintf( '%s/%s', self::ENDPOINT_LIST, $listId );
-        return $this->v2Request( $path );
+        $path = sprintf('%s/%s', self::ENDPOINT_LIST, $listId);
+        return $this->v2Request($path);
     }
 
     /**
@@ -82,15 +82,15 @@ class Lists extends KlaviyoAPI
      *
      * @return bool|mixed
      */
-    public function updateListDetails( $listId, $list_name )
+    public function updateListDetails($listId, $list_name)
     {
-        $params = $this->createRequestBody( array(
+        $params = $this->createRequestBody([
             self::LIST_NAME => $list_name
-        ) );
+        ]);
 
-        $path = sprintf( '%s/%s', self::ENDPOINT_LIST, $listId );
+        $path = sprintf('%s/%s', self::ENDPOINT_LIST, $listId);
 
-        return $this->v2Request( $path, $params, self::HTTP_PUT );
+        return $this->v2Request($path, $params, self::HTTP_PUT);
     }
 
     /**
@@ -102,10 +102,10 @@ class Lists extends KlaviyoAPI
      *
      * @return bool|mixed
      */
-    public function deleteList( $listId )
+    public function deleteList($listId)
     {
-        $path = sprintf( '%s/%s', self::ENDPOINT_LIST, $listId );
-        return $this->v2Request( $path, [], self::HTTP_DELETE );
+        $path = sprintf('%s/%s', self::ENDPOINT_LIST, $listId);
+        return $this->v2Request($path, [], self::HTTP_DELETE);
     }
 
     /**
@@ -124,20 +124,21 @@ class Lists extends KlaviyoAPI
      * @return bool|mixed
      * @throws Exception\KlaviyoException
      */
-    public function subscribeMembersToList( $listId, $profiles )
+    public function subscribeMembersToList($listId, $profiles)
     {
-        $this->checkProfile( $profiles );
+        $this->checkProfile($profiles);
 
         $profiles = array_map(
-            function( $profile ) {
+            function ($profile) {
                 return $profile->toArray();
-            }, $profiles
+            },
+            $profiles
         );
 
-        $path = sprintf( '%s/%s/%s', self::ENDPOINT_LIST, $listId, self::ENDPOINT_SUBSCRIBE );
-        $params = $this->createParams( self::PROFILES, $profiles );
+        $path = sprintf('%s/%s/%s', self::ENDPOINT_LIST, $listId, self::ENDPOINT_SUBSCRIBE);
+        $params = $this->createParams(self::PROFILES, $profiles);
 
-        return $this->v2Request( $path, $params, self::HTTP_POST );
+        return $this->v2Request($path, $params, self::HTTP_POST);
     }
 
     /**
@@ -159,21 +160,21 @@ class Lists extends KlaviyoAPI
      *
      * @return bool|mixed
      */
-    public function checkListSubscriptions ($listId, $emails = null,  $phoneNumbers = null, $pushTokens = null )
+    public function checkListSubscriptions($listId, $emails = null, $phoneNumbers = null, $pushTokens = null)
     {
         $params = $this->createRequestJson(
             $this->filterParams(
-                array(
+                [
                     self::EMAILS => $emails,
                     self::PHONE_NUMBERS => $phoneNumbers,
                     self::PUSH_TOKENS => $pushTokens
-                )
+                ]
             )
         );
 
-        $path = sprintf('%s/%s/%s', self::ENDPOINT_LIST, $listId, self::ENDPOINT_SUBSCRIBE );
+        $path = sprintf('%s/%s/%s', self::ENDPOINT_LIST, $listId, self::ENDPOINT_SUBSCRIBE);
 
-        return $this->v2Request( $path, $params, self::HTTP_GET );
+        return $this->v2Request($path, $params, self::HTTP_GET);
     }
 
     /**
@@ -188,19 +189,19 @@ class Lists extends KlaviyoAPI
      *
      * @return bool|mixed
      */
-    public function unsubscribeMembersFromList( $listId, $emails )
+    public function unsubscribeMembersFromList($listId, $emails)
     {
         $params = $this->createRequestJson(
             $this->filterParams(
-                array(
+                [
                     self::EMAILS => $emails
-                )
+                ]
             )
         );
 
-        $path = sprintf('%s/%s/%s', self::ENDPOINT_LIST, $listId, self::ENDPOINT_SUBSCRIBE );
+        $path = sprintf('%s/%s/%s', self::ENDPOINT_LIST, $listId, self::ENDPOINT_SUBSCRIBE);
 
-        return $this->v2Request( $path, $params, self::HTTP_DELETE );
+        return $this->v2Request($path, $params, self::HTTP_DELETE);
     }
 
     /**
@@ -220,20 +221,21 @@ class Lists extends KlaviyoAPI
      *
      * @throws Exception\KlaviyoException
      */
-    public function addMembersToList( $listId, $profiles )
+    public function addMembersToList($listId, $profiles)
     {
-        $this->checkProfile( $profiles );
+        $this->checkProfile($profiles);
 
         $profiles = array_map(
-            function( $profile ) {
+            function ($profile) {
                 return $profile->toArray();
-            }, $profiles
+            },
+            $profiles
         );
 
-        $path = sprintf( '%s/%s/%s', self::ENDPOINT_LIST, $listId, self::ENDPOINT_MEMBERS );
-        $options = $this->createParams( self::PROFILES, $profiles );
+        $path = sprintf('%s/%s/%s', self::ENDPOINT_LIST, $listId, self::ENDPOINT_MEMBERS);
+        $options = $this->createParams(self::PROFILES, $profiles);
 
-        return $this->v2Request( $path, $options, self::HTTP_POST );
+        return $this->v2Request($path, $options, self::HTTP_POST);
     }
 
     /**
@@ -255,21 +257,21 @@ class Lists extends KlaviyoAPI
      *
      * @return bool|mixed
      */
-    public function checkListMembership( $listId,  $emails = null, $phoneNumbers = null, $pushTokens = null )
+    public function checkListMembership($listId, $emails = null, $phoneNumbers = null, $pushTokens = null)
     {
         $params = $this->createRequestJson(
             $this->filterParams(
-                array(
+                [
                     self::EMAILS => $emails,
                     self::PHONE_NUMBERS => $phoneNumbers,
                     self::PUSH_TOKENS => $pushTokens
-                )
+                ]
             )
         );
 
-        $path = sprintf( '%s/%s/%s', self::ENDPOINT_LIST, $listId, self::ENDPOINT_MEMBERS );
+        $path = sprintf('%s/%s/%s', self::ENDPOINT_LIST, $listId, self::ENDPOINT_MEMBERS);
 
-        return $this->v2Request( $path, $params, self::HTTP_GET );
+        return $this->v2Request($path, $params, self::HTTP_GET);
     }
 
     /**
@@ -284,19 +286,19 @@ class Lists extends KlaviyoAPI
      *
      * @return bool|mixed
      */
-    public function removeMembersFromList( $listId, $emails )
+    public function removeMembersFromList($listId, $emails)
     {
         $params = $this->createRequestJson(
             $this->filterParams(
-                array(
+                [
                     self::EMAILS => $emails
-                )
+                ]
             )
         );
 
-        $path = sprintf('%s/%s/%s', self::ENDPOINT_LIST, $listId, self::ENDPOINT_MEMBERS );
+        $path = sprintf('%s/%s/%s', self::ENDPOINT_LIST, $listId, self::ENDPOINT_MEMBERS);
 
-        return $this->v2Request( $path, $params, self::HTTP_DELETE );
+        return $this->v2Request($path, $params, self::HTTP_DELETE);
     }
 
     /**
@@ -312,19 +314,19 @@ class Lists extends KlaviyoAPI
      *
      * @return bool|mixed
      */
-    public function getAllExclusionsOnList( $listId, $marker = null )
+    public function getAllExclusionsOnList($listId, $marker = null)
     {
         $params = $this->createRequestBody(
             $this->filterParams(
-                array(
+                [
                     self::MARKER => $marker
-                )
+                ]
             )
         );
 
-        $path = sprintf( '%s/%s/%s/%s',self::ENDPOINT_LIST, $listId, self::ENDPOINT_EXCLUSIONS, 'all' );
+        $path = sprintf('%s/%s/%s/%s', self::ENDPOINT_LIST, $listId, self::ENDPOINT_EXCLUSIONS, 'all');
 
-        return $this->v2Request( $path, $params );
+        return $this->v2Request($path, $params);
     }
 
     /**
@@ -340,17 +342,17 @@ class Lists extends KlaviyoAPI
      *
      * @return bool|mixed
      */
-    public function getGroupMemberIdentifiers( $groupId, $marker = null )
+    public function getGroupMemberIdentifiers($groupId, $marker = null)
     {
         $params = $this->createRequestBody(
             $this->filterParams(
-                array(
+                [
                     self::MARKER => $marker
-                )
+                ]
             )
         );
 
-        $path = sprintf( '%s/%s/%s/%s',self::ENDPOINT_GROUP, $groupId, self::ENDPOINT_MEMBERS, 'all' );
-        return $this->v2Request( $path, $params );
+        $path = sprintf('%s/%s/%s/%s', self::ENDPOINT_GROUP, $groupId, self::ENDPOINT_MEMBERS, 'all');
+        return $this->v2Request($path, $params);
     }
 }
