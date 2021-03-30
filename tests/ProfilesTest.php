@@ -1,5 +1,7 @@
 <?php
 
+namespace Klaviyo;
+
 use Klaviyo\KlaviyoAPI;
 use Klaviyo\Profiles;
 use PHPUnit\Framework\TestCase;

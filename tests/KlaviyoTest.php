@@ -1,5 +1,7 @@
 <?php
 
+namespace Klaviyo;
+
 use Klaviyo\Klaviyo;
 use PHPUnit\Framework\TestCase;
 
