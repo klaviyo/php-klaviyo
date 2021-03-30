@@ -39,6 +39,9 @@ jobs:
             -   name: "Validate composer"
                 run: "composer validate --strict"
 
+            -   name: "Check style"
+                run: "composer check-style"
+
     dependency-analysis:
         name: "Dependency Analysis"
 
