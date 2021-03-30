@@ -12,6 +12,7 @@
         }
     ],
     "require": {
+        "php": "^7.3",
         "ext-json": "*",
         "ext-curl": "*"
     },
