@@ -4,3 +4,4 @@ php-klaviyo.iml
 vendor
 .phpunit.result.cache
 composer.phar
+composer.lock
