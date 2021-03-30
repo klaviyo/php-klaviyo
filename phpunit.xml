@@ -1,13 +1,15 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<phpunit
-bootstrap="vendor/autoload.php"
-colors="true"
-verbose="true"
->
-<testsuites>
-    <testsuite name="default">
-        <directory prefix="test-" suffix=".php">tests</directory>
-    </testsuite>
-</testsuites>
-
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd" bootstrap="vendor/autoload.php"
+         colors="true" verbose="true">
+    <coverage includeUncoveredFiles="true" processUncoveredFiles="true">
+        <include>
+            <directory suffix=".php">src/</directory>
+        </include>
+    </coverage>
+    <testsuites>
+        <testsuite name="PHP Klaviyo Test Suite">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
 </phpunit>
