@@ -11,6 +11,8 @@ class Profiles extends KlaviyoAPI
     const PERSON = 'person';
     const METRICS = 'metrics';
     const METRIC = 'metric';
+    const PEOPLE = 'people';
+    const SEARCH = 'search';
     const TIMELINE = 'timeline';
 
     /**
@@ -130,4 +132,18 @@ class Profiles extends KlaviyoAPI
         return $this->v1Request( $path, $params );
     }
 
+    /**
+     * Get ID of profile by email address.
+     *
+     * @param string $email Email address of desired profile.
+     * @return mixed
+     * @throws Exception\KlaviyoException
+     */
+    public function getProfileIdByEmail($email)
+    {
+        $params = $this->createRequestBody([self::EMAIL => $email]);
+        $path = sprintf('%s/%s', self::PEOPLE, self::SEARCH);
+
+        return $this->v2Request($path, $params);
+    }
 }
