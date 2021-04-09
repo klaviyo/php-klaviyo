@@ -1,8 +1,11 @@
 ## CHANGELOG
+### Unreleased
+- Deprecate - Rename List API methods: getListDetails, updateListDetails, subscribeMembersToList, unsubscribeMembersFromList, getGroupMemberIdentifiers, getAllExclusionsOnList
+- Deprecate - Rename Metric API methods: getMetricTimeline, exportMetricData
 
 ### 2.2.5
 - Update - Add error details into KlaviyoAPI handleResponse function
-- Update - Add KlaviyoApiException 
+- Update - Add KlaviyoApiException
 
 ### 2.2.4
 - Fix - Instantiate KlaviyoRateLimitException properly
