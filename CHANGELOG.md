@@ -1,8 +1,12 @@
 ## CHANGELOG
 
+### [Unreleased]
+- Update - Add people/search endpoint.
+- Update - Add data-privacy/deletion-request endpoint.
+
 ### 2.2.5
 - Update - Add error details into KlaviyoAPI handleResponse function
-- Update - Add KlaviyoApiException 
+- Update - Add KlaviyoApiException
 
 ### 2.2.4
 - Fix - Instantiate KlaviyoRateLimitException properly
@@ -38,3 +42,5 @@
 
 ### 1.0
 - As this changelog was created after 2.0.0, please refer to the README for version 1 https://github.com/klaviyo/php-klaviyo/tree/d388ca998dff55b2a7e420c2c7aa2cd221365d1c
+
+[Unreleased]: https://github.com/klaviyo/php-klaviyo/compare/2.2.5...HEAD

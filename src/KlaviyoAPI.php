@@ -58,9 +58,10 @@ abstract class KlaviyoAPI
     /**
      * Klaviyo API arguments
      */
-    const PROFILES = 'profiles';
     const COUNT = 'count';
+    const EMAIL = 'email';
     const PAGE = 'page';
+    const PROFILES = 'profiles';
     const SINCE = 'since';
     const SORT = 'sort';
 
@@ -123,7 +124,7 @@ abstract class KlaviyoAPI
     /**
      * Make private v2 API request
      *
-     * @param $path Endpoint to call
+     * @param string $path Endpoint to call
      * @param array $options API params to add to request
      * @param string $method HTTP method for request
      * @return mixed
@@ -176,13 +177,11 @@ abstract class KlaviyoAPI
     {
         if ( $statusCode == 403 ) {
             throw new KlaviyoAuthenticationException(self::ERROR_INVALID_API_KEY, $statusCode);
-        } else if ( $statusCode == 404 ) {
-            throw new KlaviyoResourceNotFoundException( self::ERROR_RESOURCE_DOES_NOT_EXIST, $statusCode);
         } else if ( $statusCode == 429 ) {
             throw new KlaviyoRateLimitException(
-                $this->returnRateLimit( $this->decodeJsonResponse( $response ), $statusCode )
+                $this->returnRateLimit( $this->decodeJsonResponse( $response ) )
             );
-        } else if ( $statusCode != 200 ) {
+        } else if ($statusCode < 200 || $statusCode >= 300) {
             throw new KlaviyoApiException($this->decodeJsonResponse( $response )['detail'], $statusCode);
         }
 
@@ -354,7 +353,7 @@ abstract class KlaviyoAPI
      * Return formatted options.
      *
      * @param string $paramName Name of API Param to create
-     * @param $paramValue Value of API params to create
+     * @param mixed $paramValue Value of API params to create
      */
     protected function createParams( $paramName, $paramValue )
     {

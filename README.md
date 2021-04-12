@@ -11,7 +11,7 @@ http://www.klaviyo.com/
 ## How to install?
 
     composer require klaviyo/php-sdk
-    
+
 ## API Examples
 
 After installing the Klaviyo package you can initiate it using your public token which is for track events or identifying profiles and/or your private api key to utilize the metrics and list apis.
@@ -26,32 +26,32 @@ You can then easily use Klaviyo to track events or identify people.  Note, track
 ### Track an event
 ```php
 use Klaviyo\Model\EventModel as KlaviyoEvent;
-    
+
 $event = new KlaviyoEvent(
     array(
         'event' => 'Filled out Profile',
         'customer_properties' => array(
-            '$email' => 'someone@mailinator.com'    
+            '$email' => 'someone@mailinator.com'
         ),
         'properties' => array(
             'Added Social Accounts' => False
         )
     )
 );
-    
-$client->publicAPI->track( $event );    
-```    
+
+$client->publicAPI->track( $event );
+```
 ### You can also add profile properties to the 'customer properties' attribute in the Event model
 ```php
 use Klaviyo\Model\EventModel as KlaviyoEvent;
-        
+
 $event = new KlaviyoEvent(
     array(
         'event' => 'Filled out Profile',
         'customer_properties' => array(
             '$email' => 'someone@mailinator.com',
             '$first_name' => 'Thomas',
-            '$last_name' => 'Jefferson'   
+            '$last_name' => 'Jefferson'
         ),
         'properties' => array(
             'Added Social Accounts' => False
@@ -65,7 +65,7 @@ $client->publicAPI->track( $event );
 ### or just add a property to someone
 ```php
 use Klaviyo\Model\ProfileModel as KlaviyoProfile;
-    
+
 $profile = new KlaviyoProfile(
     array(
         '$email' => 'thomas.jefferson@mailinator.com',
@@ -74,7 +74,7 @@ $profile = new KlaviyoProfile(
         'Plan' => 'Premium'
     )
 );
-    
+
 $client->publicAPI->identify( $profile );
 ```
 
@@ -92,7 +92,7 @@ $client->metrics->getMetricTimeline( 'METRICID' );
 
 #export metric specific values
 $client->metrics->exportMetricData( 'METRICID' );
-``` 
+```
 
 ### You can create, update, read, and delete lists.  See here for more information https://www.klaviyo.com/docs/api/v2/lists
 ```php
@@ -149,6 +149,21 @@ $client->profiles->getAllProfileMetricsTimeline( 'ProfileId' );
 
 #Get a specific metric for a profile
 $client->profiles->getProfileMetricTimeline( 'ProfileId', 'MetricId' );
+
+#Get a profile's ID by its email address
+$client->profiles->getProfileIdByEmail('someone@mailinator.com');
+```
+
+### You can request a privacy-compliant profile deletion given an identifying property
+```php
+#Request profile deletion by email
+$client->dataprivacy->requestProfileDeletion('someone@mailinator.com');
+
+#Request profile deletion by phone number
+$client->dataprivacy->requestProfileDeletion('1-234-567-8910', 'phone_number');
+
+#Request profile deletion by person ID
+$client->dataprivacy->requestProfileDeletion('abc123', 'person_id');
 ```
 
 ## Exceptions
@@ -162,7 +177,7 @@ $client->profiles->getProfileMetricTimeline( 'ProfileId', 'MetricId' );
   `{"detail":"Request was throttled. Expected available in 26.0 seconds.","retryAfter":26}`
 
 ### Klaviyo\Exception\KlaviyoAuthenticationException
-  Thrown when there is an authentication error when making an API request, usually caused by an invalid API key.  
+  Thrown when there is an authentication error when making an API request, usually caused by an invalid API key.
 
 ### Klaviyo\Exception\KlaviyoResourceNotFoundException
   Thrown when the system attempts to update a property that doesn't exist. For example, attempting to update a list that doesn't exist on the account.
