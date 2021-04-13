@@ -58,6 +58,7 @@ class Lists extends KlaviyoAPI
 
     /**
      * Get information about a list
+     *
      * @deprecated 2.2.6
      * @see getListById
      *
@@ -68,8 +69,7 @@ class Lists extends KlaviyoAPI
      */
     public function getListDetails( $listId )
     {
-        $path = sprintf( '%s/%s', self::ENDPOINT_LIST, $listId );
-        return $this->v2Request( $path );
+        return $this->getListById($listId);
     }
 
     /**
