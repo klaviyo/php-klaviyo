@@ -149,6 +149,21 @@ $client->profiles->getAllProfileMetricsTimeline( 'ProfileId' );
 
 #Get a specific metric for a profile
 $client->profiles->getProfileMetricTimeline( 'ProfileId', 'MetricId' );
+
+#Get a profile's ID by its email address
+$client->profiles->getProfileIdByEmail('someone@mailinator.com');
+```
+
+### You can request a privacy-compliant profile deletion given an identifying property
+```php
+#Request profile deletion by email
+$client->dataprivacy->requestProfileDeletion('someone@mailinator.com');
+
+#Request profile deletion by phone number
+$client->dataprivacy->requestProfileDeletion('1-234-567-8910', 'phone_number');
+
+#Request profile deletion by person ID
+$client->dataprivacy->requestProfileDeletion('abc123', 'person_id');
 ```
 
 ## Exceptions
