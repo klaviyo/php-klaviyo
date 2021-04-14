@@ -1,8 +1,9 @@
 ## CHANGELOG
-
 ### [Unreleased]
 - Update - Add people/search endpoint.
 - Update - Add data-privacy/deletion-request endpoint.
+- Deprecate - Rename List API methods: getListDetails, updateListDetails, subscribeMembersToList, unsubscribeMembersFromList, getGroupMemberIdentifiers, getAllExclusionsOnList
+- Deprecate - Rename Metric API methods: getMetricTimeline, exportMetricData
 
 ### 2.2.5
 - Update - Add error details into KlaviyoAPI handleResponse function

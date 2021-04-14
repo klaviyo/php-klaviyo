@@ -88,10 +88,10 @@ $client->metrics->getMetrics();
 $client->metrics->getMetricsTimeline();
 
 #return a specific metric timeline using its metric ID
-$client->metrics->getMetricTimeline( 'METRICID' );
+$client->metrics->getMetricTimelineById( 'METRICID' );
 
 #export metric specific values
-$client->metrics->exportMetricData( 'METRICID' );
+$client->metrics->getMetricExport( 'METRICID' );
 ```
 
 ### You can create, update, read, and delete lists.  See here for more information https://www.klaviyo.com/docs/api/v2/lists
@@ -103,22 +103,22 @@ $client->lists->createList( 'List Name' );
 $client->lists->getLists();
 
 #Get information about a list
-$client->lists->getListDetails( 'ListId' );
+$client->lists->getListById( 'ListId' );
 
 #update a lists properties
-$client->lists->updateListDetails( 'ListId', 'ListName' );
+$client->lists->updateListNameById( 'ListId', 'ListName' );
 
 #Delete a list from account
 $client->lists->deleteList( 'ListId' );
 
 #Subscribe or re-subscribe profiles to a list
-$client->lists->subscribeMemberstoList( 'ListId', array $arrayOfProfiles );
+$client->lists->addSubscribersToList( 'ListId', array $arrayOfProfiles );
 
 #Check if profiles are on a list and not suppressed
 $client->lists->checkListSubscriptions( 'ListId', array $emails, array $phoneNumbers, array $pushTokens );
 
 #Unsubscribe and remove profiles from a list
-$client->lists->unsubscribeMembersFromList( 'ListId', array $emails );
+$client->lists->deleteSubscribersFromList( 'ListId', array $emails );
 
 #Add members to list without affecting consent status
 $client->lists->addMembersToList( 'ListId', array $arrayOfProfiles );
@@ -130,10 +130,10 @@ $client->lists->checkListMembership( 'ListId', array $emails, array $phoneNumber
 $client->lists->removeMembersFromList( 'ListId', array $emails );
 
 #Get all exclusions on a list
-$client->lists->getAllExclusionsOnList( 'ListId' );
+$client->lists->getListExclusions( 'ListId' );
 
 #Get all of the emails, phone numbers and push tokens for profiles in a given list or segment
-$client->lists->getGroupMemberIdentifiers( 'GroupId' );
+$client->lists->getAllMembers( 'GroupId' );
 ```
 
 ### You can fetch profile information given the profile ID, See here for more information https://www.klaviyo.com/docs/api/people
