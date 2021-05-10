@@ -444,14 +444,14 @@ class KlaviyoAPI
      */
     private function handleResponse(string $response, int $statusCode, bool $isPublic)
     {
-        if ( $statusCode == 403 ) {
+        if ($statusCode == 403) {
             throw new KlaviyoAuthenticationException(self::ERROR_INVALID_API_KEY, $statusCode);
-        } else if ( $statusCode == 429 ) {
+        } elseif ($statusCode == 429) {
             throw new KlaviyoRateLimitException(
-                $this->returnRateLimit( $this->decodeJsonResponse( $response ) )
+                $this->returnRateLimit($this->decodeJsonResponse($response))
             );
-        } else if ($statusCode < 200 || $statusCode >= 300) {
-            throw new KlaviyoApiException($this->decodeJsonResponse( $response )['detail'], $statusCode);
+        } elseif ($statusCode < 200 || $statusCode >= 300) {
+            throw new KlaviyoApiException($this->decodeJsonResponse($response)['detail'], $statusCode);
         }
 
         if ($isPublic) {

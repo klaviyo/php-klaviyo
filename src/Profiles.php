@@ -28,7 +28,9 @@ class Profiles
      * @link https://www.klaviyo.com/docs/api/people#person
      *
      * @param string $personId 6 digit unique identifier for Profiles
+     *
      * @return array
+     * @throws Exception\KlaviyoException
      */
     public function getProfile(string $personId) : array
     {
@@ -45,6 +47,7 @@ class Profiles
      * @param array $properties In addition to these pre-defined Klaviyo arguments, you may pass any arbitrary key/value pair as a custom property. The names of the custom properties cannot start with $.
      *
      * @return array
+     * @throws Exception\KlaviyoException
      */
     public function updateProfile(string $personId, array $properties) : array
     {
@@ -63,6 +66,7 @@ class Profiles
      * @param string $sort defaults to 'desc' Sort order to apply to timeline
      *
      * @return array
+     * @throws Exception\KlaviyoException
      */
     public function getAllProfileMetricsTimeline(string $personId, ?string $since = null, ?string $uuid = null, int $count = 100, string $sort = 'desc') : array
     {
@@ -93,6 +97,7 @@ class Profiles
      * @param string $sort defaults to 'desc' Sort order to apply to timeline
      *
      * @return array
+     * @throws Exception\KlaviyoException
      */
     public function getProfileMetricTimeline(string $personId, string $metricId, ?string $since = null, ?string $uuid = null, int $count = 100, $sort = 'desc') : array
     {
@@ -115,14 +120,15 @@ class Profiles
      * Get ID of profile by email address.
      *
      * @param string $email Email address of desired profile.
-     * @return mixed
+     *
+     * @return array
      * @throws Exception\KlaviyoException
      */
-    public function getProfileIdByEmail($email)
+    public function getProfileIdByEmail(string $email) : array
     {
-        $params = $this->createRequestBody([self::EMAIL => $email]);
+        $params = $this->klaviyoAPI->createRequestBody([KlaviyoAPI::EMAIL => $email]);
         $path = sprintf('%s/%s', self::PEOPLE, self::SEARCH);
 
-        return $this->v2Request($path, $params);
+        return $this->klaviyoAPI->v2Request($path, $params);
     }
 }

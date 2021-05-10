@@ -41,6 +41,7 @@ class Metrics
      * @param int $count For pagination, the number of results to return, The maximum number of results per page is 100, defaults to 50
      *
      * @return array
+     * @throws KlaviyoException
      */
     public function getMetrics(int $page = 0, int $count = 50) : array
     {
@@ -68,6 +69,7 @@ class Metrics
      * @param string $sort defaults to 'desc', Sort order to apply to timeline
      *
      * @return array
+     * @throws KlaviyoException
      */
     public function getMetricsTimeline(
         ?string $since = null,
@@ -92,30 +94,21 @@ class Metrics
     /**
      * Returns a batched timeline for one specific type of metric, requires metric ID from your Klaviyo account
      *
+     * @param string $metricID 6 digit unique identifier of the metric
+     * @param string|null $since To be used with the since argument of the call, can accept UNIX timestamps,
+     * The `since` argument of the call defaults to current time
+     * @param string|null $uuid Can be used with the `since` argument of the call, is obtained via the 'next' attribute of a prior API call.
+     * The `since` argument of the call defaults to current time
+     * @param int|null $count defaults to 100 Number of events to return in a batch
+     * @param string|null $sort defaults to 'desc' Sort order to apply to timeline
+     *
+     * @return array
+     * @throws KlaviyoException
+     *
      * @deprecated 2.2.6
      * @see getMetricTimelineById
-     *
-     * @param string $metricID
-     * 6 digit unique identifier of the metric
-     *
-     * @param string $since
-     * To be used with the since argument of the call, can accept UNIX timestamps,
-     * The `since` argument of the call defaults to current time
-     *
-     * @param string $uuid
-     * Can be used with the `since` argument of the call, is obtained via the 'next' attribute of a prior API call.
-     * The `since` argument of the call defaults to current time
-     *
-     * @param int $count defaults to 100,
-     * Number of events to return in a batch
-     *
-     * @param string $sort defaults to 'desc'
-     * Sort order to apply to timeline
-     *
-     * @return bool|mixed
-     *
      */
-    public function getMetricTimeline( $metricID, $since = null, $uuid = null, $count = null, $sort = null )
+    public function getMetricTimeline(string $metricID, ?string $since = null, ?string $uuid = null, ?int $count = null, ?string $sort = null) : array
     {
         return $this->getMetricTimelineById($metricID, $since, $uuid, $count, $sort);
     }
@@ -123,78 +116,64 @@ class Metrics
     /**
      * Returns a batched timeline for one specific type of metric, requires metric ID from your Klaviyo account
      * @link https://www.klaviyo.com/docs/api/metrics#metric-timeline
-     * @param string $metricID
-     * 6 digit unique identifier of the metric
      *
-     * @param string $since
-     * To be used with the since argument of the call, can accept UNIX timestamps,
+     * @param string $metricID 6 digit unique identifier of the metric
+     * @param string|null $since To be used with the since argument of the call, can accept UNIX timestamps,
      * The `since` argument of the call defaults to current time
-     *
-     * @param string $uuid
-     * Can be used with the `since` argument of the call, is obtained via the 'next' attribute of a prior API call.
+     * @param string|null $uuid Can be used with the `since` argument of the call, is obtained via the 'next' attribute of a prior API call.
      * The `since` argument of the call defaults to current time
+     * @param int|null $count defaults to 100 Number of events to return in a batch
+     * @param string|null $sort defaults to 'desc' Sort order to apply to timeline
      *
-     * @param int $count defaults to 100,
-     * Number of events to return in a batch
-     *
-     * @param string $sort defaults to 'desc'
-     * Sort order to apply to timeline
-     *
-     * @return bool|mixed
+     * @return array
+     * @throws KlaviyoException
      */
-    public function getMetricTimelineById($metricID, $since = null, $uuid = null, $count = null, $sort = null)
+    public function getMetricTimelineById(string $metricID, ?string $since = null, ?string $uuid = null, ?int $count = null, ?string $sort = null) : array
     {
-        $params = $this->setSinceParameter($since, $uuid);
+        $params = $this->klaviyoAPI->setSinceParameter($since, $uuid);
 
-        $params = $this->filterParams(
+        $params = $this->klaviyoAPI->filterParams(
             array_merge(
                 $params,
-                array(
-                    self::COUNT => $count,
-                    self::SORT => $sort
-                )
+                [
+                    KlaviyoAPI::COUNT => $count,
+                    KlaviyoAPI::SORT => $sort,
+                ]
             )
         );
 
         $path = sprintf('%s/%s/%s', self::METRIC, $metricID, self::TIMELINE);
-        return $this->v1Request($path, $params);
+        return $this->klaviyoAPI->v1Request($path, $params);
     }
 
     /**
      * Export event data from Klaviyo optionally filtering and segmented on available event properties.
      *
+     * @param string $metricID 6 digit unique identifier of the metric
+     * @param string|null $start_date
+     * @param string|null $end_date
+     * @param string|null $unit
+     * @param string|null $measurement
+     * @param string|null $where
+     * @param string|null $by
+     * @param int|null $count
+     *
+     * @return array
+     * @throws KlaviyoException
+     *
      * @deprecated 2.2.6
      * @see getMetricExport
-     *
-     * @param string $metricID
-     * 6 digit unique identifier of the metric
-     *
-     * @param $start_date
-     *
-     * @param $end_date
-     *
-     * @param $unit
-     *
-     * @param $measurement
-     *
-     * @param $where
-     *
-     * @param $by
-     *
-     * @param $count
-     *
-     * @return bool|mixed
-     * @throws KlaviyoException
      */
-    public function exportMetricData( $metricID,
-                                      $start_date = null,
-                                      $end_date = null,
-                                      $unit = null,
-                                      $measurement = null,
-                                      $where = null,
-                                      $by = null,
-                                      $count = null )
-    {
+    public function exportMetricData(
+        string $metricID,
+        ?string $start_date = null,
+        ?string $end_date = null,
+        ?string $unit = null,
+        ?string $measurement = null,
+        ?string $where = null,
+        ?string $by = null,
+        ?int $count = null
+    ) : array {
         return $this->getMetricExport($metricID, $start_date, $end_date, $unit, $measurement, $where, $by, $count);
     }
 
@@ -203,30 +182,31 @@ class Metrics
      * @link https://www.klaviyo.com/docs/api/metrics#metric-export
      *
      * @param string $metricID 6 digit unique identifier of the metric
-     * @param $start_date
-     * @param $end_date
-     * @param $unit
-     * @param $measurement
-     * @param $where
-     * @param $by
-     * @param $count
+     * @param string|null $start_date
+     * @param string|null $end_date
+     * @param string|null $unit
+     * @param string|null $measurement
+     * @param string|null $where
+     * @param string|null $by
+     * @param int|null $count
      *
-     * @return bool|mixed
+     * @return array
      * @throws KlaviyoException
      */
     public function getMetricExport(
-        $metricID,
-        $start_date = null,
-        $end_date = null,
-        $unit = null,
-        $measurement = null,
-        $where = null,
-        $by = null,
-        $count = null
-    )
-    {
+        string $metricID,
+        ?string $start_date = null,
+        ?string $end_date = null,
+        ?string $unit = null,
+        ?string $measurement = null,
+        ?string $where = null,
+        ?string $by = null,
+        ?int $count = null
+    ) : array {
         if (isset($where) && isset($by)) {
-            throw new KlaviyoException('Please use either \'where\' or \'by\', only one of these variables can be set for the export call');
+            throw new KlaviyoException(
+                'Please use either \'where\' or \'by\', only one of these variables can be set for the export call'
+            );
         }
 
         $params = $this->klaviyoAPI->filterParams(
@@ -237,12 +217,12 @@ class Metrics
                 self::MEASUREMENT => $measurement,
                 self::WHERE => $where,
                 self::BY => $by,
-                self::COUNT => $count,
+                KlaviyoAPI::COUNT => $count,
             ]
         );
 
         $path = sprintf('%s/%s/%s', self::METRIC, $metricID, self::EXPORT);
 
-        return $this->v1Request($path, $params);
+        return $this->klaviyoAPI->v1Request($path, $params);
     }
 }

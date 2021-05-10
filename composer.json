@@ -14,13 +14,13 @@
     "require": {
         "php": "^7.4",
         "ext-json": "*",
-        "ext-curl": "*",
-        "friendsofphp/php-cs-fixer": "^2.18",
-        "phpstan/phpstan": "^0.12"
+        "ext-curl": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5",
-        "vimeo/psalm": "^4.7"
+        "vimeo/psalm": "^4.7",
+        "friendsofphp/php-cs-fixer": "^2.18",
+        "phpstan/phpstan": "^0.12"
     },
     "autoload": {
         "psr-4": {

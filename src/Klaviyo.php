@@ -6,9 +6,8 @@ namespace Klaviyo;
 
 class Klaviyo
 {
-    private KlaviyoAPI $klaviyoAPI;
-
     const VERSION = '2.3.0';
+    private KlaviyoAPI $klaviyoAPI;
 
     /**
      * Constructor for Klaviyo.
@@ -34,6 +33,11 @@ class Klaviyo
     public function profiles() : Profiles
     {
         return new Profiles($this->klaviyoAPI);
+    }
+
+    public function dataPrivacy() : DataPrivacy
+    {
+        return new DataPrivacy($this->klaviyoAPI);
     }
 
     public function publicAPI() : PublicAPI
