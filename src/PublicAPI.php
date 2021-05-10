@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Klaviyo;
 
 use Klaviyo\Model\EventModel;
 use Klaviyo\Model\ProfileModel;
 
-class PublicAPI extends KlaviyoAPI
+class PublicAPI
 {
     /**
      * Track Class constants
@@ -13,15 +15,11 @@ class PublicAPI extends KlaviyoAPI
     const TRACK = 'track';
     const IDENTIFY = 'identify';
 
-    /**
-     * PublicAPI constructor.
-     * @param $public_key
-     * @param $private_key
-     * @param string $host
-     */
-    public function __construct( $public_key, $private_key, $host = self::BASE_URL )
+    private KlaviyoAPI $klaviyoAPI;
+
+    public function __construct(KlaviyoAPI $klaviyoAPI)
     {
-        parent::__construct( $public_key, $private_key, $host = self::BASE_URL );
+        $this->klaviyoAPI = $klaviyoAPI;
     }
 
     /**
@@ -29,13 +27,13 @@ class PublicAPI extends KlaviyoAPI
      * @link https://www.klaviyo.com/docs#track
      *
      * @param EventModel $event
-     * @return mixed
+     * @return array
      */
-    public function track( EventModel $event )
+    public function track(EventModel $event) : array
     {
-        $options = array( self::QUERY => $event->toArray() );
+        $options = [KlaviyoAPI::QUERY => $event->toArray()];
 
-        return $this->publicRequest( self::TRACK, $options );
+        return $this->klaviyoAPI->publicRequest(self::TRACK, $options);
     }
 
     /**
@@ -43,16 +41,16 @@ class PublicAPI extends KlaviyoAPI
      * @link https://www.klaviyo.com/docs#identify
      *
      * @param ProfileModel $profile
-     * @return mixed
+     * @return array
      */
-    public function identify( ProfileModel $profile )
+    public function identify(ProfileModel $profile) : array
     {
-        $options = array(
-            self::QUERY => array(
-                self::PROPERTIES => $profile
-            )
-        );
+        $options = [
+            KlaviyoAPI::QUERY => [
+                KlaviyoAPI::PROPERTIES => $profile,
+            ],
+        ];
 
-        return $this->publicRequest( self::IDENTIFY, $options );
+        return $this->klaviyoAPI->publicRequest(self::IDENTIFY, $options);
     }
 }

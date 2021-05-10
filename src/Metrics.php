@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Klaviyo;
 
 use Klaviyo\Exception\KlaviyoException;
 
-class Metrics extends KlaviyoAPI
+class Metrics
 {
     /**
      * Metrics endpoint constants
@@ -24,64 +26,67 @@ class Metrics extends KlaviyoAPI
     const MEASUREMENT = 'measurement';
     const BY = 'by';
 
+    private KlaviyoAPI $klaviyoAPI;
+
+    public function __construct(KlaviyoAPI $klaviyoAPI)
+    {
+        $this->klaviyoAPI = $klaviyoAPI;
+    }
+
     /**
      * Returns a list of all metrics in Klaviyo
      * @link https://www.klaviyo.com/docs/api/metrics#metrics
      *
-     * @param int $page defaults to 0,
-     * For pagination, which page of results to return, defaults to 0
+     * @param int $page For pagination, which page of results to return, defaults to 0
+     * @param int $count For pagination, the number of results to return, The maximum number of results per page is 100, defaults to 50
      *
-     * @param int $count defaults to 50,
-     * For pagination, the number of results to return, The maximum number of results per page is 100
-     *
-     * @return mixed
+     * @return array
      */
-    public function getMetrics( $page = null, $count = null )
+    public function getMetrics(int $page = 0, int $count = 50) : array
     {
-        $params = $this->filterParams( array(
-            self::PAGE=> $page,
-            self::COUNT => $count
-        ) );
+        if ($count > 100) {
+            throw new KlaviyoException('Current maximum count can not exceed 100');
+        }
 
-        return $this->v1Request( self::METRICS, $params );
+        $params = $this->klaviyoAPI->filterParams(
+            [
+                KlaviyoAPI::PAGE => $page,
+                KlaviyoAPI::COUNT => $count,
+            ]
+        );
+
+        return $this->klaviyoAPI->v1Request(self::METRICS, $params);
     }
 
     /**
      * Returns a list batched timeline of all events in your Klaviyo account
      * @link https://www.klaviyo.com/docs/api/metrics#metrics-timeline
      *
-     * @param string $since
-     * To be used with the since argument of the call, can accept UNIX timestamps,
-     * The `since` argument of the call defaults to current time
+     * @param string|null $since To be used with the since argument of the call, can accept UNIX timestamps, The `since` argument of the call defaults to current time
+     * @param string|null $uuid Can be used with the `since` argument of the call, is obtained via the 'next' attribute of a prior API call. The `since` argument of the call defaults to current time
+     * @param int $count defaults to 100, Number of events to return in a batch
+     * @param string $sort defaults to 'desc', Sort order to apply to timeline
      *
-     * @param string $uuid
-     * Can be used with the `since` argument of the call, is obtained via the 'next' attribute of a prior API call.
-     * The `since` argument of the call defaults to current time
-     *
-     * @param int $count defaults to 100,
-     * Number of events to return in a batch
-     *
-     * @param string $sort defaults to 'desc'
-     * Sort order to apply to timeline
-     *
-     * @return bool|mixed
+     * @return array
      */
-    public function getMetricsTimeline( $since = null, $uuid = null, $count = null, $sort = null )
-    {
-        $params = $this->setSinceParameter( $since, $uuid );
+    public function getMetricsTimeline(
+        ?string $since = null,
+        ?string $uuid = null,
+        int $count = 100,
+        string $sort = 'desc'
+    ) : array {
+        $params = [
+            KlaviyoAPI::COUNT => $count,
+            KlaviyoAPI::SORT => $sort,
+        ];
 
-        $params = $this->filterParams( array_merge(
-            $params,
-            array(
-                self::COUNT => $count,
-                self::SORT => $sort
-            )
-        ) );
+        if ($since || $uuid) {
+            $params = array_merge($params, $this->klaviyoAPI->setSinceParameter($since, $uuid));
+        }
 
-        $path = sprintf( '%s/%s', self::METRICS, self::TIMELINE );
+        $path = sprintf('%s/%s', self::METRICS, self::TIMELINE);
 
-        return $this->v1Request( $path, $params );
-
+        return $this->klaviyoAPI->v1Request($path, $params);
     }
 
     /**
@@ -224,8 +229,8 @@ class Metrics extends KlaviyoAPI
             throw new KlaviyoException('Please use either \'where\' or \'by\', only one of these variables can be set for the export call');
         }
 
-        $params = $this->filterParams(
-            array(
+        $params = $this->klaviyoAPI->filterParams(
+            [
                 self::START_DATE => $start_date,
                 self::END_DATE => $end_date,
                 self::UNIT => $unit,
@@ -233,7 +238,7 @@ class Metrics extends KlaviyoAPI
                 self::WHERE => $where,
                 self::BY => $by,
                 self::COUNT => $count,
-            )
+            ]
         );
 
         $path = sprintf('%s/%s/%s', self::METRIC, $metricID, self::EXPORT);

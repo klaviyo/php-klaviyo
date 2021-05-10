@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-use Klaviyo\Profiles;
+use Klaviyo\Exception\KlaviyoException;
+use Klaviyo\Metrics;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
-class ProfilesTest extends TestCase
+class MetricsTest extends TestCase
 {
     /**
-     * @var \Klaviyo\KlaviyoAPI|mixed|MockObject
+     * @var MockObject|\Klaviyo\KlaviyoAPI|mixed
      */
     private $klaviyoAPI;
 
@@ -20,72 +21,54 @@ class ProfilesTest extends TestCase
         parent::setUp();
     }
 
-    public function test_get_profile()
+    public function test_get_metrics()
     {
         $this->klaviyoAPI->method('v1Request')->willReturn(
             json_decode(
                 '{
-                    "object": "person",
-                    "id": "dqQnNW",
-                    "$email": "george.washington@example.com",
-                    "$first_name": "George",
-                    "$last_name": "Washington",
-                    "$organization": "U.S. Government",
-                    "$title": "President",
-                    "$city": "Mount Vernon",
-                    "$region": "Virginia",
-                    "$zip": "22121",
-                    "$country": "United States",
-                    "$timezone": "US/Eastern",
-                    "$phone_number": ""
-                }',
-                true,
-                512,
-                JSON_THROW_ON_ERROR
+                      "end": 1,
+                      "object": "$list",
+                      "page_size": 50,
+                      "start": 0,
+                      "total": 1,
+                      "data": [
+                        {
+                          "updated": "2014-11-03 20:54:40",
+                          "name": "Added integration",
+                          "created": "2014-11-03 20:54:40",
+                          "object": "metric",
+                          "id": "8qYK7L",
+                          "integration": {
+                            "category": "API",
+                            "object": "integration",
+                            "id": "4qYGmQ",
+                            "name": "API"
+                          }
+                        } 
+                      ]
+                  }',
+                true
             )
         );
-        $profiles = new Profiles($this->klaviyoAPI);
+        $metrics = new Metrics($this->klaviyoAPI);
 
-        $profile = $profiles->getProfile('dqQnNW');
+        $result = $metrics->getMetrics();
 
-        self::assertIsArray($profile);
-        self::assertEquals('dqQnNW', $profile['id']);
+        self::assertIsArray($result);
+        self::assertEquals(0, $result['start']);
+        self::assertEquals(1, $result['total']);
     }
 
-    public function test_updating_profile()
+    public function test_get_metrics_fail_with_over_100_count_provided()
     {
-        $this->klaviyoAPI->method('v1Request')->willReturn(
-            json_decode(
-                '{
-                    "object": "person",
-                    "id": "dqQnNW",
-                    "$email": "george.washington@example.com",
-                    "$first_name": "John",
-                    "$last_name": "Washington",
-                    "$organization": "U.S. Government",
-                    "$title": "President",
-                    "$city": "Mount Vernon",
-                    "$region": "Virginia",
-                    "$zip": "22121",
-                    "$country": "United States",
-                    "$timezone": "US/Eastern",
-                    "$phone_number": ""
-                }',
-                true,
-                512,
-                JSON_THROW_ON_ERROR
-            )
-        );
-        $profiles = new Profiles($this->klaviyoAPI);
+        $this->klaviyoAPI->method('v1Request')->willReturn([]);
+        $metrics = new Metrics($this->klaviyoAPI);
 
-        $profile = $profiles->updateProfile('dqQnNW', ['$first_name' => 'John']);
-
-        self::assertIsArray($profile);
-        self::assertEquals('dqQnNW', $profile['id']);
-        self::assertEquals('John', $profile['$first_name']);
+        $this->expectExceptionObject(new KlaviyoException('Current maximum count can not exceed 100'));
+        $metrics->getMetrics(0, 101);
     }
 
-    public function test_listing_person_complete_timeline()
+    public function test_get_metrics_timeline()
     {
         $this->klaviyoAPI->method('v1Request')->willReturn(
             json_decode(
@@ -129,22 +112,29 @@ class ProfilesTest extends TestCase
                         }
                       }
                     ]
-                }',
-                true,
-                512,
-                JSON_THROW_ON_ERROR
+                    }',
+                true
             )
         );
-        $profiles = new Profiles($this->klaviyoAPI);
+        $metrics = new Metrics($this->klaviyoAPI);
 
-        $timeline = $profiles->getAllProfileMetricsTimeline('3EJ9cW');
+        $result = $metrics->getMetricsTimeline();
+        self::assertIsArray($result);
+        self::assertEquals(1, $result['count']);
+        self::assertIsArray($result['data']);
 
-        self::assertIsArray($timeline);
-        self::assertEquals(1, $timeline['count']);
-        self::assertIsArray($timeline['data']);
+        $result = $metrics->getMetricsTimeline('20200101', null);
+        self::assertIsArray($result);
+        self::assertEquals(1, $result['count']);
+        self::assertIsArray($result['data']);
+
+        $result = $metrics->getMetricsTimeline('20200101', '30d5018c-6106-4715-a238-0028644efa1c');
+        self::assertIsArray($result);
+        self::assertEquals(1, $result['count']);
+        self::assertIsArray($result['data']);
     }
 
-    public function test_listing_person_complete_timeline_for_particular_metric()
+    public function test_get_metric_timeline()
     {
         $this->klaviyoAPI->method('v1Request')->willReturn(
             json_decode(
@@ -186,20 +176,27 @@ class ProfilesTest extends TestCase
                           "IsDiscounted": false,
                           "UsedCoupon": false
                         }
-                        }
-                      ]
+                      }
+                    ]
                     }',
-                true,
-                512,
-                JSON_THROW_ON_ERROR
+                true
             )
         );
-        $profiles = new Profiles($this->klaviyoAPI);
+        $metrics = new Metrics($this->klaviyoAPI);
 
-        $timeline = $profiles->getProfileMetricTimeline('3EJ9cW', '4Q8Y6N');
+        $result = $metrics->getMetricTimeline('123123');
+        self::assertIsArray($result);
+        self::assertEquals(1, $result['count']);
+        self::assertIsArray($result['data']);
 
-        self::assertIsArray($timeline);
-        self::assertEquals(1, $timeline['count']);
-        self::assertIsArray($timeline['data']);
+        $result = $metrics->getMetricTimeline('123123', '20200101', null);
+        self::assertIsArray($result);
+        self::assertEquals(1, $result['count']);
+        self::assertIsArray($result['data']);
+
+        $result = $metrics->getMetricTimeline('123123', '20200101', '30d5018c-6106-4715-a238-0028644efa1c');
+        self::assertIsArray($result);
+        self::assertEquals(1, $result['count']);
+        self::assertIsArray($result['data']);
     }
 }

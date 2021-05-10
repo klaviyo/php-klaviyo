@@ -1,5 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Klaviyo\Exception;
 
-class KlaviyoAuthenticationException extends KlaviyoApiException {}
+class KlaviyoAuthenticationException extends KlaviyoException
+{
+}
