@@ -1,19 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Klaviyo\Model;
 
-use DateTime;
+use DateTimeImmutable;
 use Exception;
-
 use Klaviyo\Exception\KlaviyoException;
-use Klaviyo\Model\ProfileModel;
+use JsonSerializable;
 
-class EventModel extends BaseModel
+class EventModel implements JsonSerializable
 {
-    protected $event;
-    protected $customer_properties;
-    protected $properties;
-    protected $time;
+    protected string $event;
+    protected ProfileModel $customer_properties;
+    protected array $properties;
+    protected ?DateTimeImmutable $time;
 
     /**
      * EventModel constructor. Takes in a config array which needs to be set up as follows:
@@ -36,36 +37,42 @@ class EventModel extends BaseModel
      * @param array $config
      * @throws KlaviyoException
      */
-    public function __construct( $config ) {
+    public function __construct(array $config)
+    {
         $this->event = $config['event'];
         $this->customer_properties = new ProfileModel(
             $config['customer_properties']
         );
         $this->properties = $config['properties'];
         // Can pass in unix timestamp if prefixed with '@' or any date/time format accepted by DateTime interface.
+
+        $time = null;
+
         try {
             if (isset($config['time'])) {
-                $time = new DateTime(
+                $time = new DateTimeImmutable(
                     is_int($config['time']) ? '@' . $config['time'] : $config['time']
                 );
             }
-        } catch ( Exception $e ) {
-            throw new KlaviyoException( $e->getMessage() );
+        } catch (Exception $e) {
+            throw new KlaviyoException($e->getMessage());
         }
 
-        $this->time = !empty($config['time']) ? $time->getTimestamp() : null;
+        $this->time = $time;
     }
 
-    /**
-     * @return array|mixed
-     */
-    public function jsonSerialize() {
-        return array(
+    public function jsonSerialize() : array
+    {
+        return [
             'event' => $this->event,
             'customer_properties' => $this->customer_properties,
             'properties' => $this->properties,
-            'time' => $this->time
-        );
+            'time' => $this->time ? $this->time->getTimestamp() : null,
+        ];
     }
-    
+
+    public function toArray()
+    {
+        return json_decode(json_encode($this), true);
+    }
 }

@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Klaviyo;
 
-class Profiles extends KlaviyoAPI
+class Profiles
 {
     /**
      * Profiles endpoint constants
@@ -15,19 +16,26 @@ class Profiles extends KlaviyoAPI
     const SEARCH = 'search';
     const TIMELINE = 'timeline';
 
+    private KlaviyoAPI $klaviyoAPI;
+
+    public function __construct(KlaviyoAPI $klaviyoAPI)
+    {
+        $this->klaviyoAPI = $klaviyoAPI;
+    }
+
     /**
      * Retrieve all data attributes for a person, based on the Klaviyo personID
      * @link https://www.klaviyo.com/docs/api/people#person
      *
-     * @param $personId
-     * 6 digit unique identifier for Profiles
+     * @param string $personId 6 digit unique identifier for Profiles
      *
-     * @return bool|mixed
+     * @return array
+     * @throws Exception\KlaviyoException
      */
-    public function getProfile( $personId )
+    public function getProfile(string $personId) : array
     {
-        $path = sprintf( '%s/%s', self::PERSON, $personId );
-        return $this->v1Request( $path );
+        $path = sprintf('%s/%s', self::PERSON, $personId);
+        return $this->klaviyoAPI->v1Request($path);
     }
 
     /**
@@ -35,115 +43,92 @@ class Profiles extends KlaviyoAPI
      * If a property already exists, it will be updated. If a property is not set for that record, it will be created
      * @link https://www.klaviyo.com/docs/api/people#person
      *
-     * @param $personId
-     * 6 digit unique identifier for Profile
+     * @param string $personId 6 digit unique identifier for Profile
+     * @param array $properties In addition to these pre-defined Klaviyo arguments, you may pass any arbitrary key/value pair as a custom property. The names of the custom properties cannot start with $.
      *
-     * @param array $properties
-     * In addition to these pre-defined Klaviyo arguments, you may pass any arbitrary key/value pair as a custom property. The names of the custom properties cannot start with $.
-     *
-     * @return bool|mixed
+     * @return array
+     * @throws Exception\KlaviyoException
      */
-    public function updateProfile( $personId, $properties )
+    public function updateProfile(string $personId, array $properties) : array
     {
-        $path = sprintf( '%s/%s', self::PERSON, $personId );
-        return $this->v1Request( $path, $properties, self::HTTP_PUT );
+        $path = sprintf('%s/%s', self::PERSON, $personId);
+        return $this->klaviyoAPI->v1Request($path, $properties, KlaviyoAPI::HTTP_PUT);
     }
 
     /**
      * Returns a batched timeline of all events for a person.
      * @link https://www.klaviyo.com/docs/api/people#metrics-timeline
      *
-     * @param $personId
-     * 6 digit unique identifier for Profile
+     * @param string $personId 6 digit unique identifier for Profile
+     * @param string|null $since To be used with the since argument of the call, can accept UNIX timestamps,The `since` argument of the call defaults to current time
+     * @param string|null $uuid Can be used with the `since` argument of the call, is obtained via the 'next' attribute of a prior API call. The `since` argument of the call defaults to current time
+     * @param int $count defaults to 100, Number of events to return in a batch
+     * @param string $sort defaults to 'desc' Sort order to apply to timeline
      *
-     * @param string $since
-     * To be used with the since argument of the call, can accept UNIX timestamps,
-     * The `since` argument of the call defaults to current time
-     *
-     * @param string $uuid
-     * Can be used with the `since` argument of the call, is obtained via the 'next' attribute of a prior API call.
-     * The `since` argument of the call defaults to current time
-     *
-     * @param int $count defaults to 100,
-     * Number of events to return in a batch
-     *
-     * @param string $sort defaults to 'desc'
-     * Sort order to apply to timeline
-     *
-     * @return bool|mixed
+     * @return array
+     * @throws Exception\KlaviyoException
      */
-    public function getAllProfileMetricsTimeline( $personId, $since = null, $uuid = null, $count = null, $sort = null )
+    public function getAllProfileMetricsTimeline(string $personId, ?string $since = null, ?string $uuid = null, int $count = 100, string $sort = 'desc') : array
     {
-        $params = $this->setSinceParameter( $since, $uuid );
+        $params = $this->klaviyoAPI->setSinceParameter($since, $uuid);
 
-        $params = $this->filterParams( array_merge(
+        $params = $this->klaviyoAPI->filterParams(array_merge(
             $params,
-            array(
-                self::COUNT => $count,
-                self::SORT => $sort
-            )
-        ) );
+            [
+                KlaviyoAPI::COUNT => $count,
+                KlaviyoAPI::SORT => $sort,
+            ]
+        ));
 
-        $path = sprintf( '%s/%s/%s/%s', self::PERSON, $personId, self::METRICS, self::TIMELINE );
+        $path = sprintf('%s/%s/%s/%s', self::PERSON, $personId, self::METRICS, self::TIMELINE);
 
-        return $this->v1Request( $path, $params );
+        return $this->klaviyoAPI->v1Request($path, $params);
     }
 
     /**
      * Returns a person's batched timeline for one specific event type.
      * @link https://www.klaviyo.com/docs/api/people#metric-timeline
      *
-     * @param $personId
-     * 6 digit unique identifier for Profile
+     * @param string $personId 6 digit unique identifier for Profile
+     * @param string $metricId 6 digit unique identifier of the Metric
+     * @param string|null $since To be used with the since argument of the call, can accept UNIX timestamps, The `since` argument of the call defaults to current time
+     * @param string|null $uuid Can be used with the `since` argument of the call, is obtained via the 'next' attribute of a prior API call. The `since` argument of the call defaults to current time
+     * @param int $count defaults to 100, Number of events to return in a batch
+     * @param string $sort defaults to 'desc' Sort order to apply to timeline
      *
-     * @param $metricId
-     * 6 digit unique identifier of the Metric
-     *
-     * @param string $since
-     * To be used with the since argument of the call, can accept UNIX timestamps,
-     * The `since` argument of the call defaults to current time
-     *
-     * @param string $uuid
-     * Can be used with the `since` argument of the call, is obtained via the 'next' attribute of a prior API call.
-     * The `since` argument of the call defaults to current time
-     *
-     * @param int $count defaults to 100,
-     * Number of events to return in a batch
-     *
-     * @param string $sort defaults to 'desc'
-     * Sort order to apply to timeline
-     *
-     * @return bool|mixed
+     * @return array
+     * @throws Exception\KlaviyoException
      */
-    public function getProfileMetricTimeline( $personId, $metricId, $since = null, $uuid = null, $count = null, $sort = null )
+    public function getProfileMetricTimeline(string $personId, string $metricId, ?string $since = null, ?string $uuid = null, int $count = 100, $sort = 'desc') : array
     {
-        $params = $this->setSinceParameter( $since, $uuid );
+        $params = $this->klaviyoAPI->setSinceParameter($since, $uuid);
 
-        $params = $this->filterParams( array_merge(
+        $params = $this->klaviyoAPI->filterParams(array_merge(
             $params,
-            array(
-                self::COUNT => $count,
-                self::SORT => $sort
-            )
-        ) );
+            [
+                KlaviyoAPI::COUNT => $count,
+                KlaviyoAPI::SORT => $sort,
+            ]
+        ));
 
-        $path = sprintf('%s/%s/%s/%s/%s', self::PERSON, $personId, self::METRIC, $metricId, self::TIMELINE );
+        $path = sprintf('%s/%s/%s/%s/%s', self::PERSON, $personId, self::METRIC, $metricId, self::TIMELINE);
 
-        return $this->v1Request( $path, $params );
+        return $this->klaviyoAPI->v1Request($path, $params);
     }
 
     /**
      * Get ID of profile by email address.
      *
      * @param string $email Email address of desired profile.
-     * @return mixed
+     *
+     * @return array
      * @throws Exception\KlaviyoException
      */
-    public function getProfileIdByEmail($email)
+    public function getProfileIdByEmail(string $email) : array
     {
-        $params = $this->createRequestBody([self::EMAIL => $email]);
+        $params = $this->klaviyoAPI->createRequestBody([KlaviyoAPI::EMAIL => $email]);
         $path = sprintf('%s/%s', self::PEOPLE, self::SEARCH);
 
-        return $this->v2Request($path, $params);
+        return $this->klaviyoAPI->v2Request($path, $params);
     }
 }

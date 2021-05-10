@@ -1,27 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Klaviyo;
 
-use Klaviyo\Exception\KlaviyoException as KlaviyoException;
-/**
- * Main class for accessing the Klaviyo API
- */
 class Klaviyo
 {
-    /**
-     * @var string
-     */
-    protected $private_key;
-
-    /**
-     * @var string
-     */
-    protected $public_key;
-
-    /**
-     * @var string
-     */
     const VERSION = '2.3.0';
+    private KlaviyoAPI $klaviyoAPI;
 
     /**
      * Constructor for Klaviyo.
@@ -29,44 +15,33 @@ class Klaviyo
      * @param string $private_key Private API key for Klaviyo account
      * @param string $public_key Public API key for Klaviyo account
      */
-    public function __construct($private_key, $public_key)
+    public function __construct(string $private_key, string $public_key)
     {
-        $this->private_key = $private_key;
-        $this->public_key = $public_key;
+        $this->klaviyoAPI = new KlaviyoAPI($public_key, $private_key);
     }
 
-    /**
-     * @return string
-     */
-    public function getPrivateKey()
+    public function metrics() : Metrics
     {
-        return $this->private_key;
+        return new Metrics($this->klaviyoAPI);
     }
 
-    /**
-     * @return string
-     */
-    public function getPublicKey()
+    public function lists() : Lists
     {
-        return $this->public_key;
+        return new Lists($this->klaviyoAPI);
     }
 
-    /**
-     * Dynamically retrieve the corresponding API service and
-     * save as property for re-use.
-     *
-     * @param string $api API service
-     */
-    public function __get($api)
+    public function profiles() : Profiles
     {
-        $service = __NAMESPACE__ . '\\' . ucfirst($api);
+        return new Profiles($this->klaviyoAPI);
+    }
 
-        if (class_exists($service)) {
-            $this->$api = new $service($this->public_key, $this->private_key);
+    public function dataPrivacy() : DataPrivacy
+    {
+        return new DataPrivacy($this->klaviyoAPI);
+    }
 
-            return $this->$api;
-        }
-
-        throw new KlaviyoException('Sorry, ' . $api . ' is not a valid Klaviyo API.');
+    public function publicAPI() : PublicAPI
+    {
+        return new PublicAPI($this->klaviyoAPI);
     }
 }

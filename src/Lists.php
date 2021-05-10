@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Klaviyo;
 
 /**
  * Class Lists
  * @package Klaviyo
  */
-class Lists extends KlaviyoAPI
+class Lists
 {
     /**
      * List endpoint constants
@@ -29,45 +31,54 @@ class Lists extends KlaviyoAPI
     const LIST_NAME = 'list_name';
     const MARKER = 'marker';
 
+    private KlaviyoAPI $klaviyoAPI;
+
+    public function __construct(KlaviyoAPI $klaviyoAPI)
+    {
+        $this->klaviyoAPI = $klaviyoAPI;
+    }
+
     /**
      * Create a new list
      * @link https://www.klaviyo.com/docs/api/v2/lists#post-lists
      *
-     * @param string $listName
-     * Name of list to be created.
+     * @param string $listName Name of list to be created.
      *
-     * @return bool|mixed
+     * @return array
+     * @throws Exception\KlaviyoException
      */
-    public function createList( $listName )
+    public function createList(string $listName) : array
     {
-        $options = $this->createParams(self::LIST_NAME, $listName);
+        $options = $this->klaviyoAPI->createParams(self::LIST_NAME, $listName);
 
-        return $this->v2Request( self::ENDPOINT_LISTS, $options, self::HTTP_POST );
+        return $this->klaviyoAPI->v2Request(self::ENDPOINT_LISTS, $options, KlaviyoAPI::HTTP_POST);
     }
 
     /**
      * Get all lists
      * @link https://www.klaviyo.com/docs/api/v2/lists#get-lists
      *
-     * @return bool/mixed
+     * @return array
+     * @throws Exception\KlaviyoException
      */
-    public function getLists() {
-
-        return $this->v2Request( self::ENDPOINT_LISTS );
+    public function getLists() : array
+    {
+        return $this->klaviyoAPI->v2Request(self::ENDPOINT_LISTS);
     }
 
     /**
      * Get information about a list
      *
-     * @deprecated 2.2.6
+     * @param string $listId 6 digit unique identifier of the list
+     *
+     * @return array
+     * @throws Exception\KlaviyoException
+     *
      * @see getListById
      *
-     * @param string $listId
-     * 6 digit unique identifier of the list
-     *
-     * @return bool|mixed
+     * @deprecated 2.2.6
      */
-    public function getListDetails( $listId )
+    public function getListDetails(string $listId) : array
     {
         return $this->getListById($listId);
     }
@@ -76,32 +87,31 @@ class Lists extends KlaviyoAPI
      * Get information about a list.
      * @link https://www.klaviyo.com/docs/api/v2/lists#get-list
      *
-     * @param string $listId
-     * 6 digit unique identifier of the list
+     * @param string $listId 6 digit unique identifier of the list
      *
-     * @return bool|mixed
+     * @return array
+     * @throws Exception\KlaviyoException
      */
-    public function getListById($listId)
+    public function getListById(string $listId) : array
     {
         $path = sprintf('%s/%s', self::ENDPOINT_LIST, $listId);
-        return $this->v2Request($path);
+        return $this->klaviyoAPI->v2Request($path);
     }
 
     /**
      * Update a list's properties
      *
-     * @deprecated 2.2.6
+     * @param string $listId 6 digit unique identifier of the list
+     * @param string $list_name to update list name to
+     *
+     * @return array
+     * @throws Exception\KlaviyoException
+     *
      * @see updateListNameById
      *
-     * @param $listId
-     * 6 digit unique identifier of the list
-     *
-     * @param $list_name
-     * String to update list name to
-     *
-     * @return bool|mixed
+     * @deprecated 2.2.6
      */
-    public function updateListDetails( $listId, $list_name )
+    public function updateListDetails(string $listId, string $list_name) : array
     {
         return $this->updateListNameById($listId, $list_name);
     }
@@ -110,59 +120,56 @@ class Lists extends KlaviyoAPI
      * Update a list's name.
      * @link https://www.klaviyo.com/docs/api/v2/lists#put-list
      *
-     * @param string $listId
-     * 6 digit unique identifier of the list
+     * @param string $listId 6 digit unique identifier of the list
+     * @param string $listName String to update list name to
      *
-     * @param string $listName
-     * String to update list name to
-     *
-     * @return bool|mixed
+     * @return array
+     * @throws Exception\KlaviyoException
      */
-    public function updateListNameById($listId, $listName)
+    public function updateListNameById(string $listId, string $listName) : array
     {
-        $params = $this->createRequestBody(
-            array(self::LIST_NAME => $listName)
+        $params = $this->klaviyoAPI->createRequestBody(
+            [self::LIST_NAME => $listName]
         );
 
         $path = sprintf('%s/%s', self::ENDPOINT_LIST, $listId);
 
-        return $this->v2Request($path, $params, self::HTTP_PUT);
+        return $this->klaviyoAPI->v2Request($path, $params, KlaviyoAPI::HTTP_PUT);
     }
 
     /**
      * Delete a list from an account. This is a destructive operation and cannot be undone. It will also remove flow triggers associated with the list.
      * @link https://www.klaviyo.com/docs/api/v2/lists#delete-list
      *
-     * @param $listId
-     * 6 digit unique identifier of the list
+     * @param string $listId 6 digit unique identifier of the list
      *
-     * @return bool|mixed
+     * @return array
+     * @throws Exception\KlaviyoException
      */
-    public function deleteList( $listId )
+    public function deleteList(string $listId) : array
     {
-        $path = sprintf( '%s/%s', self::ENDPOINT_LIST, $listId );
-        return $this->v2Request( $path, [], self::HTTP_DELETE );
+        $path = sprintf('%s/%s', self::ENDPOINT_LIST, $listId);
+        return $this->klaviyoAPI->v2Request($path, [], KlaviyoAPI::HTTP_DELETE);
     }
 
     /**
      * Subscribe or re-subscribe profiles to a list. Profiles will be single or double opted into the specified list in accordance with that list’s settings.
      *
-     * @deprecated 2.2.6
-     * @see addSubscribersToList
-     *
-     * @param $listId
-     * 6 digit unique identifier of the list
-     *
+     * @param string $listId 6 digit unique identifier of the list
      * @param array $profiles
      * The profiles that you would like to subscribe. Each object in the list must have either an email or phone number key.
      * You can also provide additional properties as key-value pairs. If you are a GDPR compliant business, you will need to include $consent in your API call.
      * $consent is a Klaviyo special property and only accepts the following values: "email", "web", "sms", "directmail", "mobile".
      * If you are updating consent for a phone number or would like to send an opt-in SMS to the profile (for double opt-in lists), include an sms_consent key in the profile with a value of true or false.
      *
-     * @return bool|mixed
+     * @return array
      * @throws Exception\KlaviyoException
+     *
+     * @see addSubscribersToList
+     *
+     * @deprecated 2.2.6
      */
-    public function subscribeMembersToList( $listId, $profiles )
+    public function subscribeMembersToList(string $listId, array $profiles) : array
     {
         return $this->addSubscribersToList($listId, $profiles);
     }
@@ -171,86 +178,77 @@ class Lists extends KlaviyoAPI
      * Subscribe or re-subscribe profiles to a list. Profiles will be single or double opted into the specified list in accordance with that list’s settings.
      * @link https://www.klaviyo.com/docs/api/v2/lists#post-subscribe
      *
-     * @param $listId
-     * 6 digit unique identifier of the list
-     *
+     * @param string $listId 6 digit unique identifier of the list
      * @param array $profiles
      * The profiles that you would like to subscribe. Each object in the list must have either an email or phone number key.
      * You can also provide additional properties as key-value pairs. If you are a GDPR compliant business, you will need to include $consent in your API call.
      * $consent is a Klaviyo special property and only accepts the following values: "email", "web", "sms", "directmail", "mobile".
      * If you are updating consent for a phone number or would like to send an opt-in SMS to the profile (for double opt-in lists), include an sms_consent key in the profile with a value of true or false.
      *
-     * @return bool|mixed
+     * @return array
      * @throws Exception\KlaviyoException
      */
-    public function addSubscribersToList($listId, $profiles)
+    public function addSubscribersToList(string $listId, array $profiles) : array
     {
-        $this->checkProfile($profiles);
+        $this->klaviyoAPI->checkProfile($profiles);
 
         $profiles = array_map(
-            function($profile) {
+            function ($profile) {
                 return $profile->toArray();
             },
             $profiles
         );
 
         $path = sprintf('%s/%s/%s', self::ENDPOINT_LIST, $listId, self::ENDPOINT_SUBSCRIBE);
-        $params = $this->createParams(self::PROFILES, $profiles);
+        $params = $this->klaviyoAPI->createParams(KlaviyoAPI::PROFILES, $profiles);
 
-        return $this->v2Request($path, $params, self::HTTP_POST);
+        return $this->klaviyoAPI->v2Request($path, $params, KlaviyoAPI::HTTP_POST);
     }
 
     /**
      * Check if profiles are on a list and not suppressed.
      * @link https://www.klaviyo.com/docs/api/v2/lists#get-subscribe
      *
-     * @param $listId
-     * 6 digit unique identifier of the list
-     *
-     * @param array|null $emails
-     * The emails corresponding to the profiles that you would like to check.
-     *
-     * @param array|null $phoneNumbers
-     * The phone numbers corresponding to the profiles that you would like to check.
+     * @param string $listId 6 digit unique identifier of the list
+     * @param array|null $emails The emails corresponding to the profiles that you would like to check.
+     * @param array|null $phoneNumbers The phone numbers corresponding to the profiles that you would like to check.
      * Phone numbers must be in E.164 format.
+     * @param array|null $pushTokens The push tokens corresponding to the profiles that you would like to check.
      *
-     * @param array|null $pushTokens
-     * The push tokens corresponding to the profiles that you would like to check.
-     *
-     * @return bool|mixed
+     * @return array
+     * @throws Exception\KlaviyoException
      */
-    public function checkListSubscriptions ($listId, $emails = null,  $phoneNumbers = null, $pushTokens = null )
+    public function checkListSubscriptions($listId, ?array $emails = null, ?array $phoneNumbers = null, ?array $pushTokens = null) : array
     {
-        $params = $this->createRequestJson(
-            $this->filterParams(
-                array(
+        $params = $this->klaviyoAPI->createRequestJson(
+            $this->klaviyoAPI->filterParams(
+                [
                     self::EMAILS => $emails,
                     self::PHONE_NUMBERS => $phoneNumbers,
-                    self::PUSH_TOKENS => $pushTokens
-                )
+                    self::PUSH_TOKENS => $pushTokens,
+                ]
             )
         );
 
-        $path = sprintf('%s/%s/%s', self::ENDPOINT_LIST, $listId, self::ENDPOINT_SUBSCRIBE );
+        $path = sprintf('%s/%s/%s', self::ENDPOINT_LIST, $listId, self::ENDPOINT_SUBSCRIBE);
 
-        return $this->v2Request( $path, $params, self::HTTP_GET );
+        return $this->klaviyoAPI->v2Request($path, $params, KlaviyoAPI::HTTP_GET);
     }
 
     /**
      * Unsubscribe and remove profiles from a list.
      *
-     * @deprecated 2.2.6
+     * @param string $listId 6 digit unique identifier of the list
+     * @param array $emails The emails corresponding to the profiles that you would like to check.
+     *
+     * @return array
+     * @throws Exception\KlaviyoException
+     *
      * @see deleteSubscribersFromList
      *
-     * @param string $listId
-     * 6 digit unique identifier of the list
-     *
-     * @param array $emails
-     * The emails corresponding to the profiles that you would like to check.
-     *
-     * @return bool|mixed
+     * @deprecated 2.2.6
      */
-    public function unsubscribeMembersFromList( $listId, $emails )
+    public function unsubscribeMembersFromList(string $listId, array $emails) : array
     {
         return $this->deleteSubscribersFromList($listId, $emails);
     }
@@ -259,141 +257,126 @@ class Lists extends KlaviyoAPI
      * Unsubscribe and remove profiles from a list.
      * @link https://www.klaviyo.com/docs/api/v2/lists#delete-subscribe
      *
-     * @param string $listId
-     * 6 digit unique identifier of the list
+     * @param string $listId 6 digit unique identifier of the list
+     * @param array $emails The emails corresponding to the profiles that you would like to check.
      *
-     * @param array $emails
-     * The emails corresponding to the profiles that you would like to check.
-     *
-     * @return bool|mixed
+     * @return array
+     * @throws Exception\KlaviyoException
      */
-    public function deleteSubscribersFromList($listId, $emails)
+    public function deleteSubscribersFromList(string $listId, array $emails) : array
     {
-        $params = $this->createRequestJson(
-            $this->filterParams(
-                array(
-                    self::EMAILS => $emails
-                )
+        $params = $this->klaviyoAPI->createRequestJson(
+            $this->klaviyoAPI->filterParams(
+                [
+                    self::EMAILS => $emails,
+                ]
             )
         );
 
         $path = sprintf('%s/%s/%s', self::ENDPOINT_LIST, $listId, self::ENDPOINT_SUBSCRIBE);
 
-        return $this->v2Request($path, $params, self::HTTP_DELETE);
+        return $this->klaviyoAPI->v2Request($path, $params, KlaviyoAPI::HTTP_DELETE);
     }
 
     /**
      * Use this endpoint to add profiles to and remove profiles from Klaviyo lists without changing their subscription or suppression status.
      * @link https://www.klaviyo.com/docs/api/v2/lists#post-members
      *
-     * @param $listId
-     * 6 digit unique identifier of the list
-     *
+     * @param string $listId 6 digit unique identifier of the list
      * @param array $profiles
      * The profiles that you would like to subscribe. Each object in the list must have either an email or phone number key.
      * You can also provide additional properties as key-value pairs. If you are a GDPR compliant business, you will need to include $consent in your API call.
      * $consent is a Klaviyo special property and only accepts the following values: "email", "web", "sms", "directmail", "mobile".
      * If you are updating consent for a phone number or would like to send an opt-in SMS to the profile (for double opt-in lists), include an sms_consent key in the profile with a value of true or false.
      *
-     * @return bool|mixed
-     *
+     * @return array
      * @throws Exception\KlaviyoException
      */
-    public function addMembersToList( $listId, $profiles )
+    public function addMembersToList(string $listId, array $profiles) : array
     {
-        $this->checkProfile( $profiles );
+        $this->klaviyoAPI->checkProfile($profiles);
 
         $profiles = array_map(
-            function( $profile ) {
+            function ($profile) {
                 return $profile->toArray();
-            }, $profiles
+            },
+            $profiles
         );
 
-        $path = sprintf( '%s/%s/%s', self::ENDPOINT_LIST, $listId, self::ENDPOINT_MEMBERS );
-        $options = $this->createParams( self::PROFILES, $profiles );
+        $path = sprintf('%s/%s/%s', self::ENDPOINT_LIST, $listId, self::ENDPOINT_MEMBERS);
+        $options = $this->klaviyoAPI->createParams(KlaviyoAPI::PROFILES, $profiles);
 
-        return $this->v2Request( $path, $options, self::HTTP_POST );
+        return $this->klaviyoAPI->v2Request($path, $options, KlaviyoAPI::HTTP_POST);
     }
 
     /**
      * Check if profiles are on a list.
      * @link https://www.klaviyo.com/docs/api/v2/lists#get-members
      *
-     * @param $listId
-     * 6 digit unique identifier of the list
-     *
-     * @param array|null $emails
-     * The emails corresponding to the profiles that you would like to check.
-     *
-     * @param array|null $phoneNumbers
-     * The phone numbers corresponding to the profiles that you would like to check.
+     * @param string $listId 6 digit unique identifier of the list
+     * @param array|null $emails The emails corresponding to the profiles that you would like to check.
+     * @param array|null $phoneNumbers The phone numbers corresponding to the profiles that you would like to check.
      * Phone numbers must be in E.164 format.
+     * @param array|null $pushTokens The push tokens corresponding to the profiles that you would like to check.
      *
-     * @param array|null $pushTokens
-     *The push tokens corresponding to the profiles that you would like to check.
-     *
-     * @return bool|mixed
+     * @return array
+     * @throws Exception\KlaviyoException
      */
-    public function checkListMembership( $listId,  $emails = null, $phoneNumbers = null, $pushTokens = null )
+    public function checkListMembership(string $listId, ?array $emails = null, ?array $phoneNumbers = null, ?array $pushTokens = null) : array
     {
-        $params = $this->createRequestJson(
-            $this->filterParams(
-                array(
+        $params = $this->klaviyoAPI->createRequestJson(
+            $this->klaviyoAPI->filterParams(
+                [
                     self::EMAILS => $emails,
                     self::PHONE_NUMBERS => $phoneNumbers,
-                    self::PUSH_TOKENS => $pushTokens
-                )
+                    self::PUSH_TOKENS => $pushTokens,
+                ]
             )
         );
 
-        $path = sprintf( '%s/%s/%s', self::ENDPOINT_LIST, $listId, self::ENDPOINT_MEMBERS );
+        $path = sprintf('%s/%s/%s', self::ENDPOINT_LIST, $listId, self::ENDPOINT_MEMBERS);
 
-        return $this->v2Request( $path, $params, self::HTTP_GET );
+        return $this->klaviyoAPI->v2Request($path, $params, KlaviyoAPI::HTTP_GET);
     }
 
     /**
      * Remove profiles from a list.
      * @link https://www.klaviyo.com/docs/api/v2/lists#delete-members
      *
-     * @param string $listId
-     * 6 digit unique identifier of the list.
+     * @param string $listId 6 digit unique identifier of the list.
+     * @param array $emails The emails corresponding to the profiles that you would like to check.
      *
-     * @param array $emails
-     * The emails corresponding to the profiles that you would like to check.
-     *
-     * @return bool|mixed
+     * @return array
+     * @throws Exception\KlaviyoException
      */
-    public function removeMembersFromList( $listId, $emails )
+    public function removeMembersFromList(string $listId, array $emails) : array
     {
-        $params = $this->createRequestJson(
-            $this->filterParams(
-                array(
-                    self::EMAILS => $emails
-                )
+        $params = $this->klaviyoAPI->createRequestJson(
+            $this->klaviyoAPI->filterParams(
+                [
+                    self::EMAILS => $emails,
+                ]
             )
         );
 
-        $path = sprintf('%s/%s/%s', self::ENDPOINT_LIST, $listId, self::ENDPOINT_MEMBERS );
+        $path = sprintf('%s/%s/%s', self::ENDPOINT_LIST, $listId, self::ENDPOINT_MEMBERS);
 
-        return $this->v2Request( $path, $params, self::HTTP_DELETE );
+        return $this->klaviyoAPI->v2Request($path, $params, KlaviyoAPI::HTTP_DELETE);
     }
 
     /**
      * Get all of the emails and phone numbers that have been excluded from a list along with the exclusion reasons and exclusion time.
      * This endpoint uses batching to return the records, so for a large list multiple calls will need to be made to get all of the records.
      *
-     * @deprecated 2.2.6
+     * @param string $listId 6 digit unique identifier of the list
+     * @param int|null $marker A marker value returned by a previous GET call. Use this to grab the next batch of records.
+     *
+     * @return array
      * @see getListExclusions
      *
-     * @param $listId
-     * 6 digit unique identifier of the list
-     *
-     * @param int $marker
-     * A marker value returned by a previous GET call. Use this to grab the next batch of records.
-     *
-     * @return bool|mixed
+     * @deprecated 2.2.6
      */
-    public function getAllExclusionsOnList( $listId, $marker = null )
+    public function getAllExclusionsOnList(string $listId, ?int $marker = null) : array
     {
         return $this->getListExclusions($listId, $marker);
     }
@@ -403,45 +386,42 @@ class Lists extends KlaviyoAPI
      * This endpoint uses batching to return the records, so for a large list multiple calls will need to be made to get all of the records.
      * @link https://www.klaviyo.com/docs/api/v2/lists#get-exclusions-all
      *
-     * @param $listId
-     * 6 digit unique identifier of the list
+     * @param string $listId 6 digit unique identifier of the list
+     * @param int|null $marker A marker value returned by a previous GET call. Use this to grab the next batch of records.
      *
-     * @param int $marker
-     * A marker value returned by a previous GET call. Use this to grab the next batch of records.
-     *
-     * @return bool|mixed
+     * @return array
+     * @throws Exception\KlaviyoException
      */
-    public function getListExclusions($listId, $marker = null)
+    public function getListExclusions(string $listId, ?int $marker = null) : array
     {
-        $params = $this->createRequestBody(
-            $this->filterParams(
-                array(
-                    self::MARKER => $marker
-                )
+        $params = $this->klaviyoAPI->createRequestBody(
+            $this->klaviyoAPI->filterParams(
+                [
+                    self::MARKER => $marker,
+                ]
             )
         );
 
-        $path = sprintf('%s/%s/%s/%s',self::ENDPOINT_LIST, $listId, self::ENDPOINT_EXCLUSIONS, self::ENDPOINT_ALL);
+        $path = sprintf('%s/%s/%s/%s', self::ENDPOINT_LIST, $listId, self::ENDPOINT_EXCLUSIONS, self::ENDPOINT_ALL);
 
-        return $this->v2Request($path, $params);
+        return $this->klaviyoAPI->v2Request($path, $params);
     }
 
     /**
      * Get all of the emails, phone numbers, and push tokens for profiles in a given list or segment.
      * This endpoint uses batching to return the records, so for a large list or segment multiple calls will need to be made to get all of the records.
      *
-     * @deprecated 2.2.6
+     * @param string $groupId 6 digit unique identifier of List/Segment to get member information about
+     * @param int|null $marker A marker value returned by a previous GET call. Use this to grab the next batch of records.
+     *
+     * @return array
+     * @throws Exception\KlaviyoException
+     *
      * @see getAllMembers
      *
-     * @param $groupId
-     * 6 digit unique identifier of List/Segment to get member information about
-     *
-     * @param int $marker
-     * A marker value returned by a previous GET call. Use this to grab the next batch of records.
-     *
-     * @return bool|mixed
+     * @deprecated 2.2.6
      */
-    public function getGroupMemberIdentifiers( $groupId, $marker = null )
+    public function getGroupMemberIdentifiers(string $groupId, ?int $marker = null) : array
     {
         return $this->getAllMembers($groupId, $marker);
     }
@@ -451,25 +431,23 @@ class Lists extends KlaviyoAPI
      * This endpoint uses batching to return the records, so for a large list or segment multiple calls will need to be made to get all of the records.
      * @link https://www.klaviyo.com/docs/api/v2/lists#get-members-all
      *
-     * @param $groupId
-     * 6 digit unique identifier of List/Segment to get member information about
+     * @param string $groupId 6 digit unique identifier of List/Segment to get member information about
+     * @param int|null $marker A marker value returned by a previous GET call. Use this to grab the next batch of records.
      *
-     * @param int $marker
-     * A marker value returned by a previous GET call. Use this to grab the next batch of records.
-     *
-     * @return bool|mixed
+     * @return array
+     * @throws Exception\KlaviyoException
      */
-    public function getAllMembers($groupId, $marker = null)
+    public function getAllMembers(string $groupId, ?int $marker = null) : array
     {
-        $params = $this->createRequestBody(
-            $this->filterParams(
-                array(
-                    self::MARKER => $marker
-                )
+        $params = $this->klaviyoAPI->createRequestBody(
+            $this->klaviyoAPI->filterParams(
+                [
+                    self::MARKER => $marker,
+                ]
             )
         );
 
-        $path = sprintf('%s/%s/%s/%s',self::ENDPOINT_GROUP, $groupId, self::ENDPOINT_MEMBERS, self::ENDPOINT_ALL);
-        return $this->v2Request($path, $params);
+        $path = sprintf('%s/%s/%s/%s', self::ENDPOINT_GROUP, $groupId, self::ENDPOINT_MEMBERS, self::ENDPOINT_ALL);
+        return $this->klaviyoAPI->v2Request($path, $params);
     }
 }
