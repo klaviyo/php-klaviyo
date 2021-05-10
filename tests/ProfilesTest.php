@@ -2,7 +2,8 @@
 
 declare(strict_types=1);
 
-use Klaviyo\Profiles;
+namespace Klaviyo;
+
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 

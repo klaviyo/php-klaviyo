@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
+namespace Klaviyo;
+
 use Klaviyo\Exception\KlaviyoException;
-use Klaviyo\Metrics;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 
@@ -44,7 +45,7 @@ class MetricsTest extends TestCase
                             "id": "4qYGmQ",
                             "name": "API"
                           }
-                        } 
+                        }
                       ]
                   }',
                 true

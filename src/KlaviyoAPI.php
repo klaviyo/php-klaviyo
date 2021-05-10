@@ -20,7 +20,7 @@ class KlaviyoAPI
     const BASE_URL = 'https://a.klaviyo.com/api/';
     const API_V1 = 'v1';
     const API_V2 = 'v2';
-    const PACKAGE_VERSION = '2.2.4';
+    const PACKAGE_VERSION = Klaviyo::VERSION;
 
     /**
      * Request methods
@@ -89,7 +89,9 @@ class KlaviyoAPI
      *
      * @param string $path Endpoint to call
      * @param array $options API params to add to request
+     *
      * @return array
+     * @throws KlaviyoException
      */
     public function publicRequest(string $path, array $options) : array
     {
@@ -103,8 +105,8 @@ class KlaviyoAPI
      * @param string $path Endpoint to call
      * @param array $options API params to add to request
      * @param string $method HTTP method for request
-     * @return array
      *
+     * @return array
      * @throws KlaviyoException
      */
     public function v1Request(string $path, array $options = [], string $method = self::HTTP_GET) : array
@@ -120,8 +122,8 @@ class KlaviyoAPI
      * @param string $path Endpoint to call
      * @param array $options API params to add to request
      * @param string $method HTTP method for request
-     * @return array
      *
+     * @return array
      * @throws KlaviyoException
      */
     public function v2Request(string $path, array $options = [], string $method = self::HTTP_GET) : array
@@ -136,6 +138,7 @@ class KlaviyoAPI
      *
      * @param string $paramName Name of API Param to create
      * @param string|array $paramValue Value of API params to create
+     *
      * @return array
      */
     public function createParams(string $paramName, $paramValue) : array
@@ -150,6 +153,7 @@ class KlaviyoAPI
      *
      * @param string|null $since Timestamp as a state supplied for API request
      * @param string|null $uuid New token supplied by API response
+     *
      * @return array
      */
     public function setSinceParameter(?string $since, ?string $uuid = null) : array
@@ -168,6 +172,7 @@ class KlaviyoAPI
      * Removes all params which do not have values set
      *
      * @param array $params
+     *
      * @return array
      */
     public function filterParams(array $params) : array
@@ -184,6 +189,7 @@ class KlaviyoAPI
      * Structure params for V2 API requests
      *
      * @param array $params
+     *
      * @return array[]
      */
     public function createRequestBody(array $params) : array
@@ -197,6 +203,7 @@ class KlaviyoAPI
      * Structure params for V1 API requests
      *
      * @param array $params
+     *
      * @return array[]
      */
     public function createRequestJson(array $params) : array
@@ -210,6 +217,7 @@ class KlaviyoAPI
      * Check if a profile is an instance of ProfileModel
      *
      * @param array $profiles
+     *
      * @throws KlaviyoException
      */
     public function checkProfile(array $profiles) : void
@@ -230,6 +238,7 @@ class KlaviyoAPI
      * Setup authentication for Public Klaviyo API request
      *
      * @param array $params
+     *
      * @return array[]
      */
     private function publicAuth($params) : array
@@ -397,7 +406,11 @@ class KlaviyoAPI
      * @param bool $isV1 to determine if V1 API request
      * @return array
      *
+     * @throws JsonException
+     * @throws KlaviyoAuthenticationException
      * @throws KlaviyoException
+     * @throws KlaviyoRateLimitException
+     * @throws KlaviyoResourceNotFoundException
      */
     private function request(
         string $method,
