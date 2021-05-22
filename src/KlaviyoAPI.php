@@ -32,6 +32,7 @@ abstract class KlaviyoAPI
      */
     const ERROR_INVALID_API_KEY = 'Invalid API Key.';
     const ERROR_RESOURCE_DOES_NOT_EXIST = 'The requested resource does not exist.';
+    const ERROR_NON_200_STATUS = 'Request Failed with HTTP Status Code: %s';
 
     /**
      * Request options
@@ -175,21 +176,22 @@ abstract class KlaviyoAPI
      */
     private function handleResponse( $response, $statusCode, $isPublic )
     {
+        $decoded_response = $this->decodeJsonResponse($response);
         if ( $statusCode == 403 ) {
             throw new KlaviyoAuthenticationException(self::ERROR_INVALID_API_KEY, $statusCode);
         } else if ( $statusCode == 429 ) {
             throw new KlaviyoRateLimitException(
-                $this->returnRateLimit( $this->decodeJsonResponse( $response ) )
+                $this->returnRateLimit( $decoded_response )
             );
         } else if ($statusCode < 200 || $statusCode >= 300) {
-            throw new KlaviyoApiException($this->decodeJsonResponse( $response )['detail'], $statusCode);
+            throw new KlaviyoApiException(isset($decoded_response['detail']) ? $decoded_response['detail'] : sprintf(self::ERROR_NON_200_STATUS, $statusCode), $statusCode);
         }
 
         if ( $isPublic ) {
             return $response;
         }
 
-        return $this->decodeJsonResponse( $response );
+        return $decoded_response;
     }
 
     /**
