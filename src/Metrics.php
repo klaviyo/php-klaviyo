@@ -42,6 +42,7 @@ class Metrics extends KlaviyoAPI
             self::PAGE=> $page,
             self::COUNT => $count
         ) );
+        $params = $this->createQueryParams($params);
 
         return $this->v1Request( self::METRICS, $params );
     }
@@ -69,14 +70,14 @@ class Metrics extends KlaviyoAPI
     public function getMetricsTimeline( $since = null, $uuid = null, $count = null, $sort = null )
     {
         $params = $this->setSinceParameter( $since, $uuid );
-
-        $params = $this->filterParams( array_merge(
+        $params = $this->filterParams(array_merge(
             $params,
             array(
                 self::COUNT => $count,
                 self::SORT => $sort
             )
-        ) );
+        ));
+        $params = $this->createQueryParams($params);
 
         $path = sprintf( '%s/%s', self::METRICS, self::TIMELINE );
 
@@ -140,7 +141,6 @@ class Metrics extends KlaviyoAPI
     public function getMetricTimelineById($metricID, $since = null, $uuid = null, $count = null, $sort = null)
     {
         $params = $this->setSinceParameter($since, $uuid);
-
         $params = $this->filterParams(
             array_merge(
                 $params,
@@ -150,6 +150,7 @@ class Metrics extends KlaviyoAPI
                 )
             )
         );
+        $params = $this->createQueryParams($params);
 
         $path = sprintf('%s/%s/%s', self::METRIC, $metricID, self::TIMELINE);
         return $this->v1Request($path, $params);
@@ -235,6 +236,7 @@ class Metrics extends KlaviyoAPI
                 self::COUNT => $count,
             )
         );
+        $params = $this->createQueryParams($params);
 
         $path = sprintf('%s/%s/%s', self::METRIC, $metricID, self::EXPORT);
 

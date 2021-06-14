@@ -45,8 +45,10 @@ class Profiles extends KlaviyoAPI
      */
     public function updateProfile( $personId, $properties )
     {
+        $params = $this->createQueryParams($properties);
+
         $path = sprintf( '%s/%s', self::PERSON, $personId );
-        return $this->v1Request( $path, $properties, self::HTTP_PUT );
+        return $this->v1Request( $path, $params, self::HTTP_PUT );
     }
 
     /**
@@ -75,7 +77,6 @@ class Profiles extends KlaviyoAPI
     public function getAllProfileMetricsTimeline( $personId, $since = null, $uuid = null, $count = null, $sort = null )
     {
         $params = $this->setSinceParameter( $since, $uuid );
-
         $params = $this->filterParams( array_merge(
             $params,
             array(
@@ -83,6 +84,7 @@ class Profiles extends KlaviyoAPI
                 self::SORT => $sort
             )
         ) );
+        $params = $this->createQueryParams($params);
 
         $path = sprintf( '%s/%s/%s/%s', self::PERSON, $personId, self::METRICS, self::TIMELINE );
 
@@ -118,14 +120,14 @@ class Profiles extends KlaviyoAPI
     public function getProfileMetricTimeline( $personId, $metricId, $since = null, $uuid = null, $count = null, $sort = null )
     {
         $params = $this->setSinceParameter( $since, $uuid );
-
-        $params = $this->filterParams( array_merge(
+        $params = $this->filterParams(array_merge(
             $params,
             array(
                 self::COUNT => $count,
                 self::SORT => $sort
             )
-        ) );
+        ));
+        $params = $this->createQueryParams($params);
 
         $path = sprintf('%s/%s/%s/%s/%s', self::PERSON, $personId, self::METRIC, $metricId, self::TIMELINE );
 

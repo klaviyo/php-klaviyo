@@ -108,7 +108,7 @@ abstract class KlaviyoAPI
     /**
      * Make private v1 API request
      *
-     * @param $path Endpoint to call
+     * @param string $path Endpoint to call
      * @param array $options API params to add to request
      * @param string $method HTTP method for request
      * @return mixed
@@ -255,12 +255,7 @@ abstract class KlaviyoAPI
      */
     protected function v1Auth( $params )
     {
-        $params = array(
-            self::QUERY => array_merge(
-                $params,
-                array( self::API_KEY_PARAM => $this->private_key )
-            )
-        );
+        $params[self::QUERY][self::API_KEY_PARAM] = $this->private_key;
 
         $params = $this->setUserAgentHeader( $params );
 
@@ -438,6 +433,19 @@ abstract class KlaviyoAPI
     {
         return array(
             'json' => $params
+        );
+    }
+
+    /**
+     * Create query parameter array for CURL.
+     *
+     * @param array $params Key/value pairs to be set as query string.
+     * @return array
+     */
+    protected function createQueryParams($params)
+    {
+        return array(
+            self::QUERY => $params
         );
     }
 
