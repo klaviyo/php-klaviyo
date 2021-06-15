@@ -1,5 +1,6 @@
 ## CHANGELOG
 ### [Unreleased]
+- Fix - Explicitly set curl query array and authentication.
 
 ### [2.3.1]
 - Fix - Use generic exception message if details not available.
