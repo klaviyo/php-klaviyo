@@ -14,6 +14,7 @@ class Profiles extends KlaviyoAPI
     const PEOPLE = 'people';
     const SEARCH = 'search';
     const TIMELINE = 'timeline';
+    const EXCLUSIONS = 'exclusions';
 
     /**
      * Retrieve all data attributes for a person, based on the Klaviyo personID
@@ -147,5 +148,19 @@ class Profiles extends KlaviyoAPI
         $path = sprintf('%s/%s', self::PEOPLE, self::SEARCH);
 
         return $this->v2Request($path, $params);
+    }
+
+    /**
+     * Exclude an email address from all communications.
+     * @link https://apidocs.klaviyo.com/reference/lists-segments#exclude-globally
+     *
+     * @param $email
+     * Email address to exclude.
+     */
+    public function unsubscribeProfileGlobally($email) {
+        $params = $this->createRequestBody([self::EMAIL => $email]);
+        $path = sprintf('%s/%s', self::PEOPLE, self::EXCLUSIONS);
+
+        return $this->v1Request($path, $params, self::HTTP_POST);
     }
 }
