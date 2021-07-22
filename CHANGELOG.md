@@ -1,6 +1,9 @@
 ## CHANGELOG
 ### [Unreleased]
 
+### [2.3.3]
+- Update - Switch track and identify api to use POST instead of GET
+
 ### [2.3.2]
 - Update - Add global suppression endpoint.
 - Fix - Explicitly set curl query array and authentication.
