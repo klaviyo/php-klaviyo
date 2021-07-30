@@ -204,6 +204,7 @@ abstract class KlaviyoAPI
      * Handle authentication by updating $options passed into request method
      * based on type of API request.
      *
+     * @param string $method Request method type - POST or GET
      * @param array $params Options configuration for Request Interface
      * @param bool $isPublic Request type - public
      * @param bool $isV1 Request API version - V1
