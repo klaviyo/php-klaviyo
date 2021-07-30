@@ -8,12 +8,6 @@ use Klaviyo\Model\ProfileModel;
 class PublicAPI extends KlaviyoAPI
 {
     /**
-     * Track Class constants
-     */
-    const TRACK = 'track';
-    const IDENTIFY = 'identify';
-
-    /**
      * PublicAPI constructor.
      * @param $public_key
      * @param $private_key
@@ -31,10 +25,10 @@ class PublicAPI extends KlaviyoAPI
      * @param EventModel $event
      * @return mixed
      */
-    public function track(EventModel $event)
+    public function track(EventModel $event, $post = false)
     {
-        $options = $this->createRequestJson($event->toArray());
-        return $this->publicRequest(self::TRACK, $options);
+        $options = $post ? $this->createRequestJson($event->toArray()) : $this->createOptionsArray(self::TRACK, $event);
+        return $this->publicRequest(self::TRACK, $options, $post);
     }
 
     /**
@@ -44,9 +38,9 @@ class PublicAPI extends KlaviyoAPI
      * @param ProfileModel $profile
      * @return mixed
      */
-    public function identify(ProfileModel $profile)
+    public function identify(ProfileModel $profile, $post = false)
     {
-        $options = $this->createRequestJson([self::PROPERTIES => $profile->toArray()]);
-        return $this->publicRequest(self::IDENTIFY, $options);
+        $options = $post ? $this->createRequestJson([self::PROPERTIES => $profile->toArray()]) : $this->createOptionsArray(self::IDENTIFY, $profile);
+        return $this->publicRequest(self::IDENTIFY, $options, $post);
     }
 }

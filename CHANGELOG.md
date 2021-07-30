@@ -2,7 +2,7 @@
 ### [Unreleased]
 
 ### [2.3.3]
-- Update - Switch track and identify api to use POST instead of GET
+- Update - Add ability to track and identify calls to use POST instead of GET
 
 ### [2.3.2]
 - Update - Add global suppression endpoint.

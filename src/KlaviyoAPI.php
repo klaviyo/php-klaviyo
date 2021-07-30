@@ -7,10 +7,18 @@ use Klaviyo\Exception\KlaviyoException;
 use Klaviyo\Exception\KlaviyoRateLimitException;
 use Klaviyo\Exception\KlaviyoResourceNotFoundException;
 use Klaviyo\Exception\KlaviyoApiException;
+use Klaviyo\Model\EventModel;
 use Klaviyo\Model\ProfileModel;
+
 
 abstract class KlaviyoAPI
 {
+    /**
+     * Track Class constants
+     */
+    const TRACK = 'track';
+    const IDENTIFY = 'identify';
+
     /**
      * Host and versions
      */
@@ -99,9 +107,10 @@ abstract class KlaviyoAPI
      * @param $path Endpoint to call
      * @param $options API params to add to request
      */
-    protected function publicRequest($path, $options)
+    protected function publicRequest($path, $options, $post)
     {
-        return $this->request(self::HTTP_POST, $path, $options, true);
+        $method = $post ? self::HTTP_POST : self::HTTP_GET;
+        return $this->request($method, $path, $options, true);
     }
 
     /**
@@ -151,7 +160,7 @@ abstract class KlaviyoAPI
      */
     private function request($method, $path, $options, $isPublic = false, $isV1 = false)
     {
-        $options = $this->prepareAuthentication($options, $isPublic, $isV1);
+        $options = $this->prepareAuthentication($method, $options, $isPublic, $isV1);
 
         $setopt_array = ($this->getDefaultCurlOptions($method) +
             $this->getCurlOptUrl($path, $options) +
@@ -201,10 +210,15 @@ abstract class KlaviyoAPI
      *
      * @return array|array[]
      */
-    private function prepareAuthentication($params, $isPublic, $isV1)
+    private function prepareAuthentication($method, $params, $isPublic, $isV1)
     {
+        if ($isPublic && $method == self::HTTP_POST) {
+            $params = $this->publicPostAuth($params);
+            return $params;
+        }
+
         if ($isPublic) {
-            $params = $this->publicAuth($params);
+            $params = $this->publicGetAuth($params);
             return $params;
         }
 
@@ -218,18 +232,44 @@ abstract class KlaviyoAPI
     }
 
     /**
-     * Setup authentication for Public Klaviyo API request
+     * Setup authentication for Public POST Klaviyo API request
      *
      * @param $params
      * @return array[]
      */
-    protected function publicAuth($params)
+    protected function publicPostAuth($params)
     {
         unset($params[self::HEADERS][self::API_KEY_HEADER]);
         $params = array_merge_recursive(
             $params,
             [self::JSON => [self::TOKEN => $this->public_key]]
         );
+        return $params;
+    }
+
+    /**
+     * Setup authentication for Public GET Klaviyo API request
+     *
+     * @param $params
+     * @return array[]
+     */
+    protected function publicGetAuth($params)
+    {
+        unset($params[self::HEADERS][self::API_KEY_HEADER]);
+
+        $params = [
+            self::QUERY => [
+                self::DATA => base64_encode(
+                    json_encode(
+                        array_merge(
+                            [self::TOKEN => $this->public_key],
+                            $params[self::QUERY]
+                        )
+                    )
+                )
+            ]
+        ];
+
         return $params;
     }
 
@@ -422,6 +462,25 @@ abstract class KlaviyoAPI
     {
         return array(
             'json' => $params
+        );
+    }
+    /**
+     * Create options array for either Track or Identify call.
+     *
+     * @param string $type Request type - track or identify
+     * @param ProfileModel|EventModel $model
+     * @return array
+     */
+    protected function createOptionsArray($type, $model)
+    {
+        if ($type == self::TRACK) {
+            return array(self::QUERY => $model->toArray());
+        }
+
+        return array(
+            self::QUERY => array(
+                self::PROPERTIES => $model
+            )
         );
     }
 
