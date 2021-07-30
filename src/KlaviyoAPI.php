@@ -7,10 +7,18 @@ use Klaviyo\Exception\KlaviyoException;
 use Klaviyo\Exception\KlaviyoRateLimitException;
 use Klaviyo\Exception\KlaviyoResourceNotFoundException;
 use Klaviyo\Exception\KlaviyoApiException;
+use Klaviyo\Model\EventModel;
 use Klaviyo\Model\ProfileModel;
+
 
 abstract class KlaviyoAPI
 {
+    /**
+     * Track Class constants
+     */
+    const TRACK = 'track';
+    const IDENTIFY = 'identify';
+
     /**
      * Host and versions
      */
@@ -87,7 +95,7 @@ abstract class KlaviyoAPI
      * @param string $public_key Public key (account ID) for Klaviyo account
      * @param string $private_key Private API key for Klaviyo account
      */
-    public function __construct( $public_key, $private_key )
+    public function __construct($public_key, $private_key)
     {
         $this->public_key = $public_key;
         $this->private_key = $private_key;
@@ -99,10 +107,10 @@ abstract class KlaviyoAPI
      * @param $path Endpoint to call
      * @param $options API params to add to request
      */
-    protected function publicRequest( $path, $options )
+    protected function publicRequest($path, $options, $post)
     {
-        // Public requests are always GET
-        return $this->request( self::HTTP_GET, $path, $options, true );
+        $method = $post ? self::HTTP_POST : self::HTTP_GET;
+        return $this->request($method, $path, $options, true);
     }
 
     /**
@@ -115,11 +123,11 @@ abstract class KlaviyoAPI
      *
      * @throws KlaviyoException
      */
-    protected function v1Request( $path, $options = [], $method = self::HTTP_GET )
+    protected function v1Request($path, $options = [], $method = self::HTTP_GET)
     {
-        $path = self::API_V1 . $this->trimPath( $path );
+        $path = self::API_V1 . $this->trimPath($path);
 
-        return $this->request( $method, $path, $options, false, true );
+        return $this->request($method, $path, $options, false, true);
     }
 
     /**
@@ -132,11 +140,11 @@ abstract class KlaviyoAPI
      *
      * @throws KlaviyoException
      */
-    protected function v2Request( $path, $options = [], $method = self::HTTP_GET )
+    protected function v2Request($path, $options = [], $method = self::HTTP_GET)
     {
-        $path = self::API_V2 . $this->trimPath( $path );
+        $path = self::API_V2 . $this->trimPath($path);
 
-        return $this->request( $method, $path, $options, false, false );
+        return $this->request($method, $path, $options, false, false);
     }
 
     /**
@@ -150,15 +158,13 @@ abstract class KlaviyoAPI
      *
      * @throws KlaviyoException
      */
-    private function request( $method, $path, $options, $isPublic = false, $isV1 = false )
+    private function request($method, $path, $options, $isPublic = false, $isV1 = false)
     {
-        $options = $this->prepareAuthentication( $options, $isPublic, $isV1 );
+        $options = $this->prepareAuthentication($method, $options, $isPublic, $isV1);
 
-        $setopt_array = (
-            $this->getDefaultCurlOptions($method) +
+        $setopt_array = ($this->getDefaultCurlOptions($method) +
             $this->getCurlOptUrl($path, $options) +
-            $this->getSpecificCurlOptions($options)
-        );
+            $this->getSpecificCurlOptions($options));
 
         $curl = curl_init();
         curl_setopt_array($curl, $setopt_array);
@@ -168,26 +174,26 @@ abstract class KlaviyoAPI
         $statusCode = curl_getinfo($curl, $phpVersionHttpCode);
         curl_close($curl);
 
-        return $this->handleResponse( $response, $statusCode, $isPublic );
+        return $this->handleResponse($response, $statusCode, $isPublic);
     }
 
     /**
      * Handle response from API call
      */
-    private function handleResponse( $response, $statusCode, $isPublic )
+    private function handleResponse($response, $statusCode, $isPublic)
     {
         $decoded_response = $this->decodeJsonResponse($response);
-        if ( $statusCode == 403 ) {
+        if ($statusCode == 403) {
             throw new KlaviyoAuthenticationException(self::ERROR_INVALID_API_KEY, $statusCode);
-        } else if ( $statusCode == 429 ) {
+        } else if ($statusCode == 429) {
             throw new KlaviyoRateLimitException(
-                $this->returnRateLimit( $decoded_response )
+                $this->returnRateLimit($decoded_response)
             );
         } else if ($statusCode < 200 || $statusCode >= 300) {
             throw new KlaviyoApiException(isset($decoded_response['detail']) ? $decoded_response['detail'] : sprintf(self::ERROR_NON_200_STATUS, $statusCode), $statusCode);
         }
 
-        if ( $isPublic ) {
+        if ($isPublic) {
             return $response;
         }
 
@@ -198,36 +204,57 @@ abstract class KlaviyoAPI
      * Handle authentication by updating $options passed into request method
      * based on type of API request.
      *
+     * @param string $method Request method type - POST or GET
      * @param array $params Options configuration for Request Interface
      * @param bool $isPublic Request type - public
      * @param bool $isV1 Request API version - V1
      *
      * @return array|array[]
      */
-    private function prepareAuthentication ( $params, $isPublic, $isV1 )
+    private function prepareAuthentication($method, $params, $isPublic, $isV1)
     {
-        if ( $isPublic ) {
-            $params = $this->publicAuth( $params );
+        if ($isPublic && $method == self::HTTP_POST) {
+            $params = $this->publicPostAuth($params);
             return $params;
         }
 
-        if ( $isV1 ) {
-            $params = $this->v1Auth( $params );
+        if ($isPublic) {
+            $params = $this->publicGetAuth($params);
+            return $params;
+        }
+
+        if ($isV1) {
+            $params = $this->v1Auth($params);
             return $params;
         } else {
-            $params = $this->v2Auth( $params );
+            $params = $this->v2Auth($params);
             return $params;
         }
-
     }
 
     /**
-     * Setup authentication for Public Klaviyo API request
+     * Setup authentication for Public POST Klaviyo API request
      *
      * @param $params
      * @return array[]
      */
-    protected function publicAuth( $params )
+    protected function publicPostAuth($params)
+    {
+        unset($params[self::HEADERS][self::API_KEY_HEADER]);
+        $params = array_merge_recursive(
+            $params,
+            [self::JSON => [self::TOKEN => $this->public_key]]
+        );
+        return $params;
+    }
+
+    /**
+     * Setup authentication for Public GET Klaviyo API request
+     *
+     * @param $params
+     * @return array[]
+     */
+    protected function publicGetAuth($params)
     {
         unset($params[self::HEADERS][self::API_KEY_HEADER]);
 
@@ -253,11 +280,11 @@ abstract class KlaviyoAPI
      * @param $params
      * @return array
      */
-    protected function v1Auth( $params )
+    protected function v1Auth($params)
     {
         $params[self::QUERY][self::API_KEY_PARAM] = $this->private_key;
 
-        $params = $this->setUserAgentHeader( $params );
+        $params = $this->setUserAgentHeader($params);
 
         return $params;
     }
@@ -268,7 +295,7 @@ abstract class KlaviyoAPI
      * @param $params
      * @return array
      */
-    protected function v2Auth( $params )
+    protected function v2Auth($params)
     {
         $params = array_merge(
             $params,
@@ -289,7 +316,7 @@ abstract class KlaviyoAPI
      * @param $params
      * @return array
      */
-    protected function setUserAgentHeader( $params )
+    protected function setUserAgentHeader($params)
     {
         $params = array_merge(
             $params,
@@ -306,9 +333,9 @@ abstract class KlaviyoAPI
     /**
      * Helper function to remove leading forward slashes
      */
-    private function trimPath ( $path )
+    private function trimPath($path)
     {
-        return '/' . ltrim( $path, '/' );
+        return '/' . ltrim($path, '/');
     }
 
     /**
@@ -319,12 +346,12 @@ abstract class KlaviyoAPI
      * @param string $response
      * @return mixed
      */
-    private function decodeJsonResponse( $response )
+    private function decodeJsonResponse($response)
     {
         if (!empty($response)) {
-            return json_decode( $response, true );
+            return json_decode($response, true);
         }
-        return json_decode( '{}', true );
+        return json_decode('{}', true);
     }
 
     /**
@@ -334,9 +361,9 @@ abstract class KlaviyoAPI
      * @param mixed $response
      * @return string
      */
-    private function returnRateLimit ( $response )
+    private function returnRateLimit($response)
     {
-        $responseDetail = explode(" ", $response['detail'] );
+        $responseDetail = explode(" ", $response['detail']);
         foreach ($responseDetail as $value) {
             if (intval($value) > 0) {
                 $response['retryAfter'] = intval($value);
@@ -352,9 +379,10 @@ abstract class KlaviyoAPI
      * @param string $paramName Name of API Param to create
      * @param mixed $paramValue Value of API params to create
      */
-    protected function createParams( $paramName, $paramValue )
+    protected function createParams($paramName, $paramValue)
     {
-        return [self::JSON =>
+        return [
+            self::JSON =>
             [$paramName => $paramValue]
         ];
     }
@@ -367,7 +395,7 @@ abstract class KlaviyoAPI
      * @param mixed $key Key of item in array.
      * @param string $class Name of class against which items are validated.
      */
-    protected function isInstanceOf( $value, $key, $class )
+    protected function isInstanceOf($value, $key, $class)
     {
         if (!($value instanceof $class)) {
             throw new KlaviyoException(
@@ -383,9 +411,9 @@ abstract class KlaviyoAPI
      * @param $uuid New token supplied by API response
      * @return array
      */
-    protected function setSinceParameter( $since, $uuid )
+    protected function setSinceParameter($since, $uuid)
     {
-        if ( is_null( $uuid )) {
+        if (is_null($uuid)) {
             return array(
                 self::SINCE => $since
             );
@@ -402,11 +430,13 @@ abstract class KlaviyoAPI
      * @param array $params
      * @return array
      */
-    protected function filterParams( $params )
+    protected function filterParams($params)
     {
         return array_filter(
             $params,
-            function ( $key ){ return !is_null( $key ); }
+            function ($key) {
+                return !is_null($key);
+            }
         );
     }
 
@@ -416,7 +446,7 @@ abstract class KlaviyoAPI
      * @param array $params
      * @return array[]
      */
-    protected function createRequestBody( $params )
+    protected function createRequestBody($params)
     {
         return array(
             'form_params' => $params
@@ -429,10 +459,29 @@ abstract class KlaviyoAPI
      * @param array $params
      * @return array[]
      */
-    protected function createRequestJson( $params )
+    protected function createRequestJson($params)
     {
         return array(
             'json' => $params
+        );
+    }
+    /**
+     * Create options array for either Track or Identify call.
+     *
+     * @param string $type Request type - track or identify
+     * @param ProfileModel|EventModel $model
+     * @return array
+     */
+    protected function createOptionsArray($type, $model)
+    {
+        if ($type == self::TRACK) {
+            return array(self::QUERY => $model->toArray());
+        }
+
+        return array(
+            self::QUERY => array(
+                self::PROPERTIES => $model
+            )
         );
     }
 
@@ -455,12 +504,14 @@ abstract class KlaviyoAPI
      * @param array $profiles
      * @throws KlaviyoException
      */
-    protected function checkProfile( $profiles )
+    protected function checkProfile($profiles)
     {
-        foreach ( $profiles as $profile ) {
-            if ( ! $profile instanceof ProfileModel ) {
-                throw new KlaviyoException( sprintf( " %s is not an instance of ProfileModel, You must identify the person by their email, using a \$email key, or a unique identifier, using a \$id.",
-                    $profile['$email']
+        foreach ($profiles as $profile) {
+            if (!$profile instanceof ProfileModel) {
+                throw new KlaviyoException(
+                    sprintf(
+                        " %s is not an instance of ProfileModel, You must identify the person by their email, using a \$email key, or a unique identifier, using a \$id.",
+                        $profile['$email']
                     )
                 );
             }
@@ -530,7 +581,7 @@ abstract class KlaviyoAPI
      * @param array $headers
      * @return array
      */
-    protected function formatCurlHeaders( $headers )
+    protected function formatCurlHeaders($headers)
     {
         $formatted = array();
 

@@ -1,6 +1,9 @@
 ## CHANGELOG
 ### [Unreleased]
 
+### [2.3.3]
+- Update - Add ability to track and identify calls to use POST instead of GET
+
 ### [2.3.2]
 - Update - Add global suppression endpoint.
 - Fix - Explicitly set curl query array and authentication.
@@ -53,7 +56,8 @@
 ### 1.0
 - As this changelog was created after 2.0.0, please refer to the README for version 1 https://github.com/klaviyo/php-klaviyo/tree/d388ca998dff55b2a7e420c2c7aa2cd221365d1c
 
-[Unreleased]: https://github.com/klaviyo/php-klaviyo/compare/2.3.2...HEAD
+[Unreleased]: https://github.com/klaviyo/php-klaviyo/compare/2.3.3...HEAD
+[2.3.3]: https://github.com/klaviyo/php-klaviyo/compare/2.3.2...2.3.3
 [2.3.2]: https://github.com/klaviyo/php-klaviyo/compare/2.3.1...2.3.2
 [2.3.1]: https://github.com/klaviyo/php-klaviyo/compare/2.3.0...2.3.1
 [2.3.0]: https://github.com/klaviyo/php-klaviyo/compare/2.2.5...2.3.0
