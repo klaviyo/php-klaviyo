@@ -75,7 +75,7 @@ $profile = new KlaviyoProfile(
     )
 );
 
-$client->publicAPI->identify( $profile );
+$client->publicAPI->identify( $profile, $post=true );
 ```
 
 ### You can get metrics, a timeline of events and export analytics for a metric. See here for more https://www.klaviyo.com/docs/api/metrics
