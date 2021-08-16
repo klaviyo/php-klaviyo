@@ -39,7 +39,7 @@ $event = new KlaviyoEvent(
     )
 );
 
-$client->publicAPI->track( $event, $post='POST' );
+$client->publicAPI->track( $event, $post=true );
 ```
 ### You can also add profile properties to the 'customer properties' attribute in the Event model
 ```php
@@ -59,7 +59,7 @@ $event = new KlaviyoEvent(
     )
 );
 
-$client->publicAPI->track( $event, $post='POST' );
+$client->publicAPI->track( $event, $post=true );
 ```
 
 ### or just add a property to someone
