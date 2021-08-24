@@ -41,6 +41,7 @@ abstract class KlaviyoAPI
     const ERROR_INVALID_API_KEY = 'Invalid API Key.';
     const ERROR_RESOURCE_DOES_NOT_EXIST = 'The requested resource does not exist.';
     const ERROR_NON_200_STATUS = 'Request Failed with HTTP Status Code: %s';
+    const ERROR_CURL_ERROR = 'Request Failed with CURL error: %s';
 
     /**
      * Request options
@@ -174,13 +175,19 @@ abstract class KlaviyoAPI
         $statusCode = curl_getinfo($curl, $phpVersionHttpCode);
         curl_close($curl);
 
-        return $this->handleResponse($response, $statusCode, $isPublic);
+        if ( $statusCode == 0 && curl_errno($curl)) {
+            $curlError = curl_error($curl);
+        } else {
+            $curlError = null;
+        }
+
+        return $this->handleResponse($response, $statusCode, $curlError, $isPublic);
     }
 
     /**
      * Handle response from API call
      */
-    private function handleResponse($response, $statusCode, $isPublic)
+    private function handleResponse($response, $statusCode, $curlError, $isPublic)
     {
         $decoded_response = $this->decodeJsonResponse($response);
         if ($statusCode == 403) {
@@ -190,7 +197,14 @@ abstract class KlaviyoAPI
                 $this->returnRateLimit($decoded_response)
             );
         } else if ($statusCode < 200 || $statusCode >= 300) {
-            throw new KlaviyoApiException(isset($decoded_response['detail']) ? $decoded_response['detail'] : sprintf(self::ERROR_NON_200_STATUS, $statusCode), $statusCode);
+            if ($curlError) {
+                $errorMsg = sprintf(self::ERROR_CURL_ERROR, $curlError);
+            } elseif (isset($decoded_response['detail'])) {
+                $errorMsg = $decoded_response['detail'];
+            } else {
+                $errorMsg = sprintf(self::ERROR_NON_200_STATUS, $statusCode);
+            }
+            throw new KlaviyoApiException($errorMsg, $statusCode);
         }
 
         if ($isPublic) {
