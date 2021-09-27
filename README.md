@@ -133,7 +133,7 @@ $client->lists->removeMembersFromList( 'ListId', array $emails );
 $client->lists->getListExclusions( 'ListId' );
 
 #Get all of the emails, phone numbers and push tokens for profiles in a given list or segment
-$client->lists->getAllMembers( 'GroupId' );
+$client->lists->getAllMembers( 'GroupId', $marker = $marker_value );
 ```
 
 ### You can fetch profile information given the profile ID, See here for more information https://www.klaviyo.com/docs/api/people
