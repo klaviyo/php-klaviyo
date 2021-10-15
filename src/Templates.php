@@ -128,11 +128,10 @@ class Templates extends KlaviyoAPI
     public function cloneTemplate($templateId, $name)
     {
         $path = sprintf('%s/%s/%s', self::ENDPOINT_EMAIL_TEMPLATE, $templateId, self::CLONE_PATH);
-
         $params = $this->filterParams( array(
             self::NAME=> $name
         ) );
-        $params = $this->createQueryParams($params);
+        $params = $this->createRequestBody($params);
 
         return $this->v1Request($path, $params, self::HTTP_POST);
     }
