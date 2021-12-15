@@ -15,6 +15,8 @@ class Profiles extends KlaviyoAPI
     const SEARCH = 'search';
     const TIMELINE = 'timeline';
     const EXCLUSIONS = 'exclusions';
+    const EXCHANGE = 'exchange';
+    const EXCHANGE_ID = 'exchange_id';
 
     /**
      * Retrieve all data attributes for a person, based on the Klaviyo personID
@@ -150,6 +152,22 @@ class Profiles extends KlaviyoAPI
         return $this->v2Request($path, $params);
     }
 
+    
+    /**
+     * Get ID of profile by exchange id.
+     *
+     * @param string $exchangeId exchange id or kx parameter.
+     * @return mixed
+     * @throws Exception\KlaviyoException
+     */
+    public function getProfileIdByExchangeId($exchangeId)
+    {
+        $params = $this->createRequestBody([self::EXCHANGE_ID => $exchangeId]);
+        $path = sprintf('%s/%s', self::PEOPLE, self::EXCHANGE);
+
+        return $this->v2Request($path, $params);
+    }
+    
     /**
      * Exclude an email address from all communications.
      * @link https://apidocs.klaviyo.com/reference/lists-segments#exclude-globally
