@@ -40,6 +40,11 @@ $client = new Client('YOUR_API_KEY');
 
 The new SDK has many changes to namespace (resource and function names), parameters (names, types, and format), and error handling. Additionally, the new SDK sticks to just standard/built-in PHP types (int, string, array, etc), and does not make use of custom Models, as this legacy one does. Please reference [this section](https://github.com/klaviyo/klaviyo-php-sdk#comprehensive-list-of-operations--parameters) of the new SDK repo for details on how to update each operation.
 
+### Multistore limitation
+
+The new SDK currently sets API keys at a global environment level. This means that if you manage multiple stores, each store's client must be running in a different environment. We plan to update this behavior to better support multistore applications.
+
+
 # What is Klaviyo?
 
 Klaviyo is a real-time service for understanding your customers by aggregating all your customer data, identifying important groups of customers and then taking action.
