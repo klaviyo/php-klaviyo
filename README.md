@@ -26,21 +26,21 @@ use Klaviyo\Client;
 
 ### Update Client Instantiation
 
-from:
+From:
 ```php
 $client = new Klaviyo( 'PRIVATE_API_KEY', 'PUBLIC_API_KEY' );
 ```
 
-from:
+To:
 ```php
 $client = new Client('YOUR_API_KEY');
 ```
 
-### Updating API Operations
+### Updating SDK Calls
 
-The new API has many name changes to both namespace and parameters (types+format). Additionally, it only makes use of standard/built-in PHP types (int, string, array, etc), and does not make use of custom Models, as this one does. Please reference [this section](https://github.com/klaviyo/klaviyo-php-sdk#comprehensive-list-of-operations--parameters) of the new SDK repo for details on how to update each operation.
+The new SDK has many changes to namespace (resource and function names), parameters (names, types, and format), and error handling. Additionally, the new SDK sticks to just standard/built-in PHP types (int, string, array, etc), and does not make use of custom Models, as this legacy one does. Please reference [this section](https://github.com/klaviyo/klaviyo-php-sdk#comprehensive-list-of-operations--parameters) of the new SDK repo for details on how to update each operation.
 
-## What is Klaviyo?
+# What is Klaviyo?
 
 Klaviyo is a real-time service for understanding your customers by aggregating all your customer data, identifying important groups of customers and then taking action.
 http://www.klaviyo.com/
