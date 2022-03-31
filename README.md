@@ -38,7 +38,7 @@ $client = new Client('YOUR_API_KEY');
 
 ### Updating SDK Calls
 
-The new SDK has many changes to both namespace (resource and function names) and parameters (names, types, and format). Additionally, the new SDK sticks to just standard/built-in PHP types (int, string, array, etc), and does not make use of custom Models, as this legacy one does. Please reference [this section](https://github.com/klaviyo/klaviyo-php-sdk#comprehensive-list-of-operations--parameters) of the new SDK repo for details on how to update each operation.
+The new SDK has many changes to namespace (resource and function names), parameters (names, types, and format), and error handling. Additionally, the new SDK sticks to just standard/built-in PHP types (int, string, array, etc), and does not make use of custom Models, as this legacy one does. Please reference [this section](https://github.com/klaviyo/klaviyo-php-sdk#comprehensive-list-of-operations--parameters) of the new SDK repo for details on how to update each operation.
 
 # What is Klaviyo?
 
