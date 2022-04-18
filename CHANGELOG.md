@@ -1,6 +1,9 @@
 ## CHANGELOG
 ### [Unreleased]
 
+### [2.3.4]
+- EventModel does not to throw warnings if optional 'properties' parameter is not set
+
 ### [2.3.3]
 - Update - Add ability to track and identify calls to use POST instead of GET
 
