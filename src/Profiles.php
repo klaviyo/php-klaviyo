@@ -25,6 +25,7 @@ class Profiles extends KlaviyoAPI
      *
      * @return bool|mixed
      */
+    #[\ReturnTypeWillChange]
     public function getProfile( $personId )
     {
         $path = sprintf( '%s/%s', self::PERSON, $personId );
@@ -44,6 +45,7 @@ class Profiles extends KlaviyoAPI
      *
      * @return bool|mixed
      */
+    #[\ReturnTypeWillChange]
     public function updateProfile( $personId, $properties )
     {
         $params = $this->createQueryParams($properties);
@@ -75,6 +77,7 @@ class Profiles extends KlaviyoAPI
      *
      * @return bool|mixed
      */
+    #[\ReturnTypeWillChange]
     public function getAllProfileMetricsTimeline( $personId, $since = null, $uuid = null, $count = null, $sort = null )
     {
         $params = $this->setSinceParameter( $since, $uuid );
@@ -118,6 +121,7 @@ class Profiles extends KlaviyoAPI
      *
      * @return bool|mixed
      */
+    #[\ReturnTypeWillChange]
     public function getProfileMetricTimeline( $personId, $metricId, $since = null, $uuid = null, $count = null, $sort = null )
     {
         $params = $this->setSinceParameter( $since, $uuid );
@@ -142,6 +146,7 @@ class Profiles extends KlaviyoAPI
      * @return mixed
      * @throws Exception\KlaviyoException
      */
+    #[\ReturnTypeWillChange]
     public function getProfileIdByEmail($email)
     {
         $params = $this->createRequestBody([self::EMAIL => $email]);
@@ -157,6 +162,7 @@ class Profiles extends KlaviyoAPI
      * @param $email
      * Email address to exclude.
      */
+    #[\ReturnTypeWillChange]
     public function unsubscribeProfileGlobally($email) {
         $params = $this->createRequestBody([self::EMAIL => $email]);
         $path = sprintf('%s/%s', self::PEOPLE, self::EXCLUSIONS);

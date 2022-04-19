@@ -36,6 +36,7 @@ class Metrics extends KlaviyoAPI
      *
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function getMetrics( $page = null, $count = null )
     {
         $params = $this->filterParams( array(
@@ -67,6 +68,7 @@ class Metrics extends KlaviyoAPI
      *
      * @return bool|mixed
      */
+    #[\ReturnTypeWillChange]
     public function getMetricsTimeline( $since = null, $uuid = null, $count = null, $sort = null )
     {
         $params = $this->setSinceParameter( $since, $uuid );
@@ -111,6 +113,7 @@ class Metrics extends KlaviyoAPI
      * @return bool|mixed
      *
      */
+    #[\ReturnTypeWillChange]
     public function getMetricTimeline( $metricID, $since = null, $uuid = null, $count = null, $sort = null )
     {
         return $this->getMetricTimelineById($metricID, $since, $uuid, $count, $sort);
@@ -138,6 +141,7 @@ class Metrics extends KlaviyoAPI
      *
      * @return bool|mixed
      */
+    #[\ReturnTypeWillChange]
     public function getMetricTimelineById($metricID, $since = null, $uuid = null, $count = null, $sort = null)
     {
         $params = $this->setSinceParameter($since, $uuid);
@@ -182,6 +186,7 @@ class Metrics extends KlaviyoAPI
      * @return bool|mixed
      * @throws KlaviyoException
      */
+    #[\ReturnTypeWillChange]
     public function exportMetricData( $metricID,
                                       $start_date = null,
                                       $end_date = null,
@@ -210,6 +215,7 @@ class Metrics extends KlaviyoAPI
      * @return bool|mixed
      * @throws KlaviyoException
      */
+    #[\ReturnTypeWillChange]
     public function getMetricExport(
         $metricID,
         $start_date = null,

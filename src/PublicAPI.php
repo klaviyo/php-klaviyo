@@ -25,6 +25,7 @@ class PublicAPI extends KlaviyoAPI
      * @param EventModel $event
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function track(EventModel $event, $post = false)
     {
         $options = $post ? $this->createRequestJson($event->toArray()) : $this->createOptionsArray(self::TRACK, $event);
@@ -38,6 +39,7 @@ class PublicAPI extends KlaviyoAPI
      * @param ProfileModel $profile
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function identify(ProfileModel $profile, $post = false)
     {
         $options = $post ? $this->createRequestJson([self::PROPERTIES => $profile->toArray()]) : $this->createOptionsArray(self::IDENTIFY, $profile);

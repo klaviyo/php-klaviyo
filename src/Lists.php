@@ -38,6 +38,7 @@ class Lists extends KlaviyoAPI
      *
      * @return bool|mixed
      */
+    #[\ReturnTypeWillChange]
     public function createList( $listName )
     {
         $options = $this->createParams(self::LIST_NAME, $listName);
@@ -51,6 +52,7 @@ class Lists extends KlaviyoAPI
      *
      * @return bool/mixed
      */
+    #[\ReturnTypeWillChange]
     public function getLists() {
 
         return $this->v2Request( self::ENDPOINT_LISTS );
@@ -67,6 +69,7 @@ class Lists extends KlaviyoAPI
      *
      * @return bool|mixed
      */
+    #[\ReturnTypeWillChange]
     public function getListDetails( $listId )
     {
         return $this->getListById($listId);
@@ -81,6 +84,7 @@ class Lists extends KlaviyoAPI
      *
      * @return bool|mixed
      */
+    #[\ReturnTypeWillChange]
     public function getListById($listId)
     {
         $path = sprintf('%s/%s', self::ENDPOINT_LIST, $listId);
@@ -101,6 +105,7 @@ class Lists extends KlaviyoAPI
      *
      * @return bool|mixed
      */
+    #[\ReturnTypeWillChange]
     public function updateListDetails( $listId, $list_name )
     {
         return $this->updateListNameById($listId, $list_name);
@@ -118,6 +123,7 @@ class Lists extends KlaviyoAPI
      *
      * @return bool|mixed
      */
+    #[\ReturnTypeWillChange]
     public function updateListNameById($listId, $listName)
     {
         $params = $this->createRequestBody(
@@ -138,6 +144,7 @@ class Lists extends KlaviyoAPI
      *
      * @return bool|mixed
      */
+    #[\ReturnTypeWillChange]
     public function deleteList( $listId )
     {
         $path = sprintf( '%s/%s', self::ENDPOINT_LIST, $listId );
@@ -162,6 +169,7 @@ class Lists extends KlaviyoAPI
      * @return bool|mixed
      * @throws Exception\KlaviyoException
      */
+    #[\ReturnTypeWillChange]
     public function subscribeMembersToList( $listId, $profiles )
     {
         return $this->addSubscribersToList($listId, $profiles);
@@ -183,6 +191,7 @@ class Lists extends KlaviyoAPI
      * @return bool|mixed
      * @throws Exception\KlaviyoException
      */
+    #[\ReturnTypeWillChange]
     public function addSubscribersToList($listId, $profiles)
     {
         $this->checkProfile($profiles);
@@ -219,6 +228,7 @@ class Lists extends KlaviyoAPI
      *
      * @return bool|mixed
      */
+    #[\ReturnTypeWillChange]
     public function checkListSubscriptions ($listId, $emails = null,  $phoneNumbers = null, $pushTokens = null )
     {
         $params = $this->createRequestJson(
@@ -250,6 +260,7 @@ class Lists extends KlaviyoAPI
      *
      * @return bool|mixed
      */
+    #[\ReturnTypeWillChange]
     public function unsubscribeMembersFromList( $listId, $emails )
     {
         return $this->deleteSubscribersFromList($listId, $emails);
@@ -267,6 +278,7 @@ class Lists extends KlaviyoAPI
      *
      * @return bool|mixed
      */
+    #[\ReturnTypeWillChange]
     public function deleteSubscribersFromList($listId, $emails)
     {
         $params = $this->createRequestJson(
@@ -299,6 +311,7 @@ class Lists extends KlaviyoAPI
      *
      * @throws Exception\KlaviyoException
      */
+    #[\ReturnTypeWillChange]
     public function addMembersToList( $listId, $profiles )
     {
         $this->checkProfile( $profiles );
@@ -334,6 +347,7 @@ class Lists extends KlaviyoAPI
      *
      * @return bool|mixed
      */
+    #[\ReturnTypeWillChange]
     public function checkListMembership( $listId,  $emails = null, $phoneNumbers = null, $pushTokens = null )
     {
         $params = $this->createRequestJson(
@@ -363,6 +377,7 @@ class Lists extends KlaviyoAPI
      *
      * @return bool|mixed
      */
+    #[\ReturnTypeWillChange]
     public function removeMembersFromList( $listId, $emails )
     {
         $params = $this->createRequestJson(
@@ -393,6 +408,7 @@ class Lists extends KlaviyoAPI
      *
      * @return bool|mixed
      */
+    #[\ReturnTypeWillChange]
     public function getAllExclusionsOnList( $listId, $marker = null )
     {
         return $this->getListExclusions($listId, $marker);
@@ -411,6 +427,7 @@ class Lists extends KlaviyoAPI
      *
      * @return bool|mixed
      */
+    #[\ReturnTypeWillChange]
     public function getListExclusions($listId, $marker = null)
     {
         $params = $this->createRequestBody(
@@ -441,6 +458,7 @@ class Lists extends KlaviyoAPI
      *
      * @return bool|mixed
      */
+    #[\ReturnTypeWillChange]
     public function getGroupMemberIdentifiers( $groupId, $marker = null )
     {
         return $this->getAllMembers($groupId, $marker);
@@ -459,6 +477,7 @@ class Lists extends KlaviyoAPI
      *
      * @return bool|mixed
      */
+    #[\ReturnTypeWillChange]
     public function getAllMembers($groupId, $marker = null)
     {
         $params = $this->createRequestBody(

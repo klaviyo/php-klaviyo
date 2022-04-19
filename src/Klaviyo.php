@@ -39,6 +39,7 @@ class Klaviyo
     /**
      * @return string
      */
+    #[\ReturnTypeWillChange]
     public function getPrivateKey()
     {
         return $this->private_key;
@@ -47,6 +48,7 @@ class Klaviyo
     /**
      * @return string
      */
+    #[\ReturnTypeWillChange]
     public function getPublicKey()
     {
         return $this->public_key;
@@ -58,6 +60,7 @@ class Klaviyo
      *
      * @param string $api API service
      */
+    #[\ReturnTypeWillChange]
     public function __get($api)
     {
         $service = __NAMESPACE__ . '\\' . ucfirst($api);

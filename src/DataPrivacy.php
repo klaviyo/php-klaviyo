@@ -40,6 +40,7 @@ class DataPrivacy extends KlaviyoAPI
      * @return mixed
      * @throws KlaviyoException
      */
+    #[\ReturnTypeWillChange]
     public function requestProfileDeletion($identifier, $idType = self::EMAIL)
     {
         if (!in_array($idType, self::PROFILE_DELETION_VALID_ID_TYPES)) {

@@ -107,6 +107,7 @@ abstract class KlaviyoAPI
      * @param $path Endpoint to call
      * @param $options API params to add to request
      */
+    #[\ReturnTypeWillChange]
     protected function publicRequest($path, $options, $post)
     {
         $method = $post ? self::HTTP_POST : self::HTTP_GET;
@@ -123,6 +124,7 @@ abstract class KlaviyoAPI
      *
      * @throws KlaviyoException
      */
+    #[\ReturnTypeWillChange]
     protected function v1Request($path, $options = [], $method = self::HTTP_GET)
     {
         $path = self::API_V1 . $this->trimPath($path);
@@ -140,6 +142,7 @@ abstract class KlaviyoAPI
      *
      * @throws KlaviyoException
      */
+    #[\ReturnTypeWillChange]
     protected function v2Request($path, $options = [], $method = self::HTTP_GET)
     {
         $path = self::API_V2 . $this->trimPath($path);
@@ -158,6 +161,7 @@ abstract class KlaviyoAPI
      *
      * @throws KlaviyoException
      */
+    #[\ReturnTypeWillChange]
     private function request($method, $path, $options, $isPublic = false, $isV1 = false)
     {
         $options = $this->prepareAuthentication($method, $options, $isPublic, $isV1);
@@ -180,6 +184,7 @@ abstract class KlaviyoAPI
     /**
      * Handle response from API call
      */
+    #[\ReturnTypeWillChange]
     private function handleResponse($response, $statusCode, $isPublic)
     {
         $decoded_response = $this->decodeJsonResponse($response);
@@ -211,6 +216,7 @@ abstract class KlaviyoAPI
      *
      * @return array|array[]
      */
+    #[\ReturnTypeWillChange]
     private function prepareAuthentication($method, $params, $isPublic, $isV1)
     {
         if ($isPublic && $method == self::HTTP_POST) {
@@ -238,6 +244,7 @@ abstract class KlaviyoAPI
      * @param $params
      * @return array[]
      */
+    #[\ReturnTypeWillChange]
     protected function publicPostAuth($params)
     {
         unset($params[self::HEADERS][self::API_KEY_HEADER]);
@@ -254,6 +261,7 @@ abstract class KlaviyoAPI
      * @param $params
      * @return array[]
      */
+    #[\ReturnTypeWillChange]
     protected function publicGetAuth($params)
     {
         unset($params[self::HEADERS][self::API_KEY_HEADER]);
@@ -280,6 +288,7 @@ abstract class KlaviyoAPI
      * @param $params
      * @return array
      */
+    #[\ReturnTypeWillChange]
     protected function v1Auth($params)
     {
         $params[self::QUERY][self::API_KEY_PARAM] = $this->private_key;
@@ -295,6 +304,7 @@ abstract class KlaviyoAPI
      * @param $params
      * @return array
      */
+    #[\ReturnTypeWillChange]
     protected function v2Auth($params)
     {
         $params = array_merge(
@@ -316,6 +326,7 @@ abstract class KlaviyoAPI
      * @param $params
      * @return array
      */
+    #[\ReturnTypeWillChange]
     protected function setUserAgentHeader($params)
     {
         $params = array_merge(
@@ -333,6 +344,7 @@ abstract class KlaviyoAPI
     /**
      * Helper function to remove leading forward slashes
      */
+    #[\ReturnTypeWillChange]
     private function trimPath($path)
     {
         return '/' . ltrim($path, '/');
@@ -346,6 +358,7 @@ abstract class KlaviyoAPI
      * @param string $response
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     private function decodeJsonResponse($response)
     {
         if (!empty($response)) {
@@ -361,6 +374,7 @@ abstract class KlaviyoAPI
      * @param mixed $response
      * @return string
      */
+    #[\ReturnTypeWillChange]
     private function returnRateLimit($response)
     {
         $responseDetail = explode(" ", $response['detail']);
@@ -379,6 +393,7 @@ abstract class KlaviyoAPI
      * @param string $paramName Name of API Param to create
      * @param mixed $paramValue Value of API params to create
      */
+    #[\ReturnTypeWillChange]
     protected function createParams($paramName, $paramValue)
     {
         return [
@@ -395,6 +410,7 @@ abstract class KlaviyoAPI
      * @param mixed $key Key of item in array.
      * @param string $class Name of class against which items are validated.
      */
+    #[\ReturnTypeWillChange]
     protected function isInstanceOf($value, $key, $class)
     {
         if (!($value instanceof $class)) {
@@ -411,6 +427,7 @@ abstract class KlaviyoAPI
      * @param $uuid New token supplied by API response
      * @return array
      */
+    #[\ReturnTypeWillChange]
     protected function setSinceParameter($since, $uuid)
     {
         if (is_null($uuid)) {
@@ -430,6 +447,7 @@ abstract class KlaviyoAPI
      * @param array $params
      * @return array
      */
+    #[\ReturnTypeWillChange]
     protected function filterParams($params)
     {
         return array_filter(
@@ -446,6 +464,7 @@ abstract class KlaviyoAPI
      * @param array $params
      * @return array[]
      */
+    #[\ReturnTypeWillChange]
     protected function createRequestBody($params)
     {
         return array(
@@ -459,6 +478,7 @@ abstract class KlaviyoAPI
      * @param array $params
      * @return array[]
      */
+    #[\ReturnTypeWillChange]
     protected function createRequestJson($params)
     {
         return array(
@@ -472,6 +492,7 @@ abstract class KlaviyoAPI
      * @param ProfileModel|EventModel $model
      * @return array
      */
+    #[\ReturnTypeWillChange]
     protected function createOptionsArray($type, $model)
     {
         if ($type == self::TRACK) {
@@ -491,6 +512,7 @@ abstract class KlaviyoAPI
      * @param array $params Key/value pairs to be set as query string.
      * @return array
      */
+    #[\ReturnTypeWillChange]
     protected function createQueryParams($params)
     {
         return array(
@@ -504,6 +526,7 @@ abstract class KlaviyoAPI
      * @param array $profiles
      * @throws KlaviyoException
      */
+    #[\ReturnTypeWillChange]
     protected function checkProfile($profiles)
     {
         foreach ($profiles as $profile) {
@@ -524,6 +547,7 @@ abstract class KlaviyoAPI
      * @param $method
      * @return array
      */
+    #[\ReturnTypeWillChange]
     protected function getDefaultCurlOptions($method)
     {
         return array(
@@ -542,6 +566,7 @@ abstract class KlaviyoAPI
      * @param $options
      * @return array
      */
+    #[\ReturnTypeWillChange]
     protected function getCurlOptUrl($path, $options)
     {
         $url = self::BASE_URL . $path;
@@ -558,6 +583,7 @@ abstract class KlaviyoAPI
      * @param $options
      * @return array
      */
+    #[\ReturnTypeWillChange]
     protected function getSpecificCurlOptions($options)
     {
         $setopt_array = array();
@@ -581,6 +607,7 @@ abstract class KlaviyoAPI
      * @param array $headers
      * @return array
      */
+    #[\ReturnTypeWillChange]
     protected function formatCurlHeaders($headers)
     {
         $formatted = array();
