@@ -1,6 +1,9 @@
 ## CHANGELOG
 ### [Unreleased]
 
+### [2.3.5]
+- Fix - Remove null coalesce operator to keep php 5.6 compatibility
+
 ### [2.3.4]
 - Fix - EventModel does not to throw warnings if optional 'properties' parameter is not set
 
@@ -60,6 +63,7 @@
 - As this changelog was created after 2.0.0, please refer to the README for version 1 https://github.com/klaviyo/php-klaviyo/tree/d388ca998dff55b2a7e420c2c7aa2cd221365d1c
 
 [Unreleased]: https://github.com/klaviyo/php-klaviyo/compare/2.3.3...HEAD
+[2.3.5]: https://github.com/klaviyo/php-klaviyo/compare/2.3.4...2.3.5
 [2.3.4]: https://github.com/klaviyo/php-klaviyo/compare/2.3.3...2.3.4
 [2.3.3]: https://github.com/klaviyo/php-klaviyo/compare/2.3.2...2.3.3
 [2.3.2]: https://github.com/klaviyo/php-klaviyo/compare/2.3.1...2.3.2
