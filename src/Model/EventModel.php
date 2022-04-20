@@ -41,7 +41,7 @@ class EventModel extends BaseModel
         $this->customer_properties = new ProfileModel(
             $config['customer_properties']
         );
-        $this->properties = $config['properties'] ?? [];
+        $this->properties = empty($config['properties']) == false ? $config['properties'] : [];
         // Can pass in unix timestamp if prefixed with '@' or any date/time format accepted by DateTime interface.
         try {
             if (isset($config['time'])) {
