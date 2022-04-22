@@ -59,6 +59,7 @@ class EventModel extends BaseModel
     /**
      * @return array|mixed
      */
+    #[\ReturnTypeWillChange]
     public function jsonSerialize() {
         return array(
             'event' => $this->event,

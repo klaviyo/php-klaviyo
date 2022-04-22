@@ -94,6 +94,7 @@ class ProfileModel extends BaseModel
     /**
      * @param array $configuration
      */
+    #[\ReturnTypeWillChange]
     protected function setAttributes(array $configuration ) {
         foreach ( $configuration as $key => $value ) {
             if ( $this->isSpecialAttribute($key) ) {
@@ -108,6 +109,7 @@ class ProfileModel extends BaseModel
     /**
      * @param array $configuration
      */
+    #[\ReturnTypeWillChange]
     private function setCustomAttributes(array $configuration ) {
         $customAttributeKeys = array_flip(
             array_filter(
@@ -123,6 +125,7 @@ class ProfileModel extends BaseModel
      * @param $attributeKey
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     protected function isSpecialAttribute($attributeKey ) {
         return in_array( $attributeKey, self::$specialAttributes );
     }
@@ -131,6 +134,7 @@ class ProfileModel extends BaseModel
      * @param $attributeKey
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     protected function isCustomAttribute($attributeKey ) {
         return !self::isSpecialAttribute( $attributeKey );
     }
@@ -139,6 +143,7 @@ class ProfileModel extends BaseModel
      * @param $attributeKey
      * @return string
      */
+    #[\ReturnTypeWillChange]
     public function getCustomAttribute($attributeKey ) {
         return !empty($this->customAttributes[$attributeKey]) ? $this->customAttributes[$attributeKey] : '';
     }
@@ -146,6 +151,7 @@ class ProfileModel extends BaseModel
     /**
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function getCustomAttributes() {
         return $this->customAttributes;
     }
@@ -157,10 +163,11 @@ class ProfileModel extends BaseModel
      *
      * @return string
      */
+    #[\ReturnTypeWillChange]
     public function convertToCamelCase($key) {
         return lcfirst(str_replace('_', '', ucwords(ltrim($key, '$'), '_')));
     }
-
+    #[\ReturnTypeWillChange]
     public function jsonSerialize() {
         $properties = array_fill_keys($this::$specialAttributes, null);
         foreach ($properties as $key => &$value) {
