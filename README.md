@@ -2,7 +2,7 @@
 
 # Deprecation Notice
 
-This SDK and its associated pip package are set to be deprecated on 2024-01-01 and will not receive further updates.
+This SDK and its associated pip package are set to be deprecated on 2024-06-30 and will not receive further updates.
 
 We recommend migrating over to our [newest SDK](https://github.com/klaviyo/klaviyo-api-php).
 
