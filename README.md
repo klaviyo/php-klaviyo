@@ -205,6 +205,9 @@ $client->profiles->getProfileMetricTimeline( 'ProfileId', 'MetricId' );
 
 #Get a profile's ID by its email address
 $client->profiles->getProfileIdByEmail('someone@mailinator.com');
+
+#Get a profile's ID by exchange id or kx parameter
+$client->profiles->getProfileIdByExchangeId('exchangeId');
 ```
 
 ### You can request a privacy-compliant profile deletion given an identifying property
